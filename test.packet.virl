@@ -257,6 +257,9 @@ no scheduler allocate
 !
 end</entry>
             <entry key="static_serial_port_3" type="Integer">13003</entry>
+            <entry key="static_serial_port_1" type="Integer">11002</entry>
+            <entry key="static_serial_port_2" type="Integer">12002</entry>
+            <entry key="static_serial_port_0" type="Integer">10002</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -370,6 +373,7 @@ line vty 0 4
 end</entry>
             <entry key="static_serial_port_0" type="Integer">10003</entry>
             <entry key="static_serial_port_3" type="Integer">13003</entry>
+            <entry key="static_serial_port_2" type="Integer">12003</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
