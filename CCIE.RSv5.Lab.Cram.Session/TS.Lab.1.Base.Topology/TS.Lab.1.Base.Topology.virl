@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <extensions>
+        <entry key="lxc.host.static_ip" type="String">172.16.11.100</entry>
+    </extensions>
     <node name="R1" type="SIMPLE" subtype="IOSv" location="123,51">
         <extensions>
             <entry key="config" type="String">!
