@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
-    <node name="iosv-1" type="SIMPLE" subtype="IOSv" location="240,341">
+    <node name="R1" type="SIMPLE" subtype="IOSv" location="240,341">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 20:23:16 UTC Mon Mar 21 2016
@@ -126,10 +126,14 @@ line vty 0 4
 no scheduler allocate
 !
 end</entry>
+            <entry key="static_serial_port_0" type="Integer">10001</entry>
+            <entry key="static_serial_port_1" type="Integer">11001</entry>
+            <entry key="static_serial_port_2" type="Integer">12001</entry>
+            <entry key="static_serial_port_3" type="Integer">13001</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="iosv-2" type="SIMPLE" subtype="IOSv" location="751,345">
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="751,345">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 20:23:16 UTC Mon Mar 21 2016
@@ -252,10 +256,11 @@ line vty 0 4
 no scheduler allocate
 !
 end</entry>
+            <entry key="static_serial_port_3" type="Integer">13003</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="iosvl2-1" type="SIMPLE" subtype="IOSvL2" location="520,349">
+    <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="520,349">
         <extensions>
             <entry key="config" type="String">!
 ! Last configuration change at 20:23:17 UTC Mon Mar 21 2016
@@ -363,6 +368,8 @@ line vty 0 4
 !
 !
 end</entry>
+            <entry key="static_serial_port_0" type="Integer">10003</entry>
+            <entry key="static_serial_port_3" type="Integer">13003</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
