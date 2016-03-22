@@ -1,0 +1,126 @@
+
+!
+enable
+configure terminal
+version 12.2
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+no service dhcp
+!
+hostname SW4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+!
+no aaa new-model
+system mtu routing 1500
+vtp file vtp.ccie.dat
+ip routing
+no ip domain-lookup
+!
+ip dhcp pool default
+   network 192.168.2.0 255.255.255.0
+   default-router 192.168.2.2 
+   dns-server 150.1.24.24 
+   domain-name ine.ccie.local
+!
+ip dhcp pool srv1
+   host 192.168.2.100 255.255.255.0
+   client-identifier 0100.5056.8d1a.a0
+   default-router 192.168.2.2 
+   dns-server 150.1.24.24 
+   domain-name ine.ccie.local
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree portfast bpdufilter default
+spanning-tree extend system-id
+spanning-tree vlan 322,1624 max-age 10
+!
+vlan internal allocation policy ascending
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.24.24 255.255.255.255
+ no ip mroute-cache
+ ip ospf 50 area 3
+ ipv6 address 2001::24/128
+!
+interface Port-channel14
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 14 mode auto
+!
+interface GigabitEthernet1/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ channel-group 14 mode auto
+!
+interface GigabitEthernet1/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet1/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+
+interface Vlan1
+ no shutdown
+ no ip mroute-cache
+!
+interface Vlan1624
+ ip address 172.31.246.24 255.255.255.128
+ ip ospf 50 area 3
+ ipv6 address 2001:172:31:246::24/65
+!
+router ospf 50
+ log-adjacency-changes
+!
+no ip classless
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end

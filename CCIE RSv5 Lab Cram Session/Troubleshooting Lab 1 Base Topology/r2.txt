@@ -1,0 +1,145 @@
+
+!
+! Last configuration change at 21:39:36 UTC Sat Feb 21 2015
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9DMEUSB233Y
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.2.2 255.255.255.255
+ ip ospf 50 area 0
+ ipv6 address 2001::2/128
+ ipv6 ospf 1 area 1
+!
+interface Loopback2
+ ip address 155.1.25.25 255.255.255.255
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 192.168.2.2 255.255.255.0
+ ip helper-address 150.1.24.24
+ ip ospf 50 area 1
+ ipv6 address 2001:192:168:2::2/64
+ ipv6 nd router-preference High
+ ipv6 ospf 1 area 1
+!
+interface GigabitEthernet0/1.215
+ encapsulation dot1Q 215
+ ip address 172.31.215.2 255.255.255.128
+ ip ospf 50 area 1
+ ipv6 address 2001:172:31:215::2/64
+ ipv6 ospf 1 area 1
+
+router ospf 50
+ area 2 virtual-link 150.1.15.15
+ passive-interface GigabitEthernet0/1.200
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+no ip forward-protocol nd
+no ip forward-protocol udp
+!
+no ip http server
+no ip http secure-server
+!
+ipv6 router ospf 1
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end

@@ -1,0 +1,173 @@
+
+!
+! Last configuration change at 00:42:27 UTC Tue Mar 16 1993
+!
+enable
+configure terminal
+version 15.0
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+!
+hostname SW2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+system mtu routing 1500
+vtp file vtp.ccie.dat
+ip routing
+no ip domain-lookup
+!
+!
+!
+ip multicast-routing distributed
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree portfast default
+spanning-tree portfast bpdufilter default
+spanning-tree extend system-id
+spanning-tree vlan 1,1623,1723,1823,1921 priority 0
+spanning-tree vlan 322,1624 priority 61440
+spanning-tree vlan 322,1624 max-age 10
+!
+vlan internal allocation policy ascending
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.22.22 255.255.255.255
+ ip pim sparse-mode
+ ipv6 address 2001::22/128
+!
+interface Port-channel12
+ no switchport
+ ip address 119.3.12.22 255.255.255.0
+ ip pim sparse-mode
+ ipv6 address 2001:119:3:12::22/64
+!
+interface Port-channel23
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/1
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface GigabitEthernet0/2
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 23 mode on
+ spanning-tree vlan 1,1623,1723,1823,1921 port-priority 0
+!
+interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 23 mode on
+!
+interface GigabitEthernet1/0
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport nonegotiate
+ channel-group 23 mode on
+!
+interface GigabitEthernet1/1
+ no switchport
+ no ip address
+ channel-group 12 mode desirable
+!
+interface GigabitEthernet1/2
+ no switchport
+ no ip address
+ channel-group 12 mode desirable
+!
+
+interface Vlan1
+ no shutdown
+!
+interface Vlan322
+ ip address 119.3.223.22 255.255.255.0
+ ip pim sparse-mode
+ ipv6 address 2001:119:3:223::22/64
+!
+interface Vlan1921
+ no ip address
+ ip pim sparse-mode
+!
+!
+router eigrp HOUSTON
+ !
+ address-family ipv4 unicast autonomous-system 5000
+  !
+  af-interface default
+   authentication mode hmac-sha-256 !EIGRP_!
+  exit-af-interface
+  !
+  topology base
+   variance 4
+   distribute-list route-map EIGRP_IN in Port-channel12
+  exit-af-topology
+  network 119.3.0.0 0.0.255.255
+  network 150.1.22.22 0.0.0.0
+  metric weights 0 0 0 1 0 0
+  eigrp router-id 150.1.22.22
+ exit-address-family
+!
+!
+router eigrp HUSTON
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+ip prefix-list SW1_Lo0 seq 5 permit 150.1.21.21/32
+!
+route-map EIGRP_IN permit 10
+ match ip address prefix-list SW1_Lo0
+ set metric 200000 +2012 255 1 1500
+!
+route-map EIGRP_IN permit 100
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end

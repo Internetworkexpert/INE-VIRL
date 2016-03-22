@@ -1,0 +1,193 @@
+
+!
+! Last configuration change at 21:39:36 UTC Sat Feb 21 2015
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9MWA7QEAAU8
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.10.10 255.255.255.255
+ ipv6 address 2001::10/128
+!
+interface Loopback1
+ ip address 150.2.10.10 255.255.255.255
+ ip pim sparse-mode
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.105
+ encapsulation dot1Q 105
+ ip address 192.0.105.10 255.255.255.0
+ ip pim sparse-mode
+ ipv6 address 2001:192:0:105::10/64
+!
+interface GigabitEthernet0/1.106
+ encapsulation dot1Q 106
+ ip address 192.0.106.10 255.255.255.0
+ ip pim sparse-mode
+ ipv6 address 2001:192:0:106::10/64
+!
+interface GigabitEthernet0/1.107
+ encapsulation dot1Q 107
+ ip address 192.0.107.10 255.255.255.0
+ ip pim sparse-mode
+ ipv6 address 2001:192:0:107::10/64
+
+!
+router eigrp RENO
+ !
+ address-family ipv4 unicast autonomous-system 6000
+  !
+  topology base
+  exit-af-topology
+  network 150.1.10.10 0.0.0.0
+  network 192.0.106.0
+  network 192.0.107.0
+  eigrp default-route-tag 10.9.6.7
+ exit-address-family
+!
+router bgp 65600
+ template peer-policy SACRAMENTO_POLICY
+  send-community both
+ exit-peer-policy
+ !
+ template peer-policy RR_POLICY
+ exit-peer-policy
+ !
+ template peer-session RR_SESSION
+  remote-as 65600
+  update-source Loopback0
+ exit-peer-session
+ !
+ template peer-session SACRAMENTO_SESSION
+  remote-as 3000
+ exit-peer-session
+ !
+ bgp router-id 150.1.10.10
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 150.1.6.6 inherit peer-session RR_SESSION
+ neighbor 150.1.7.7 inherit peer-session RR_SESSION
+ neighbor 192.0.105.5 inherit peer-session SACRAMENTO_SESSION
+ !
+ address-family ipv4
+  network 150.2.10.10 mask 255.255.255.255
+  neighbor 150.1.6.6 activate
+  neighbor 150.1.6.6 inherit peer-policy RR_POLICY
+  neighbor 150.1.7.7 activate
+  neighbor 150.1.7.7 inherit peer-policy RR_POLICY
+  neighbor 192.0.105.5 activate
+  neighbor 192.0.105.5 inherit peer-policy SACRAMENTO_POLICY
+ exit-address-family
+ !
+ address-family ipv4 multicast
+  neighbor 192.0.105.5 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+ip pim rp-candidate Loopback1 group-list 10 interval 5
+no ip http server
+no ip http secure-server
+!
+access-list 10 permit 230.10.10.10
+!
+route-tag notation dotted-decimal
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end

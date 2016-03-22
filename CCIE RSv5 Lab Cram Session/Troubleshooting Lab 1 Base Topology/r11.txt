@@ -1,0 +1,156 @@
+
+!
+! Last configuration change at 21:39:36 UTC Sat Feb 21 2015
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9T8WPK3T4YM
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.11.11 255.255.255.255
+ ip ospf 100 area 1000
+ ipv6 address 2001::11/128
+ ospfv3 1 ipv6 area 1000
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.411
+ encapsulation dot1Q 411
+ ip address 10.254.255.1 255.255.255.254
+ ip ospf 100 area 1000
+ ipv6 address 2001:10:254:255::1/127
+ ospfv3 1 ipv6 area 1000
+!
+interface GigabitEthernet0/1.1113
+ encapsulation dot1Q 1113
+ ip address 10.254.255.4 255.255.255.254
+ ip ospf 100 area 0
+ ipv6 address 2001:10:254:255::4/127
+ ospfv3 1 ipv6 area 0
+!
+interface GigabitEthernet0/1.1114
+ encapsulation dot1Q 1114
+ ip address 10.254.255.6 255.255.255.254
+ ip ospf network point-to-point
+ ip ospf multi-area 1000
+ ip ospf 100 area 0
+ ipv6 address 2001:10:254:255::6/127
+ ospfv3 1 ipv6 area 0
+
+router ospfv3 1
+ router-id 255.255.255.255
+ !
+ address-family ipv6 unicast
+  area 1000 nssa
+ exit-address-family
+!
+router ospf 100
+ router-id 150.1.11.11
+ auto-cost reference-bandwidth 100000
+ area 1000 nssa
+ mpls ldp autoconfig
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
