@@ -1,0 +1,1570 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" simulationEngine="OPENSTACK" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <node name="R1" type="SIMPLE" subtype="IOSv" location="57,131"><extensions><entry key="config" type="String">!
+version 15.2
+!
+enable
+configure terminal
+no service timestamps debug uptime
+no service timestamps log uptime
+!
+hostname R1
+!
+no ip domain lookup
+ip routing
+ipv6 unicast-routing
+!
+cdp run
+!
+interface Loopback0
+ ipv6 address 2001:150:1:1::1/128
+ ip address 150.1.1.1 255.255.255.255
+!
+interface GigabitEthernet0/1
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1.13
+ encapsulation dot1q 13
+ ip address 155.1.13.1 255.255.255.0
+ ipv6 address 2001:155:1:13::1/64
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1q 100
+ ip address 169.254.100.1 255.255.255.0
+ ipv6 address 2001:169:254:100::1/64
+!
+interface GigabitEthernet0/1.146
+ encapsulation dot1q 146
+ ip address 155.1.146.1 255.255.255.0
+ ipv6 address 2001:155:1:146::1/64
+!
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 5
+ hash md5
+! 
+crypto isakmp key cisco address 0.0.0.0
+!
+crypto ipsec transform-set ESP_AES_SHA esp-aes esp-sha-hmac
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP_AES_SHA
+!
+interface Tunnel0
+ ip address 155.1.0.1 255.255.255.0
+ ip mtu 1400
+ ip nhrp authentication NHRPPASS
+ ip nhrp map 155.1.0.5 169.254.100.5
+ ip nhrp map multicast 169.254.100.5
+ ip nhrp network-id 1 
+ ip nhrp holdtime 300
+ ip nhrp nhs 155.1.0.5
+ ip tcp adjust-mss 1360
+ tunnel source GigabitEthernet0/1.100
+ tunnel mode gre multipoint
+ tunnel key 150
+ tunnel protection ipsec profile DMVPN_PROFILE
+ no shutdown
+!
+router eigrp 100
+ no auto-summary
+ network 155.1.0.0 0.0.255.255
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ privilege level 15
+ no login
+!
+line vty 0 4
+ privilege level 15
+ no login
+!
+end
+
+
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="58,197"><extensions><entry key="config" type="String">!
+version 15.2
+!
+
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key cisco address 0.0.0.0        
+!
+!
+crypto ipsec transform-set ESP_AES_SHA esp-aes esp-sha-hmac 
+ mode tunnel
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP_AES_SHA 
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.2.2 255.255.255.255
+ ipv6 address 2001:150:2:2::2/128
+!
+interface Tunnel0
+ ip address 155.1.0.2 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPPASS
+ ip nhrp map 155.1.0.5 169.254.100.5
+ ip nhrp map multicast 169.254.100.5
+ ip nhrp network-id 1
+ ip nhrp holdtime 300
+ ip nhrp nhs 155.1.0.5
+ ip tcp adjust-mss 1360
+ tunnel source GigabitEthernet0/1.100
+ tunnel mode gre multipoint
+ tunnel key 150
+ tunnel protection ipsec profile DMVPN_PROFILE
+!
+interface GigabitEthernet0/1
+ no ip address
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.23
+ encapsulation dot1Q 23
+ ip address 155.1.23.2 255.255.255.0
+ ipv6 address 2001:155:1:23::2/64
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 169.254.100.2 255.255.255.0
+ ipv6 address 2001:169:254:100::2/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp 100
+ network 155.1.0.0
+!
+router bgp 100
+ bgp log-neighbor-changes
+ neighbor 155.1.0.4 remote-as 200
+ neighbor 155.1.0.5 remote-as 100
+ neighbor 155.1.108.10 remote-as 54
+ neighbor 155.1.108.10 ebgp-multihop 255
+!
+!
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+!
+!
+end
+
+R2#
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="IOSv" location="59,270"><extensions><entry key="config" type="String">!
+version 15.2
+!
+enable
+configure terminal
+no service timestamps debug uptime
+no service timestamps log uptime
+!
+hostname R3
+!
+no ip domain lookup
+ip routing
+ipv6 unicast-routing
+!
+cdp run
+!
+interface Loopback0
+ ipv6 address 2001:150:3:3::3/128
+ ip address 150.1.3.3 255.255.255.255
+!
+interface GigabitEthernet0/1
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1.13
+ encapsulation dot1q 13
+ ip address 155.1.13.3 255.255.255.0
+ ipv6 address 2001:155:1:13::3/64
+!
+interface GigabitEthernet0/1.23
+ encapsulation dot1q 23
+ ip address 155.1.23.3 255.255.255.0
+ ipv6 address 2001:155:1:23::3/64
+!
+interface GigabitEthernet0/1.37
+ encapsulation dot1q 37
+ ip address 155.1.37.3 255.255.255.0
+ ipv6 address 2001:155:1:37::3/64
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1q 100
+ ip address 169.254.100.3 255.255.255.0
+ ipv6 address 2001:169:254:100::3/64
+!
+crypto isakmp policy 10
+ encr aes
+ authentication pre-share
+ group 5
+ hash md5
+! 
+crypto isakmp key cisco address 0.0.0.0
+!
+crypto ipsec transform-set ESP_AES_SHA esp-aes esp-sha-hmac
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP_AES_SHA
+!
+interface Tunnel0
+ ip address 155.1.0.3 255.255.255.0
+ ip mtu 1400
+ ip nhrp authentication NHRPPASS
+ ip nhrp map 155.1.0.5 169.254.100.5
+ ip nhrp map multicast 169.254.100.5
+ ip nhrp network-id 1 
+ ip nhrp holdtime 300
+ ip nhrp nhs 155.1.0.5
+ ip tcp adjust-mss 1360
+ tunnel source GigabitEthernet0/1.100
+ tunnel mode gre multipoint
+ tunnel key 150
+ tunnel protection ipsec profile DMVPN_PROFILE
+ no shutdown
+!
+router eigrp 100
+ no auto-summary
+ network 155.1.0.0 0.0.255.255
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ privilege level 15
+ no login
+!
+line vty 0 4
+ privilege level 15
+ no login
+!
+end
+
+
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="IOSv" location="58,345"><extensions><entry key="config" type="String">!
+version 15.2
+!
+
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key cisco address 0.0.0.0        
+!
+!
+crypto ipsec transform-set ESP_AES_SHA esp-aes esp-sha-hmac 
+ mode tunnel
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP_AES_SHA 
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.4.4 255.255.255.255
+ ipv6 address 2001:150:4:4::4/128
+!
+interface Tunnel0
+ ip address 155.1.0.4 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPPASS
+ ip nhrp map 155.1.0.5 169.254.100.5
+ ip nhrp map multicast 169.254.100.5
+ ip nhrp network-id 1
+ ip nhrp holdtime 300
+ ip nhrp nhs 155.1.0.5
+ ip tcp adjust-mss 1360
+ tunnel source GigabitEthernet0/1.100
+ tunnel mode gre multipoint
+ tunnel key 150
+ tunnel protection ipsec profile DMVPN_PROFILE
+!
+interface GigabitEthernet0/1
+ no ip address
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.45
+ encapsulation dot1Q 45
+ ip address 155.1.45.4 255.255.255.0
+ ipv6 address 2001:155:1:45::4/64
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 169.254.100.4 255.255.255.0
+ ipv6 address 2001:169:254:100::4/64
+!
+interface GigabitEthernet0/1.146
+ encapsulation dot1Q 146
+ ip address 155.1.146.4 255.255.255.0
+ ipv6 address 2001:155:1:146::4/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp 100
+ network 155.1.0.0
+!
+router bgp 200
+ bgp log-neighbor-changes
+ neighbor 150.1.5.5 remote-as 100
+ neighbor 150.1.5.5 ebgp-multihop 255
+ neighbor 150.1.5.5 update-source Loopback0
+ neighbor 155.1.0.2 remote-as 100
+!
+!
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+!
+!
+end
+
+R4#
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="IOSv" location="47,417"><extensions><entry key="config" type="String">!
+version 15.2
+!
+
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 10
+ encr aes
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key cisco address 0.0.0.0        
+!
+!
+crypto ipsec transform-set ESP_AES_SHA esp-aes esp-sha-hmac 
+ mode tunnel
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP_AES_SHA 
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.5.5 255.255.255.255
+ ipv6 address 2001:150:5:5::5/128
+!
+interface Tunnel0
+ ip address 155.1.0.5 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPPASS
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 1
+ ip tcp adjust-mss 1360
+ delay 1000
+ tunnel source GigabitEthernet0/1.100
+ tunnel mode gre multipoint
+ tunnel key 150
+ tunnel protection ipsec profile DMVPN_PROFILE
+!
+interface GigabitEthernet0/1
+ no ip address
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.5
+ encapsulation dot1Q 5
+ ip address 155.1.5.5 255.255.255.0
+ ipv6 address 2001:155:1:5::5/64
+!
+interface GigabitEthernet0/1.45
+ encapsulation dot1Q 45
+ ip address 155.1.45.5 255.255.255.0
+ ipv6 address 2001:155:1:45::5/64
+!
+interface GigabitEthernet0/1.58
+ encapsulation dot1Q 58
+ ip address 155.1.58.5 255.255.255.0
+ ipv6 address 2001:155:1:58::5/64
+!
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 169.254.100.5 255.255.255.0
+ ipv6 address 2001:169:254:100::5/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp 100
+ network 155.1.0.0
+!
+router bgp 100
+ bgp log-neighbor-changes
+ neighbor 150.1.4.4 remote-as 200
+ neighbor 150.1.4.4 ebgp-multihop 255
+ neighbor 150.1.4.4 update-source Loopback0
+ neighbor 155.1.0.2 remote-as 100
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+!
+!
+end
+
+R5#
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="IOSv" location="49,474"><extensions><entry key="config" type="String">!
+version 15.2
+!
+enable
+configure terminal
+no service timestamps debug uptime
+no service timestamps log uptime
+!
+hostname R6
+!
+no ip domain lookup
+ip routing
+ipv6 unicast-routing
+!
+cdp run
+!
+interface Loopback0
+ ipv6 address 2001:150:6:6::6/128
+ ip address 150.1.6.6 255.255.255.255
+!
+interface GigabitEthernet0/1
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1q 67
+ ip address 155.1.67.6 255.255.255.0
+ ipv6 address 2001:155:1:67::6/64
+!
+interface GigabitEthernet0/1.146
+ encapsulation dot1q 146
+ ip address 155.1.146.6 255.255.255.0
+ ipv6 address 2001:155:1:146::6/64
+!
+router eigrp 100
+ no auto-summary
+ network 155.1.0.0 0.0.255.255
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ privilege level 15
+ no login
+!
+line vty 0 4
+ privilege level 15
+ no login
+!
+end
+
+
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="43,552"><extensions><entry key="config" type="String">!
+version 15.2
+!
+enable
+configure terminal
+no service timestamps debug uptime
+no service timestamps log uptime
+!
+hostname R7
+!
+no ip domain lookup
+ip routing
+ipv6 unicast-routing
+!
+cdp run
+!
+interface Loopback0
+ ipv6 address 2001:150:7:7::7/128
+ ip address 150.1.7.7 255.255.255.255
+!
+interface GigabitEthernet0/1
+ cdp enable
+ no shutdown
+!
+interface GigabitEthernet0/1.7
+ encapsulation dot1q 7
+ ip address 155.1.7.7 255.255.255.0
+ ipv6 address 2001:155:1:7::7/64
+!
+interface GigabitEthernet0/1.37
+ encapsulation dot1q 37
+ ip address 155.1.37.7 255.255.255.0
+ ipv6 address 2001:155:1:37::7/64
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1q 67
+ ip address 155.1.67.7 255.255.255.0
+ ipv6 address 2001:155:1:67::7/64
+!
+interface GigabitEthernet0/1.79
+ encapsulation dot1q 79
+ ip address 155.1.79.7 255.255.255.0
+ ipv6 address 2001:155:1:79::7/64
+!
+router eigrp 100
+ no auto-summary
+ network 155.1.7.7 0.0.0.0
+ network 155.1.37.7 0.0.0.0
+ network 155.1.67.7 0.0.0.0
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+ privilege level 15
+ no login
+!
+line vty 0 4
+ privilege level 15
+ no login
+!
+end
+
+
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="IOSv" location="43,618"><extensions><entry key="config" type="String">!
+version 15.2
+!
+
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R8
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.8.8 255.255.255.255
+ ipv6 address 2001:150:8:8::8/128
+!
+interface GigabitEthernet0/1
+ no ip address
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.8
+ encapsulation dot1Q 8
+ ip address 155.1.8.8 255.255.255.0
+ ipv6 address 2001:155:1:8::8/64
+!
+interface GigabitEthernet0/1.58
+ encapsulation dot1Q 58
+ ip address 155.1.58.8 255.255.255.0
+ ipv6 address 2001:155:1:58::8/64
+!
+interface GigabitEthernet0/1.108
+ encapsulation dot1Q 108
+ ip address 155.1.108.8 255.255.255.0
+ ipv6 address 2001:155:1:108::8/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+!
+router eigrp 100
+ network 155.1.8.8 0.0.0.0
+ network 155.1.58.8 0.0.0.0
+ network 155.1.108.8 0.0.0.0
+ passive-interface GigabitEthernet0/1.108
+!
+!
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+!
+!
+end
+
+R8#
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="IOSv" location="37,675"><extensions><entry key="config" type="String">!
+version 15.2
+!
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R9
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.9.9 255.255.255.255
+ ipv6 address 2001:150:9:9::9/128
+!
+interface Loopback112
+ ip address 112.0.0.1 255.0.0.0
+ ipv6 address 2001:254:0:112::1/64
+!
+interface Loopback113
+ ip address 113.0.0.1 255.0.0.0
+ ipv6 address 2001:254:0:113::1/64
+!
+interface Loopback114
+ ip address 114.0.0.1 255.0.0.0
+ ipv6 address 2001:254:0:114::1/64
+!
+interface Loopback115
+ ip address 115.0.0.1 255.0.0.0
+ ipv6 address 2001:254:0:115::1/96
+!
+interface Loopback116
+ ip address 116.0.0.1 255.0.0.0
+!
+interface Loopback117
+ ip address 117.0.0.1 255.0.0.0
+!
+interface Loopback118
+ ip address 118.0.0.1 255.0.0.0
+!
+interface Loopback119
+ ip address 119.0.0.1 255.0.0.0
+!
+interface Loopback51001
+ ip address 51.0.0.1 255.255.0.0
+!
+interface Loopback51101
+ ip address 51.1.0.1 255.255.0.0
+!
+interface Loopback51201
+ ip address 51.2.0.1 255.255.0.0
+!
+interface Loopback51301
+ ip address 51.3.0.1 255.255.0.0
+!
+interface Loopback51401
+ ip address 51.4.0.1 255.255.0.0
+!
+interface Loopback51501
+ ip address 51.5.0.1 255.255.0.0
+!
+interface Loopback51601
+ ip address 51.6.0.1 255.255.0.0
+!
+interface Loopback51701
+ ip address 51.7.0.1 255.255.0.0
+!
+interface Loopback200000
+ ip address 200.0.0.1 255.255.255.0
+!
+interface Loopback200010
+ ip address 200.0.1.1 255.255.255.0
+!
+interface Loopback200020
+ ip address 200.0.2.1 255.255.255.0
+!
+interface Loopback200030
+ ip address 200.0.3.1 255.255.255.0
+!
+interface Loopback2121801
+ ip address 212.18.0.1 255.255.255.0
+!
+interface Loopback2121811
+ ip address 212.18.1.1 255.255.255.0
+!
+interface Loopback2121821
+ ip address 212.18.2.1 255.255.255.0
+!
+interface Loopback2121831
+ ip address 212.18.3.1 255.255.255.0
+!
+interface GigabitEthernet0/1
+no ip address
+no shutdown
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.9
+ encapsulation dot1Q 9
+ ip address 155.1.9.9 255.255.255.0
+ ipv6 address 2001:155:1:9::9/64
+!
+interface GigabitEthernet0/1.79
+ encapsulation dot1Q 79
+ ip address 155.1.79.9 255.255.255.0
+ ipv6 address 2001:155:1:79::9/64
+!
+interface GigabitEthernet0/1.109
+ encapsulation dot1Q 109
+ ip address 155.1.109.9 255.255.255.0
+ ipv6 address 2001:155:1:109::9/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 54
+ bgp log-neighbor-changes
+ neighbor 155.1.79.7 remote-as 100
+ neighbor 155.1.109.10 remote-as 54
+ !
+ address-family ipv4
+  network 112.0.0.0
+  network 113.0.0.0
+  network 114.0.0.0 route-map SET_COMMUNITY_54
+  network 115.0.0.0 route-map SET_COMMUNITY_54
+  network 116.0.0.0
+  network 117.0.0.0
+  network 118.0.0.0
+  network 119.0.0.0
+  neighbor 155.1.79.7 activate
+  neighbor 155.1.79.7 send-community both
+  neighbor 155.1.79.7 route-map BGP_IN in
+  neighbor 155.1.79.7 route-map BGP_OUT out
+  neighbor 155.1.109.10 activate
+  neighbor 155.1.109.10 next-hop-self
+ exit-address-family
+!
+!
+!
+ip forward-protocol nd
+!
+ip as-path access-list 1 permit ^$
+no ip http server
+no ip http secure-server
+ip route 155.1.108.0 255.255.255.0 155.1.109.10
+ip route 204.12.8.8 255.255.255.255 155.1.79.7
+!
+!
+ip prefix-list BGP_PREPEND_1 seq 5 permit 112.0.0.0/8
+ip prefix-list BGP_PREPEND_1 seq 10 permit 113.0.0.0/8
+!
+ip prefix-list DEFAULT seq 5 permit 0.0.0.0/0
+!
+ip prefix-list DENY_DEFAULT seq 5 deny 0.0.0.0/0
+ip prefix-list DENY_DEFAULT seq 10 permit 0.0.0.0/0 le 32
+!
+route-map BGP_IN deny 10
+ match ip address prefix-list DEFAULT
+!
+route-map BGP_IN permit 10000
+!
+route-map SET_COMMUNITY_54 permit 10
+ set community 54
+!
+route-map BGP_OUT permit 10
+ match ip address prefix-list BGP_PREPEND_1
+ set as-path prepend 50 60
+!
+route-map BGP_OUT permit 10000
+ match as-path 1
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+!
+!
+end
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="IOSv" location="32,741"><extensions><entry key="config" type="String">!
+version 15.2
+!
+
+enable
+conf t
+version 15.4
+no service timestamps debug uptime
+no service timestamps log uptime
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+license udi pid CSR1000V sn 9Y9VCZ8B841
+license boot level premium
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+cdp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 28.119.16.1 255.255.255.0
+ ipv6 address 2001:28:119:16::1/64
+ ipv6 address 2001:150:10:10::10/128
+!
+interface Loopback1
+ ip address 28.119.17.1 255.255.255.0
+ ipv6 address 2001:28:119:17::1/64
+!
+interface Loopback10
+ ip address 30.0.0.1 255.255.0.0
+ ipv6 address 2001:30::1/64
+!
+interface Loopback11
+ ip address 30.1.0.1 255.255.0.0
+ ipv6 address 2001:30:1::1/64
+!
+interface Loopback12
+ ip address 30.2.0.1 255.255.0.0
+ ipv6 address 2001:30:2::1/64
+!
+interface Loopback13
+ ip address 30.3.0.1 255.255.0.0
+ ipv6 address 2001:30:3::1/64
+!
+interface Loopback14
+ ip address 31.0.0.1 255.255.0.0
+ ipv6 address 2001:31::1/64
+!
+interface Loopback15
+ ip address 31.1.0.1 255.255.0.0
+ ipv6 address 2001:31:1::1/64
+!
+interface Loopback16
+ ip address 31.2.0.1 255.255.0.0
+ ipv6 address 2001:31:2::1/64
+!
+interface Loopback17
+ ip address 31.3.0.1 255.255.0.0
+ ipv6 address 2001:31:3::1/64
+!
+interface GigabitEthernet0/1
+no ip address
+no shutdown
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 155.1.10.10 255.255.255.0
+ ipv6 address 2001:155:1:10::10/64
+!
+interface GigabitEthernet0/1.108
+ encapsulation dot1Q 108
+ ip address 155.1.108.10 255.255.255.0
+ ipv6 address 2001:155:1:108::10/64
+!
+interface GigabitEthernet0/1.109
+ encapsulation dot1Q 109
+ ip address 155.1.109.10 255.255.255.0
+ ipv6 address 2001:155:1:109::10/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+!
+router bgp 54
+ bgp log-neighbor-changes
+ neighbor 155.1.0.2 remote-as 100
+ neighbor 155.1.0.2 ebgp-multihop 255
+ neighbor 155.1.108.8 remote-as 100
+ neighbor 155.1.109.9 remote-as 54
+ !
+ address-family ipv4
+  network 28.119.16.0 mask 255.255.255.0
+  network 28.119.17.0 mask 255.255.255.0
+  neighbor 155.1.0.2 activate
+  neighbor 155.1.108.8 activate
+  neighbor 155.1.108.8 send-community
+  neighbor 155.1.108.8 route-map BGP_IN in
+  neighbor 155.1.108.8 route-map BGP_OUT out
+  neighbor 155.1.109.9 activate
+  neighbor 155.1.109.9 next-hop-self
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route 155.1.0.0 255.255.0.0 155.1.108.8
+ip route 155.1.79.0 255.255.255.0 155.1.109.9
+!
+!
+ip prefix-list BGP_PREPEND_1 seq 5 permit 112.0.0.0/8
+ip prefix-list BGP_PREPEND_1 seq 10 permit 113.0.0.0/8
+!
+ip prefix-list DEFAULT seq 5 permit 0.0.0.0/0
+!
+ip prefix-list DENY_DEFAULT seq 5 deny 0.0.0.0/0
+ip prefix-list DENY_DEFAULT seq 10 permit 0.0.0.0/0 le 32
+!
+route-map BGP_IN deny 10
+ match ip address prefix-list DEFAULT
+!
+route-map BGP_IN permit 1000
+!
+route-map BGP_OUT permit 10
+ match ip address prefix-list BGP_PREPEND_1
+ set as-path prepend 50 60
+!
+route-map BGP_OUT permit 10000
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+!
+!
+end
+
+R10#
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="346,347">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+        <interface id="6" name="GigabitEthernet1/3"/>
+    </node>
+    <node name="SW2" type="SIMPLE" subtype="IOSvL2" location="580,343">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW3" type="SIMPLE" subtype="IOSvL2" location="339,520">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW4" type="SIMPLE" subtype="IOSvL2" location="580,519">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="unmanagedswitch-1" type="SIMPLE" subtype="Unmanaged Switch" location="185,485">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+    </node>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[3]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[7]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[8]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[9]" src="/virl:topology/virl:node[9]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[10]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[11]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[2]" src="/virl:topology/virl:node[11]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[12]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[2]" src="/virl:topology/virl:node[12]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[11]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[3]" src="/virl:topology/virl:node[13]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[5]" src="/virl:topology/virl:node[11]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[6]" src="/virl:topology/virl:node[11]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[13]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[6]" src="/virl:topology/virl:node[13]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[11]" src="/virl:topology/virl:node[11]/virl:interface[7]"/>
+</topology>
