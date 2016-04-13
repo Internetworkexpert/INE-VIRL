@@ -1,0 +1,4372 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" simulationEngine="OPENSTACK" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <node name="R1" type="SIMPLE" subtype="IOSv" location="57,131"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CustA
+ rd 122.1.1.1:100
+ route-target export 100:100
+ route-target import 100:100
+ route-target import 200:200
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.3 password LDP!PASS
+mpls ldp neighbor 122.1.1.2 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 92HVO0PSL3U
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.1 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::1/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface Loopback1
+ vrf forwarding CustA
+ ip address 192.168.1.1 255.255.255.255
+ ipv6 address 2002:192:168:1::1/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.12
+ encapsulation dot1Q 12
+ ip address 10.16.0.29 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::1D/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.13
+ encapsulation dot1Q 13
+ ip address 10.16.0.1 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::1/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.110
+ encapsulation dot1Q 110
+ vrf forwarding CustA
+ ip address 10.245.1.0 255.255.255.254
+ ipv6 address 2001:10:245:1::/127
+!
+interface GigabitEthernet0/1.115
+ encapsulation dot1Q 115
+ vrf forwarding CustA
+ ip address 10.245.1.2 255.255.255.254
+ ipv6 address 2001:10:245:1::2/127
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp CustA
+ !
+ address-family ipv4 unicast vrf CustA autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 P@SSWORD
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 101 metric 1000000 100 255 1 1500
+  exit-af-topology
+  network 10.245.1.0 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf CustA autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  af-interface Loopback1
+   shutdown
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 101 metric 1000000 100 255 1 1500
+  exit-af-topology
+ exit-address-family
+!
+!
+router eigrp AAA
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+  router-id 122.1.1.1
+ exit-address-family
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router rip
+ version 2
+ passive-interface GigabitEthernet0/1.110
+ no auto-summary
+ !
+ address-family ipv4 vrf CustA
+  redistribute bgp 101 metric 6
+  network 10.0.0.0
+  distance 190
+  no auto-summary
+  version 2
+ exit-address-family
+!
+router bgp 101
+ bgp log-neighbor-changes
+ bgp bestpath cost-community ignore
+ neighbor 122.1.1.3 remote-as 101
+ neighbor 122.1.1.3 password CC!E123
+ neighbor 122.1.1.3 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 122.1.1.3 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CustA
+  redistribute eigrp 925
+  redistribute rip
+ exit-address-family
+ !
+ address-family ipv6 vrf CustA
+  redistribute eigrp 925
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ login
+line vty 1
+ login
+ length 0
+line vty 2 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="57,197"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CustA
+ rd 122.1.1.2:100
+ route-target export 100:100
+ route-target import 100:100
+ route-target import 200:200
+ !
+ address-family ipv4
+  export map vrfcusta
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.3 password LDP!PASS
+mpls ldp neighbor 122.1.1.1 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9DMEUSB233Y
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+!
+!
+!
+!
+!
+!
+!
+class-map match-all default
+ match access-group name default
+!
+policy-map default
+ class default
+  police 8000 conform-action drop  exceed-action drop  violate-action drop 
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.2 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::2/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface Loopback1
+ vrf forwarding CustA
+ ip address 192.168.1.2 255.255.255.255
+ ipv6 address 2002:192:168:1::2/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.12
+ encapsulation dot1Q 12
+ ip address 10.16.0.30 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:15::1E/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.23
+ encapsulation dot1Q 23
+ ip address 10.16.0.5 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::5/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.210
+ encapsulation dot1Q 210
+ vrf forwarding CustA
+ ip address 10.245.2.4 255.255.255.254
+ ipv6 address 2001:10:245:2::4/127
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp CustA
+ !
+ address-family ipv4 unicast vrf CustA autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 P@SSWORD
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 101 metric 1000000 100 255 1 1500
+  exit-af-topology
+  network 10.245.2.4 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf CustA autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  af-interface Loopback1
+   shutdown
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 101 metric 1000000 100 255 1 1500
+  exit-af-topology
+ exit-address-family
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+  router-id 122.1.1.2
+ exit-address-family
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router bgp 101
+ bgp log-neighbor-changes
+ bgp bestpath cost-community ignore
+ neighbor 122.1.1.3 remote-as 101
+ neighbor 122.1.1.3 password CC!E123
+ neighbor 122.1.1.3 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 122.1.1.3 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  bgp additional-paths select backup
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CustA
+  redistribute eigrp 925
+ exit-address-family
+ !
+ address-family ipv6 vrf CustA
+  redistribute eigrp 925
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+ip prefix-list default seq 5 permit 10.245.2.8/31
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+route-map vrfcusta permit 10
+ match ip address prefix-list default
+ set extcommunity rt 100:100 300:100
+!
+route-map vrfcusta permit 20
+!
+mpls ldp router-id Loopback0
+!
+!
+ipv6 access-list default
+ deny 88 any any
+control-plane host
+!
+!
+control-plane
+ service-policy input default
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ login
+line vty 1
+ login
+ length 0
+line vty 2 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="IOSv" location="57,270"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+logging discriminator DIS msg-body drops TCP-6-BADAUTH
+no logging buffered
+no logging console
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.1 password LDP!PASS
+mpls ldp neighbor 122.1.1.2 password LDP!PASS
+mpls ldp neighbor 122.1.1.4 password LDP!PASS
+mpls ldp neighbor 122.1.1.5 password LDP!PASS
+mpls ldp neighbor 122.1.1.16 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+key chain bfddefault
+ key 0
+   key-string CC!E
+!
+!
+license udi pid CSR1000V sn 9MALPY1LQP1
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+bfd-template single-hop default
+ interval min-tx 500 min-rx 500 multiplier 3
+ authentication meticulous-sha-1 keychain bfddefault
+ dampening 3 1500 3000 5
+ echo
+!
+!
+!
+!
+!
+!
+!
+!
+class-map match-all bgp
+ match access-group 101
+!
+policy-map bgp
+ class bgp
+  police 8000 conform-action drop  exceed-action drop  violate-action drop 
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.3 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::3/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.13
+ encapsulation dot1Q 13
+ ip address 10.16.0.2 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::2/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.23
+ encapsulation dot1Q 23
+ ip address 10.16.0.6 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::6/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.34
+ encapsulation dot1Q 34
+ ip address 10.16.0.10 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::A/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.35
+ encapsulation dot1Q 35
+ ip address 10.16.0.14 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::E/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd template default
+!
+interface GigabitEthernet0/1.316
+ encapsulation dot1Q 316
+ ip address 10.16.0.18 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::12/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router bgp 101
+ template peer-policy RR
+  route-reflector-client
+  send-community both
+  additional-paths send receive
+ exit-peer-policy
+ !
+ template peer-session RR
+  remote-as 101
+  password CC!E123
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp log-neighbor-changes
+ bgp listen range 122.1.1.0/24 peer-group AS_101
+ bgp listen limit 10
+ no bgp default ipv4-unicast
+ neighbor 122.1.1.1 inherit peer-session RR
+ neighbor 122.1.1.2 inherit peer-session RR
+ neighbor 122.1.1.4 inherit peer-session RR
+ neighbor 122.1.1.5 inherit peer-session RR
+ neighbor 122.1.1.16 inherit peer-session RR
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 122.1.1.1 activate
+  neighbor 122.1.1.1 send-community extended
+  neighbor 122.1.1.1 inherit peer-policy RR
+  neighbor 122.1.1.2 activate
+  neighbor 122.1.1.2 send-community extended
+  neighbor 122.1.1.2 inherit peer-policy RR
+  neighbor 122.1.1.4 activate
+  neighbor 122.1.1.4 send-community extended
+  neighbor 122.1.1.4 inherit peer-policy RR
+  neighbor 122.1.1.5 activate
+  neighbor 122.1.1.5 send-community extended
+  neighbor 122.1.1.5 inherit peer-policy RR
+  neighbor 122.1.1.16 activate
+  neighbor 122.1.1.16 send-community extended
+  neighbor 122.1.1.16 inherit peer-policy RR
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.1 activate
+  neighbor 122.1.1.1 send-community extended
+  neighbor 122.1.1.1 inherit peer-policy RR
+  neighbor 122.1.1.2 activate
+  neighbor 122.1.1.2 send-community extended
+  neighbor 122.1.1.2 inherit peer-policy RR
+  neighbor 122.1.1.4 activate
+  neighbor 122.1.1.4 send-community extended
+  neighbor 122.1.1.4 inherit peer-policy RR
+  neighbor 122.1.1.5 activate
+  neighbor 122.1.1.5 send-community extended
+  neighbor 122.1.1.5 inherit peer-policy RR
+  neighbor 122.1.1.16 activate
+  neighbor 122.1.1.16 send-community extended
+  neighbor 122.1.1.16 inherit peer-policy RR
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="IOSv" location="57,345"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CustB
+ rd 122.1.1.5:200
+ route-target export 200:200
+ route-target import 200:200
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.3 password LDP!PASS
+mpls ldp neighbor 122.1.1.16 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 92M3KGFZPG9
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.4 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::4/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface Loopback1
+ vrf forwarding CustB
+ ip address 192.168.1.4 255.255.255.255
+ ipv6 address 2002:192:168:1::4/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.34
+ encapsulation dot1Q 34
+ ip address 10.16.0.9 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::9/126
+ mpls label protocol ldp
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.411
+ encapsulation dot1Q 411
+ vrf forwarding CustB
+ ip address 10.4.11.0 255.255.255.254
+ ipv6 address 2001:10:4:11::/127
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1.412
+ encapsulation dot1Q 412
+ vrf forwarding CustB
+ ip address 10.4.12.0 255.255.255.254
+ ipv6 address 2001:10:4:12::/127
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1.416
+ encapsulation dot1Q 416
+ ip address 10.16.0.25 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::19/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp 20
+ !
+ address-family ipv4 vrf CustB autonomous-system 20
+  redistribute bgp 101 metric 1000000 100 255 1 1500
+  network 10.4.11.0 0.0.0.0
+  network 10.4.12.0 0.0.0.0
+ exit-address-family
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+  router-id 122.1.1.4
+ exit-address-family
+!
+router ospfv3 20
+ !
+ address-family ipv6 unicast vrf CustB
+  redistribute bgp 101
+ exit-address-family
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router bgp 101
+ bgp log-neighbor-changes
+ bgp bestpath cost-community ignore
+ neighbor 122.1.1.3 remote-as 101
+ neighbor 122.1.1.3 password CC!E123
+ neighbor 122.1.1.3 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 122.1.1.3 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CustB
+  table-map ldpadj filter
+  redistribute eigrp 20
+ exit-address-family
+ !
+ address-family ipv6 vrf CustB
+  redistribute ospf 20 match internal external 1 external 2 include-connected
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+no ip forward-protocol udp domain
+!
+no ip http server
+no ip http secure-server
+!
+!
+ip prefix-list ldpadj seq 5 permit 122.1.1.10/32
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+route-map ldpadj permit 10
+ match ip address prefix-list ldpadj
+!
+route-map ldpadj permit 20
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ login
+line vty 1
+ login
+ length 0
+line vty 2 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="IOSv" location="57,417"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CustB
+ rd 122.1.1.5:200
+ route-target export 200:200
+ route-target import 200:200
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging buffered
+no logging console
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.3 password LDP!PASS
+mpls ldp neighbor 122.1.1.16 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+key chain bfddefault
+ key 0
+   key-string CC!E
+!
+!
+license udi pid CSR1000V sn 9ORST0AKGHD
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+bfd-template single-hop default
+ interval min-tx 500 min-rx 500 multiplier 3
+ authentication meticulous-sha-1 keychain bfddefault
+ dampening 3 1500 3000 5
+ echo
+!
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.5 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::5/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.35
+ encapsulation dot1Q 35
+ ip address 10.16.0.13 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::D/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd template default
+!
+interface GigabitEthernet0/1.56
+ encapsulation dot1Q 56
+ vrf forwarding CustB
+ ip address 12.252.100.5 255.255.255.0
+ ipv6 address 2001:12:252:100::5/64
+ bfd interval 500 min_rx 500 multiplier 3
+!
+interface GigabitEthernet0/1.57
+ encapsulation dot1Q 57
+ vrf forwarding CustB
+ ip address 12.252.101.5 255.255.255.0
+ ipv6 address 2001:12:252:101::5/64
+ bfd interval 500 min_rx 500 multiplier 3
+!
+interface GigabitEthernet0/1.516
+ encapsulation dot1Q 516
+ ip address 10.16.0.21 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::15/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router bgp 101
+ bgp log-neighbor-changes
+ bgp bestpath cost-community ignore
+ neighbor 122.1.1.3 remote-as 101
+ neighbor 122.1.1.3 password CC!E123
+ neighbor 122.1.1.3 update-source Loopback0
+ !
+ address-family ipv4
+  no neighbor 122.1.1.3 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  bgp additional-paths install
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CustB
+  neighbor 12.252.100.6 remote-as 600
+  neighbor 12.252.100.6 fall-over bfd single-hop
+  neighbor 12.252.100.6 activate
+  neighbor 12.252.101.7 remote-as 600
+  neighbor 12.252.101.7 fall-over bfd single-hop
+  neighbor 12.252.101.7 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf CustB
+  neighbor 2001:12:252:100::6 remote-as 600
+  neighbor 2001:12:252:100::6 activate
+  neighbor 2001:12:252:101::7 remote-as 600
+  neighbor 2001:12:252:101::7 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+event manager applet noname
+ event none
+ action 0 cli command "enable"
+ action 1 cli command "conf t"
+ action 2 cli command "interface gig1.35"
+ action 3 cli command "shut"
+event manager applet noname1
+ event none
+ action 0 cli command "enable"
+ action 1 cli command "conf t"
+ action 2 cli command "interface gig1.35"
+ action 3 cli command "no shut"
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="IOSv" location="57,474"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R6
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 95OSJ0DCRXR
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.6 255.255.255.255
+ ipv6 address 2001:122:1:1::6/128
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.56
+ encapsulation dot1Q 56
+ ip address 12.252.100.6 255.255.255.0
+ ipv6 address 2001:12:252:100::6/64
+ bfd interval 500 min_rx 500 multiplier 3
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1Q 67
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1.68
+ encapsulation dot1Q 68
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 50
+ bfd all-interfaces
+ area 50 nssa
+ !
+ address-family ipv4 unicast
+  redistribute bgp 600
+ exit-address-family
+ !
+ address-family ipv6 unicast
+  redistribute bgp 600
+ exit-address-family
+!
+router bgp 600
+ bgp log-neighbor-changes
+ neighbor 12.252.100.5 remote-as 101
+ neighbor 12.252.100.5 fall-over bfd single-hop
+ neighbor 2001:12:252:100::5 remote-as 101
+ !
+ address-family ipv4
+  redistribute ospfv3 50 route-map DENY_TAG
+  neighbor 12.252.100.5 activate
+  no neighbor 2001:12:252:100::5 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute ospf 50 include-connected
+  neighbor 2001:12:252:100::5 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+route-map DENY_TAG deny 10
+ match tag 101
+!
+route-map DENY_TAG permit 20
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="57,552"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R7
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9433QKU0O4I
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.7 255.255.255.255
+ ipv6 address 2001:122:1:1::7/128
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.57
+ encapsulation dot1Q 57
+ ip address 12.252.101.7 255.255.255.0
+ ipv6 address 2001:12:252:101::7/64
+ bfd interval 500 min_rx 500 multiplier 3
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1Q 67
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1.79
+ encapsulation dot1Q 79
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 50
+ bfd all-interfaces
+ area 50 nssa no-redistribution
+ !
+ address-family ipv4 unicast
+  redistribute bgp 600
+ exit-address-family
+ !
+ address-family ipv6 unicast
+  redistribute bgp 600
+ exit-address-family
+!
+router bgp 600
+ bgp log-neighbor-changes
+ neighbor 12.252.101.5 remote-as 101
+ neighbor 12.252.101.5 fall-over bfd single-hop
+ neighbor 2001:12:252:101::5 remote-as 101
+ !
+ address-family ipv4
+  redistribute ospfv3 50 route-map DENY_TAG
+  neighbor 12.252.101.5 activate
+  no neighbor 2001:12:252:101::5 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute ospf 50 include-connected
+  neighbor 2001:12:252:101::5 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+ip community-list expanded AS200 permit 200:[0-9]+_
+no ip http server
+no ip http secure-server
+!
+!
+route-map DENY_TAG deny 10
+ match tag 101
+!
+route-map DENY_TAG permit 20
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="IOSv" location="57,618"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console virtual
+!
+hostname R8
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9O1KOE672K8
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.8 255.255.255.255
+ ipv6 address 2001:122:1:1::8/128
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.68
+ encapsulation dot1Q 68
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet0/1.89
+ encapsulation dot1Q 89
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv4 area 50
+ ospfv3 50 ipv6 area 50
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 50
+ bfd all-interfaces
+ area 50 nssa
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="IOSv" location="57,675"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R9
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 989PI5Z8M4J
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+class-map match-all default
+ match access-group 100
+!
+policy-map default
+ class default
+  police 8000 conform-action drop  exceed-action drop  violate-action drop 
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.9 255.255.255.255
+ ipv6 address 2001:122:1:1::9/128
+ ospfv3 50 ipv6 area 50
+ ospfv3 50 ipv4 area 50
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.79
+ encapsulation dot1Q 79
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv6 area 50
+ ospfv3 50 ipv4 area 50
+ service-policy output default
+!
+interface GigabitEthernet0/1.89
+ encapsulation dot1Q 89
+ ip unnumbered Loopback0
+ ipv6 enable
+ ospfv3 50 ipv6 area 50
+ ospfv3 50 ipv4 area 50
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router ospfv3 50
+ bfd all-interfaces
+ area 50 nssa
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route 122.1.1.6 255.255.255.255 Null0 255
+!
+access-list 100 permit ip host 122.1.1.9 host 122.1.1.20
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="IOSv" location="57,741"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9MWA7QEAAU8
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+crypto isakmp policy 18
+ encr aes
+ hash sha512
+ authentication pre-share
+ group 16
+crypto isakmp key CISCO address 122.1.1.18     
+!
+!
+crypto ipsec transform-set ENTERPRISE_ENCRYPTION esp-des esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile CRYPTO_PROFILE
+ set transform-set ENTERPRISE_ENCRYPTION 
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.10 255.255.255.255
+ ip pim sparse-mode
+ ipv6 address 2001:122:1:1::10/128
+!
+interface Loopback100
+ description Anycast Loopback
+ ip address 100.1.1.1 255.255.255.255
+ ip pim sparse-mode
+ ipv6 address 2001::100/128
+!
+interface Tunnel10
+ description Multicast Tunnel to Site 2
+ ip address 110.18.10.10 255.255.255.192
+ ip mtu 1400
+ ip pim bsr-border
+ ip pim sparse-mode
+ tunnel source Loopback0
+ tunnel destination 122.1.1.18
+ tunnel protection ipsec profile CRYPTO_PROFILE
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.110
+ encapsulation dot1Q 110
+ ip address 10.245.1.1 255.255.255.254
+ ipv6 address 2001:10:16::1/127
+ ipv6 address 2001:10:245:1::1/127
+!
+interface GigabitEthernet0/1.210
+ encapsulation dot1Q 210
+ ip address 10.245.2.5 255.255.255.254
+ ipv6 address 2001:10:245:2::5/127
+!
+interface GigabitEthernet0/1.1015
+ encapsulation dot1Q 1015
+ ip address 10.245.2.8 255.255.255.254
+ ip pim sparse-mode
+ ipv6 address 2001:10:245:2::8/127
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv4 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 P@SSWORD
+  exit-af-interface
+  !
+  topology base
+   redistribute rip metric 1000000 100 255 1 1500
+  exit-af-topology
+  network 10.245.1.1 0.0.0.0
+  network 10.245.2.5 0.0.0.0
+  network 100.1.1.1 0.0.0.0
+  network 122.1.1.10 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router rip
+ version 2
+ redistribute eigrp 925 metric 6
+ passive-interface GigabitEthernet0/1.110
+ network 10.0.0.0
+ no auto-summary
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+ip pim bsr-candidate Loopback100 0
+ip pim rp-candidate Loopback100
+ip msdp peer 110.18.10.18 connect-source Tunnel10
+ip msdp cache-sa-state
+ip msdp password peer 110.18.10.18 MsDpP@sS!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ privilege level 15
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="326,130">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+        <interface id="6" name="GigabitEthernet1/3"/>
+    </node>
+    <node name="SW2" type="SIMPLE" subtype="IOSvL2" location="560,126">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW3" type="SIMPLE" subtype="IOSvL2" location="319,303">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW4" type="SIMPLE" subtype="IOSvL2" location="560,302">
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="unmanagedswitch-1" type="SIMPLE" subtype="Unmanaged Switch" location="185,485">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+        <interface id="11" name="link12"/>
+    </node>
+    <node name="unmanagedswitch-2" type="SIMPLE" subtype="Unmanaged Switch" location="457,487">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+    </node>
+    <node name="R11" type="SIMPLE" subtype="IOSv" location="715,135"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9T8WPK3T4YM
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+class-map match-all CITRIX
+ match access-group name CITRIX
+class-map match-all LLQ
+ match access-group name ACL_VOICE
+!
+policy-map WAN_QOS
+ class LLQ
+  priority percent 25
+ class CITRIX
+  bandwidth remaining percent 35 
+ class class-default
+  random-detect dscp-based
+policy-map SHAPE
+ class class-default
+  shape average 100000000
+   service-policy WAN_QOS
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.11 255.255.255.255
+ ipv6 address 2001:122:1:1::11/128
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.123
+ encapsulation dot1Q 123
+ ip address 10.1.123.11 255.255.255.0
+ ipv6 address 2001:10:1:123::11/64
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1.411
+ encapsulation dot1Q 411
+ ip address 10.4.11.1 255.255.255.254
+ ipv6 address 2001:10:4:11::1/127
+ ospfv3 20 ipv6 area 0
+ service-policy output SHAPE
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp 20
+ network 10.1.123.11 0.0.0.0
+ network 10.4.11.11 0.0.0.0
+ network 122.1.1.11 0.0.0.0
+ redistribute bgp 200 metric 1000000 100 255 1 1500
+!
+router ospfv3 20
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router bgp 200
+ bgp log-neighbor-changes
+ neighbor 10.1.123.13 remote-as 200
+ neighbor 2001:10:1:123::13 remote-as 200
+ !
+ address-family ipv4
+  bgp redistribute-internal
+  neighbor 10.1.123.13 activate
+  neighbor 10.1.123.13 send-community both
+  neighbor 10.1.123.13 default-originate route-map default
+  no neighbor 2001:10:1:123::13 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:10:1:123::13 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended ACL_VOICE
+ permit udp any any dscp ef
+ip access-list extended CITRIX
+ permit ip any any dscp af31
+!
+!
+route-map default permit 10
+ set community no-advertise
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R12" type="SIMPLE" subtype="IOSv" location="715,227"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R12
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9RIGE0C5F9C
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+!
+class-map match-all CITRIX
+ match access-group name CITRIX
+class-map match-all LLQ
+ match access-group name ACL_VOICE
+!
+policy-map WAN_QOS
+ class LLQ
+  priority percent 25
+ class CITRIX
+  bandwidth remaining percent 35 
+ class class-default
+  random-detect dscp-based
+policy-map SHAPE
+ class class-default
+  shape average 100000000
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.12 255.255.255.255
+ ipv6 address 2001:122:1:1::12/128
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.123
+ encapsulation dot1Q 123
+ ip address 10.1.123.12 255.255.255.0
+ ipv6 address 2001:10:1:123::12/64
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet0/1.412
+ encapsulation dot1Q 412
+ ip address 10.4.12.1 255.255.255.254
+ ipv6 address 2001:10:4:12::1/127
+ ospfv3 20 ipv6 area 0
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp 20
+ network 10.1.123.12 0.0.0.0
+ network 10.4.12.1 0.0.0.0
+ redistribute bgp 200 metric 1000000 100 255 1 1500
+!
+router ospfv3 20
+ !
+ address-family ipv6 unicast
+  redistribute bgp 200
+ exit-address-family
+!
+router bgp 200
+ bgp log-neighbor-changes
+ neighbor 10.1.123.13 remote-as 200
+ neighbor 2001:10:1:123::13 remote-as 200
+ !
+ address-family ipv4
+  neighbor 10.1.123.13 activate
+  neighbor 10.1.123.13 send-community
+  neighbor 10.1.123.13 default-originate route-map default
+  no neighbor 2001:10:1:123::13 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute ospf 20 match internal external 1 external 2 include-connected
+  bgp redistribute-internal
+  neighbor 2001:10:1:123::13 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+ip access-list extended ACL_VOICE
+ permit udp any any dscp ef
+ip access-list extended CITRIX
+ permit ip any any dscp af31
+!
+!
+route-map default permit 10
+ set community no-advertise
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R13" type="SIMPLE" subtype="IOSv" location="715,298"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+ip cef load-sharing algorithm include-ports source destination
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 97B6YBUT01O
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.13 255.255.255.255
+ ipv6 address 2001:122:1:1::13/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.123
+ encapsulation dot1Q 123
+ ip address 10.1.123.13 255.255.255.0
+ ipv6 address 2001:10:1:123::13/64
+!
+interface GigabitEthernet0/1.1314
+ encapsulation dot1Q 1314
+ ip address 54.251.1.13 255.255.255.240
+ ipv6 address 2001:54:251:1::13/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router bgp 200
+ bgp log-neighbor-changes
+ bgp listen range 10.1.123.0/24 peer-group AS_200
+ no bgp default ipv4-unicast
+ neighbor AS_200 peer-group
+ neighbor AS_200 remote-as 200
+ neighbor 2001:10:1:123::11 remote-as 200
+ neighbor 2001:10:1:123::12 remote-as 200
+ neighbor 2001:54:251:1::14 remote-as 555
+ neighbor 54.251.1.14 remote-as 555
+ !
+ address-family ipv4
+  network 54.251.1.0 mask 255.255.255.240
+  network 122.1.1.13 mask 255.255.255.255
+  aggregate-address 122.0.0.0 255.0.0.0 summary-only
+  aggregate-address 60.7.7.0 255.255.255.128 as-set summary-only
+  aggregate-address 30.9.0.0 255.255.0.0 as-set summary-only attribute-map STRIP_OFF_COMMUNITIES
+  neighbor AS_200 activate
+  neighbor AS_200 send-community both
+  neighbor AS_200 route-reflector-client
+  neighbor 54.251.1.14 activate
+  neighbor 54.251.1.14 send-community both
+  maximum-paths eibgp 2
+  distance bgp 20 200 255
+ exit-address-family
+ !
+ address-family ipv6
+  network 2001:122:1:1::13/128
+  neighbor 2001:10:1:123::11 activate
+  neighbor 2001:10:1:123::11 route-reflector-client
+  neighbor 2001:10:1:123::11 next-hop-self
+  neighbor 2001:10:1:123::12 activate
+  neighbor 2001:10:1:123::12 route-reflector-client
+  neighbor 2001:10:1:123::12 next-hop-self
+  neighbor 2001:54:251:1::14 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+route-map STRIP_OFF_COMMUNITIES permit 10
+ set community none
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R14" type="SIMPLE" subtype="IOSv" location="715,370"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R14
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9CV7ZTTD0F1
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.14 255.255.255.255
+ ipv6 address 2001:122:1:1::14/128
+!
+interface Loopback10
+ ip address 30.9.9.1 255.255.255.255
+!
+interface Loopback11
+ ip address 30.9.10.2 255.255.255.255
+!
+interface Loopback12
+ ip address 30.9.11.3 255.255.255.255
+!
+interface Loopback13
+ ip address 30.10.9.4 255.255.255.255
+!
+interface Loopback14
+ ip address 30.10.9.5 255.255.255.255
+!
+interface Loopback15
+ ip address 30.10.9.6 255.255.255.255
+!
+interface Loopback16
+ ip address 77.9.9.7 255.255.255.255
+!
+interface Loopback17
+ ip address 77.9.9.8 255.255.255.255
+!
+interface Loopback18
+ ip address 77.9.9.9 255.255.255.255
+!
+interface Loopback19
+ ip address 77.9.9.10 255.255.255.255
+!
+interface Loopback20
+ ip address 40.7.7.2 255.255.255.255
+!
+interface Loopback22
+ ip address 40.7.5.3 255.255.255.255
+!
+interface Loopback23
+ ip address 40.8.7.4 255.255.255.255
+!
+interface Loopback24
+ ip address 40.8.7.5 255.255.255.255
+!
+interface Loopback25
+ ip address 40.8.7.6 255.255.255.255
+!
+interface Loopback26
+ ip address 60.7.7.7 255.255.255.255
+!
+interface Loopback27
+ ip address 60.7.7.8 255.255.255.255
+!
+interface Loopback28
+ ip address 60.7.7.9 255.255.255.255
+!
+interface Loopback29
+ ip address 60.7.7.20 255.255.255.255
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.1314
+ encapsulation dot1Q 1314
+ ip address 54.251.1.14 255.255.255.240
+ ipv6 address 2001:54:251:1::14/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+router bgp 555
+ bgp log-neighbor-changes
+ neighbor 2001:54:251:1::13 remote-as 200
+ neighbor 54.251.1.13 remote-as 200
+ !
+ address-family ipv4
+  redistribute connected route-map REDISTRIBUTE_CONNECTED
+  no neighbor 2001:54:251:1::13 activate
+  neighbor 54.251.1.13 activate
+  neighbor 54.251.1.13 send-community both
+  neighbor 54.251.1.13 route-map default out
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 2001:54:251:1::13 activate
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+ip prefix-list BGP seq 5 permit 0.0.0.0/1 le 32
+!
+ip prefix-list l011 seq 5 permit 30.9.10.2/32
+ip prefix-list l011 seq 10 permit 30.9.9.1/32
+!
+route-map REDISTRIBUTE_CONNECTED permit 10
+ match ip address prefix-list BGP
+!
+route-map default permit 10
+ match ip address prefix-list l011
+ set community no-advertise
+!
+route-map default permit 20
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R15" type="SIMPLE" subtype="IOSv" location="715,441"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R15
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9FSD6IRBA2E
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.15 255.255.255.255
+ ip pim sparse-mode
+ ipv6 address 2001:122:1:1::15/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.115
+ encapsulation dot1Q 115
+ ip address 10.245.1.3 255.255.255.254
+ ipv6 address 2001:10:245:1::3/127
+!
+interface GigabitEthernet0/1.1015
+ encapsulation dot1Q 1015
+ ip address 10.245.2.9 255.255.255.254
+ ip pim sparse-mode
+ ipv6 address 2001:10:245:2::9/127
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router rip
+ version 2
+ network 10.0.0.0
+ network 122.0.0.0
+ no auto-summary
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R16" type="SIMPLE" subtype="IOSv" location="715,498"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R16
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition CustA
+ rd 122.1.1.16:100
+ route-target export 100:100
+ route-target import 100:100
+ route-target import 200:200
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+mpls ldp password required for 10
+mpls ldp neighbor 122.1.1.3 password LDP!PASS
+mpls ldp neighbor 122.1.1.5 password LDP!PASS
+mpls ldp neighbor 122.1.1.4 password LDP!PASS
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 90Y69TXLGPT
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+bfd slow-timers 30000
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.16 255.255.255.255
+ ip ospf 100 area 100
+ ipv6 address 2001:122:1:1::16/128
+ ospfv3 101 ipv6 area 0 instance 1
+!
+interface Loopback1
+ vrf forwarding CustA
+ ip address 192.168.1.16 255.255.255.255
+ ipv6 address 2002:192:168:1::16/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.316
+ encapsulation dot1Q 316
+ ip address 10.16.0.17 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:16::11/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.416
+ encapsulation dot1Q 416
+ ip address 10.16.0.26 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:15::1A/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.516
+ encapsulation dot1Q 516
+ ip address 10.16.0.22 255.255.255.252
+ ip ospf 100 area 100
+ ipv6 address 2001:10:15::16/126
+ ospfv3 101 ipv6 area 0 instance 1
+ bfd interval 100 min_rx 300 multiplier 3
+!
+interface GigabitEthernet0/1.1617
+ encapsulation dot1Q 1617
+ vrf forwarding CustA
+ ip address 172.23.17.16 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ipv6 address 2004:172:23:17::16/64
+!
+interface GigabitEthernet0/1.1618
+ encapsulation dot1Q 1618
+ vrf forwarding CustA
+ ip address 172.23.16.16 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ipv6 address 2004:172:23:16::16/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp CustA
+ !
+ address-family ipv6 unicast vrf CustA autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+   redistribute bgp 101 metric 1000000 100 255 1 1500
+  exit-af-topology
+ exit-address-family
+!
+router ospfv3 101
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 22 vrf CustA
+ router-id 192.168.1.16
+ area 10 virtual-link 122.1.1.18
+ area 10 virtual-link 122.1.1.17
+ redistribute bgp 101 subnets
+!
+router ospf 100
+ prefix-suppression
+ bfd all-interfaces
+ mpls ldp autoconfig area 100
+!
+router bgp 101
+ bgp log-neighbor-changes
+ bgp bestpath cost-community ignore
+ neighbor 122.1.1.3 remote-as 101
+ neighbor 122.1.1.3 password CC!E123
+ neighbor 122.1.1.3 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 122.1.1.3 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 122.1.1.3 activate
+  neighbor 122.1.1.3 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CustA
+  bgp additional-paths install
+  redistribute ospf 22
+ exit-address-family
+ !
+ address-family ipv6 vrf CustA
+  redistribute eigrp 925
+ exit-address-family
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+access-list 10 permit 122.1.1.16
+access-list 10 permit 122.1.1.2
+access-list 10 permit 122.1.1.3
+access-list 10 permit 122.1.1.1
+access-list 10 permit 122.1.1.4
+access-list 10 permit 122.1.1.5
+!
+mpls ldp router-id Loopback0
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R17" type="SIMPLE" subtype="IOSv" location="715,575"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R17
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9ZKEEWZ6S6H
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.17 255.255.255.255
+ ip pim sparse-mode
+ ip igmp join-group 227.7.7.7
+ ip ospf 22 area 0
+ ipv6 address 2001:122:1:1::17/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.1617
+ encapsulation dot1Q 1617
+ ip address 172.23.17.17 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ip ospf cost 1
+ ipv6 address 2004:172:23:17::17/64
+!
+interface GigabitEthernet0/1.1718
+ encapsulation dot1Q 1718
+ ip address 172.23.18.17 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ipv6 address 2004:172:23:18::17/64
+!
+interface GigabitEthernet0/1.1719
+ encapsulation dot1Q 1719
+ ip address 172.23.179.17 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 0
+ ipv6 address 2004:172:23:179::17/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router ospf 22
+ fast-reroute per-prefix enable area 0 prefix-priority high
+ fast-reroute per-prefix enable prefix-priority low
+ fast-reroute keep-all-paths
+ area 10 virtual-link 192.168.1.16
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R18" type="SIMPLE" subtype="IOSv" location="715,638"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R18
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging buffered
+no logging monitor
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+ip vrf A
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing vrf A distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 99IBUFLFZQE
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+crypto keyring KEY_RING vrf A 
+  pre-shared-key address 122.1.1.10 key CISCO
+!
+!
+!
+!
+!
+crypto isakmp policy 18
+ encr aes
+ hash sha512
+ authentication pre-share
+ group 16
+!
+!
+crypto ipsec transform-set ENTERPRISE_ENCRYPTION esp-des esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile CRYPTO_PROFILE
+ set transform-set ENTERPRISE_ENCRYPTION 
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip vrf forwarding A
+ ip address 122.1.1.18 255.255.255.255
+ ip pim sparse-mode
+ ip ospf 22 area 0
+ ipv6 address 2001:122:1:1::18/128
+!
+interface Loopback100
+ description Anycast Loopback
+ ip vrf forwarding A
+ ip address 100.1.1.1 255.255.255.255
+ ip pim sparse-mode
+ ip ospf 22 area 0
+ ipv6 address 2001::100/128
+!
+interface Tunnel10
+ description Multicast Tunnel to Site 1
+ ip vrf forwarding A
+ ip address 110.18.10.18 255.255.255.192
+ ip mtu 1400
+ ip pim bsr-border
+ ip pim sparse-mode
+ tunnel source Loopback0
+ tunnel destination 122.1.1.10
+ tunnel vrf A
+ tunnel protection ipsec profile CRYPTO_PROFILE
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.1618
+ encapsulation dot1Q 1618
+ ip vrf forwarding A
+ ip address 172.23.16.18 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ip ospf cost 1
+ ipv6 address 2004:172:23:16::18/64
+!
+interface GigabitEthernet0/1.1718
+ encapsulation dot1Q 1718
+ ip vrf forwarding A
+ ip address 172.23.18.18 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 10
+ ipv6 address 2004:172:23:18::18/64
+!
+interface GigabitEthernet0/1.1820
+ encapsulation dot1Q 1820
+ ip vrf forwarding A
+ ip address 172.23.20.18 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 20
+ ipv6 address 2004:172:23:20::18/64
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router ospf 22 vrf A
+ capability vrf-lite
+ area 10 virtual-link 192.168.1.16
+ area 20 virtual-link 122.1.1.20
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+ip pim vrf A bsr-candidate Loopback100 0
+ip pim vrf A rp-candidate Loopback100
+ip mroute vrf A 122.1.1.15 255.255.255.255 Tunnel10
+ip msdp vrf A peer 110.18.10.10 connect-source Tunnel10
+ip msdp vrf A cache-sa-state
+ip msdp vrf A password peer 110.18.10.10 MsDpP@sS!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R19" type="SIMPLE" subtype="IOSv" location="715,709"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R19
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging on
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+flow record RECORD
+ match routing next-hop address ipv4
+ match routing next-hop address ipv6
+ match transport source-port
+ match interface input
+ collect flow direction
+ collect pfr one-way-delay sum
+!
+!
+flow monitor MONITOR
+ record RECORD
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 958KW40Q1I2
+spanning-tree extend system-id
+!
+username R20 password 0 CCIE
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 122.1.1.19 255.255.255.255
+ ip ospf 22 area 0
+ ipv6 address FE80::19 link-local
+ ipv6 address 2001:122:1:1::19/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.1719
+ encapsulation dot1Q 1719
+ ip address 172.23.179.19 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 0
+ ipv6 address 2004:172:23:179::19/64
+!
+interface GigabitEthernet0/1.1920
+ encapsulation dot1Q 1920
+ ipv6 address FE80::19 link-local
+ pppoe enable group global
+ pppoe-client dial-pool-number 1
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+interface Dialer1
+ mtu 1492
+ bandwidth 1000000
+ ip address negotiated
+ ip nat outside
+ ip pim sparse-mode
+ ip flow monitor MONITOR input
+ encapsulation ppp
+ ip ospf network point-to-point
+ ip ospf 22 area 0
+ ip ospf cost 1
+ delay 1
+ dialer pool 1
+ ipv6 address FE80::19 link-local
+ ipv6 address 2004:172:23:19::19/64
+ ppp authentication chap
+ ppp chap password 0 CCIE
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+   distribute-list prefix-list tunnelme in Dialer1
+  exit-af-topology
+  eigrp router-id 122.1.1.19
+ exit-address-family
+!
+router ospf 22
+ fast-reroute per-prefix enable prefix-priority low
+ fast-reroute keep-all-paths
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+ipv6 prefix-list tunnelme seq 5 permit 2001:122:1:1::20/128
+ipv6 prefix-list tunnelme seq 15 permit ::/0 le 128
+route-map discardroute permit 10
+ match ipv6 address prefix-list tunnelme
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R20" type="SIMPLE" subtype="IOSv" location="715,774"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:02:16 UTC Sat Oct 4 2014
+enable
+configure terminal
+
+!
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R20
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no logging on
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+ip multicast-routing distributed
+no ip domain lookup
+
+!
+!
+!
+ipv6 unicast-routing
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+!
+flow record RECORD
+ match routing next-hop address ipv4
+ match routing next-hop address ipv6
+ match transport source-port
+ match interface input
+ collect flow direction
+ collect pfr one-way-delay sum
+!
+!
+flow monitor MONITOR
+ record RECORD
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9RVSNJLIZK3
+spanning-tree extend system-id
+!
+username R19 password 0 CCIE
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+bba-group pppoe global
+ virtual-template 1
+!
+!
+interface Loopback0
+ ip address 122.1.1.20 255.255.255.255
+ ip ospf 22 area 0
+ ipv6 address FE80::20 link-local
+ ipv6 address 2001:122:1:1::20/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+
+ 
+!
+interface GigabitEthernet0/1.1020
+ ip flow monitor MONITOR input
+!
+interface GigabitEthernet0/1.1820
+ encapsulation dot1Q 1820
+ ip address 172.23.20.20 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 20
+ ipv6 address 2004:172:23:20::20/64
+!
+interface GigabitEthernet0/1.1920
+ encapsulation dot1Q 1920
+ pppoe enable group global
+!
+interface GigabitEthernet2
+ no ip address
+ shutdown
+ 
+!
+interface Virtual-Template1
+ bandwidth 1000000
+ ip address 172.23.19.20 255.255.255.0
+ ip nat inside
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 22 area 0
+ delay 1
+ peer ip address forced
+ peer default ip address pool default
+ ipv6 address autoconfig
+ ppp authentication chap
+ ppp chap password 0 CCIE
+!
+!
+router eigrp INE_DOT_COM
+ !
+ address-family ipv6 unicast autonomous-system 925
+  !
+  af-interface default
+   authentication mode hmac-sha-256 v6PASS!
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  eigrp router-id 122.1.1.20
+ exit-address-family
+!
+router ospf 22
+ fast-reroute per-prefix enable prefix-priority low
+ fast-reroute keep-all-paths
+ area 20 virtual-link 122.1.1.18
+!
+!
+virtual-service csr_mgmt
+!
+ip local pool default 172.23.19.19
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0
+ privilege level 15
+ no login
+line vty 1
+ no login
+ length 0
+line vty 2 4
+ privilege level 15
+ no login
+line vty 5
+ login
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[3]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[7]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[8]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[9]" src="/virl:topology/virl:node[9]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[10]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[11]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[2]" src="/virl:topology/virl:node[11]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[12]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[2]" src="/virl:topology/virl:node[12]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[11]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[3]" src="/virl:topology/virl:node[13]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[5]" src="/virl:topology/virl:node[11]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[6]" src="/virl:topology/virl:node[11]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[13]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[6]" src="/virl:topology/virl:node[13]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[11]" src="/virl:topology/virl:node[11]/virl:interface[7]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[12]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[4]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[5]" src="/virl:topology/virl:node[20]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[6]" src="/virl:topology/virl:node[21]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[7]" src="/virl:topology/virl:node[22]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[8]" src="/virl:topology/virl:node[23]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[9]" src="/virl:topology/virl:node[24]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[10]" src="/virl:topology/virl:node[25]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[11]"/>
+</topology>

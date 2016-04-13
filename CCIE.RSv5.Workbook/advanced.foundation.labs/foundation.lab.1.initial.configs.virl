@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" simulationEngine="OPENSTACK" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <node name="R1" type="SIMPLE" subtype="IOSv" location="57,131"><extensions><entry key="config" type="String">hostname R1
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ipv6 address 2001:1:1:1::1/128
+interface GigabitEthernet0/1.12
+ encapsulation dot1Q 12
+ ip address 10.1.12.1 255.255.255.0
+ ipv6 address 2001:10:1:12::1/64
+interface GigabitEthernet0/1.13
+ encapsulation dot1Q 13
+ ip address 100.1.13.1 255.255.255.0
+ ipv6 address 2001:100:1:13::1/64
+interface GigabitEthernet0/1.121
+ encapsulation dot1Q 121
+ ip address 10.1.121.1 255.255.255.0
+ ipv6 address 2001:10:1:121::1/64
+interface GigabitEthernet0/1.122
+ encapsulation dot1Q 122
+ ip address 10.1.122.1 255.255.255.0
+ ipv6 address 2001:10:1:122::1/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="58,197"><extensions><entry key="config" type="String">hostname R2
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ ipv6 address 2001:2:2:2::2/128
+interface GigabitEthernet0/1.12
+ encapsulation dot1Q 12
+ ip address 10.1.12.2 255.255.255.0
+ ipv6 address 2001:10:1:12::2/64
+interface GigabitEthernet0/1.212
+ encapsulation dot1Q 24
+ ip address 200.1.24.2 255.255.255.0
+ ipv6 address 2001:200:1:24::2/64
+interface GigabitEthernet0/1.221
+ encapsulation dot1Q 221
+ ip address 10.1.221.2 255.255.255.0
+ ipv6 address 2001:10:1:221::2/64
+interface GigabitEthernet0/1.222
+ encapsulation dot1Q 222
+ ip address 10.1.222.2 255.255.255.0
+ ipv6 address 2001:10:1:222::2/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="IOSv" location="59,270"><extensions><entry key="config" type="String">hostname R3
+!
+no ip domain-lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+ ipv6 address 2001:3:3:3::3/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+!
+interface GigabitEthernet0/1.103
+ encapsulation dot1Q 103
+ ip address 100.1.103.3 255.255.255.0
+ ipv6 address 2001:100:1:103::3/64
+!
+interface GigabitEthernet0/1.13
+ encapsulation dot1Q 13
+ ip address 100.1.13.3 255.255.255.0
+ ipv6 address 2001:100:1:13::3/64
+!
+interface GigabitEthernet0/1.35
+ encapsulation dot1Q 35
+ ip address 100.1.35.3 255.255.255.0
+ ipv6 address 2001:100:1:35::3/64
+!
+interface GigabitEthernet0/1.39
+ encapsulation dot1Q 39
+ ip address 100.1.39.3 255.255.255.0
+ ipv6 address 2001:100:1:39::3/64
+!
+router bgp 3
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2001:100:1:103::10 remote-as 65010
+ neighbor 2001:100:1:13::1 remote-as 65012
+ neighbor 2001:100:1:35::5 remote-as 65056
+ neighbor 2001:100:1:39::9 remote-as 65009
+ neighbor 100.1.103.10 remote-as 65010
+ neighbor 100.1.13.1 remote-as 65012
+ neighbor 100.1.35.5 remote-as 65056
+ neighbor 100.1.39.9 remote-as 65009
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 100.1.103.10 activate
+  neighbor 100.1.13.1 activate
+  neighbor 100.1.35.5 activate
+  neighbor 100.1.39.9 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 2001:100:1:103::10 activate
+  neighbor 2001:100:1:13::1 activate
+  neighbor 2001:100:1:35::5 activate
+  neighbor 2001:100:1:39::9 activate
+ exit-address-family
+!
+end
+
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="IOSv" location="58,345"><extensions><entry key="config" type="String">hostname R4
+!
+vrf definition 1
+ rd 1:1
+ route-target export 1:1
+ route-target import 1:1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ vrf forwarding 1
+ ip address 4.4.4.4 255.255.255.255
+ ipv6 address 2001:4:4:4::4/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+!
+interface GigabitEthernet0/1.46
+ encapsulation dot1Q 46
+ vrf forwarding 1
+ ip address 200.1.46.4 255.255.255.0
+ ipv6 address 2001:200:1:46::4/64
+!
+interface GigabitEthernet0/1.24
+ encapsulation dot1Q 24
+ vrf forwarding 1
+ ip address 200.1.24.4 255.255.255.0
+ ipv6 address 2001:200:1:24::4/64
+!
+router bgp 4
+ bgp router-id 4.4.4.4
+ !
+  address-family ipv4 vrf 1
+  redistribute connected
+  neighbor 200.1.46.6 remote-as 65056
+  neighbor 200.1.46.6 activate
+  neighbor 200.1.24.2 remote-as 65012
+  neighbor 200.1.24.2 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf 1
+  redistribute connected
+  neighbor 2001:200:1:46::6 remote-as 65056
+  neighbor 2001:200:1:46::6 activate
+  neighbor 2001:200:1:24::2 remote-as 65012
+  neighbor 2001:200:1:24::2 activate
+ exit-address-family
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="IOSv" location="47,417"><extensions><entry key="config" type="String">hostname R5
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+ ipv6 address 2001:5:5:5::5/128
+interface GigabitEthernet0/1.56
+ encapsulation dot1Q 56
+ ip address 10.1.56.5 255.255.255.0
+ ipv6 address 2001:10:1:56::5/64
+interface GigabitEthernet0/1.57
+ encapsulation dot1Q 57
+ ip address 10.1.57.5 255.255.255.0
+ ipv6 address 2001:10:1:57::5/64
+interface GigabitEthernet0/1.35
+ encapsulation dot1Q 35
+ ip address 100.1.35.5 255.255.255.0
+ ipv6 address 2001:100:1:35::5/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="IOSv" location="49,474"><extensions><entry key="config" type="String">hostname R6
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+ ipv6 address 2001:6:6:6::6/128
+interface GigabitEthernet0/1.56
+ encapsulation dot1Q 56
+ ip address 10.1.56.6 255.255.255.0
+ ipv6 address 2001:10:1:56::6/64
+interface GigabitEthernet0/1.68
+ encapsulation dot1Q 68
+ ip address 10.1.68.6 255.255.255.0
+ ipv6 address 2001:10:1:68::6/64
+interface GigabitEthernet0/1.46
+ encapsulation dot1Q 46
+ ip address 200.1.46.6 255.255.255.0
+ ipv6 address 2001:200:1:46::6/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="43,552"><extensions><entry key="config" type="String">hostname R7
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 7.7.7.7 255.255.255.255
+ ipv6 address 2001:7:7:7::7/128
+interface GigabitEthernet0/1.57
+ encapsulation dot1Q 57
+ ip address 10.1.57.7 255.255.255.0
+ ipv6 address 2001:10:1:57::7/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="IOSv" location="43,618"><extensions><entry key="config" type="String">hostname R8
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 8.8.8.8 255.255.255.255
+ ipv6 address 2001:8:8:8::8/128
+interface GigabitEthernet0/1.68
+ encapsulation dot1Q 68
+ ip address 10.1.68.8 255.255.255.0
+ ipv6 address 2001:10:1:68::8/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="IOSv" location="37,675"><extensions><entry key="config" type="String">hostname R9
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 9.9.9.9 255.255.255.255
+ ipv6 address 2001:9:9:9::9/128
+interface GigabitEthernet0/1.119
+ encapsulation dot1Q 39
+ ip address 100.1.39.9 255.255.255.0
+ ipv6 address 2001:100:1:39::9/64
+interface GigabitEthernet0/1.239
+ encapsulation dot1Q 239
+ ip address 10.1.239.9 255.255.255.0
+ ipv6 address 2001:10:1:239::9/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="IOSv" location="32,741"><extensions><entry key="config" type="String">hostname R10
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ipv6 address 2001:10:10:10::10/128
+interface GigabitEthernet0/1.103
+ encapsulation dot1Q 103
+ ip address 100.1.103.10 255.255.255.0
+ ipv6 address 2001:100:1:103::10/64
+interface GigabitEthernet0/1.124
+ encapsulation dot1Q 124
+ ip address 10.1.124.10 255.255.255.0
+ ipv6 address 2001:10:1:124::10/64
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="346,347"><extensions><entry key="config" type="String">hostname SW1
+!
+no ip domain-lookup
+!
+interface Loopback0
+ ip address 21.21.21.21 255.255.255.255
+ ipv6 address 2001:21:21:21::21/128
+!
+interface Vlan121
+ ip address 10.1.121.21 255.255.255.0
+ ipv6 address 2001:10:1:121::21/64
+!
+interface Vlan21
+ ip address 10.1.21.21 255.255.255.0
+ ipv6 address 2001:10:1:21::21/64
+!
+interface Vlan221
+ ip address 10.1.221.21 255.255.255.0
+ ipv6 address 2001:10:1:221::21/64
+!
+!
+end
+
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+        <interface id="6" name="GigabitEthernet1/3"/>
+    </node>
+    <node name="SW2" type="SIMPLE" subtype="IOSvL2" location="580,343"><extensions><entry key="config" type="String">hostname SW2
+!
+no ip domain-lookup
+!
+interface Loopback0
+ ip address 22.22.22.22 255.255.255.255
+ ipv6 address 2001:22:22:22::22/128
+!
+interface Vlan122
+ ip address 10.1.122.22 255.255.255.0
+ ipv6 address 2001:10:1:122::22/64
+!
+interface Vlan222
+ ip address 10.1.222.22 255.255.255.0
+ ipv6 address 2001:10:1:222::22/64
+!
+interface Vlan22
+ ip address 10.1.22.22 255.255.255.0
+ ipv6 address 2001:10:1:22::22/64
+!
+end
+
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW3" type="SIMPLE" subtype="IOSvL2" location="339,520"><extensions><entry key="config" type="String">hostname SW3
+!
+no ip domain-lookup
+!
+interface Loopback0
+ ip address 23.23.23.23 255.255.255.255
+ ipv6 address 2001:23:23:23::23/128
+!
+interface Vlan239
+ ip address 10.1.239.23 255.255.255.0
+ ipv6 address 2001:10:1:239::23/64
+!
+end
+
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW4" type="SIMPLE" subtype="IOSvL2" location="580,519"><extensions><entry key="config" type="String">hostname SW4
+!
+no ip domain-lookup
+!
+interface Loopback0
+ ip address 24.24.24.24 255.255.255.255
+ ipv6 address 2001:24:24:24::24/128
+!
+interface Vlan124
+ ip address 10.1.124.24 255.255.255.0
+ ipv6 address 2001:10:1:124::24/64
+!
+end
+
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="unmanagedswitch-1" type="SIMPLE" subtype="Unmanaged Switch" location="185,485">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+    </node>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[3]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[7]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[8]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[9]" src="/virl:topology/virl:node[9]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[10]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[11]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[2]" src="/virl:topology/virl:node[11]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[12]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[2]" src="/virl:topology/virl:node[12]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[11]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[3]" src="/virl:topology/virl:node[13]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[5]" src="/virl:topology/virl:node[11]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[6]" src="/virl:topology/virl:node[11]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[13]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[6]" src="/virl:topology/virl:node[13]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[11]" src="/virl:topology/virl:node[11]/virl:interface[7]"/>
+</topology>

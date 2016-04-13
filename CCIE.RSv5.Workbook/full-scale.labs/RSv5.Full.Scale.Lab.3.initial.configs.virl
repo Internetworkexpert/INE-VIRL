@@ -1,0 +1,3653 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" simulationEngine="OPENSTACK" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
+    <node name="R1" type="SIMPLE" subtype="IOSv" location="57,131"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 92HVO0PSL3U
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.1.1 255.255.255.255
+ ipv6 address 2001::1/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.10.1.1 255.255.255.0
+ ipv6 address 2001:10:10:1::1/64
+!
+interface GigabitEthernet0/1.11
+ encapsulation dot1Q 11
+ ip address 11.11.1.1 255.255.255.0
+ ipv6 address 2001:11:11:1::1/64
+!
+interface GigabitEthernet0/1.1319
+ encapsulation dot1Q 1319
+ ip address 119.3.0.1 255.255.255.0
+ ipv6 address 2001:119:3::1/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.1 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ length 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="57,197"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9DMEUSB233Y
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.2.2 255.255.255.255
+ ipv6 address 2001::2/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 192.168.2.2 255.255.255.0
+ ipv6 address 2001:192:168:2::2/64
+!
+interface GigabitEthernet0/1.215
+ encapsulation dot1Q 215
+ ip address 172.31.215.2 255.255.255.128
+ ipv6 address 2001:172:31:215::2/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.2 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="IOSv" location="57,270"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9MALPY1LQP1
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.3.3 255.255.255.255
+ ipv6 address 2001::3/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.315
+ encapsulation dot1Q 315
+ ip address 119.3.153.3 255.255.255.0
+ ipv6 address 2001:119:3:153::3/64
+!
+interface GigabitEthernet0/1.322
+ encapsulation dot1Q 322
+ ip address 119.3.223.3 255.255.255.0
+ ipv6 address 2001:119:3:223::3/64
+!
+interface GigabitEthernet0/1.1319
+ encapsulation dot1Q 1319
+ ip address 119.3.0.3 255.255.255.0
+ ipv6 address 2001:119:3::3/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.3 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="IOSv" location="57,345"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 92M3KGFZPG9
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.4.4 255.255.255.255
+ ipv6 address 2001::4/128
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ ip address 40.40.1.1 255.255.255.0
+ ipv6 address 2001:40:40:1::1/64
+!
+interface GigabitEthernet0/1.41
+ encapsulation dot1Q 41
+ ip address 41.41.1.1 255.255.255.0
+ ipv6 address 2001:41:41:1::1/64
+!
+interface GigabitEthernet0/1.411
+ encapsulation dot1Q 411
+ ip address 10.254.255.0 255.255.255.254
+ ipv6 address 2001:10:254:255::/127
+!
+interface GigabitEthernet0/1.412
+ encapsulation dot1Q 412
+ ip address 10.254.255.2 255.255.255.254
+ ipv6 address 2001:10:254:255::2/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.4 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+no ip forward-protocol udp domain
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="IOSv" location="57,417"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9ORST0AKGHD
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.5.5 255.255.255.255
+ ipv6 address 2001::5/128
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ ip address 50.50.1.1 255.255.255.0
+ ipv6 address 2001:50:50:1::1/64
+!
+interface GigabitEthernet0/1.51
+ encapsulation dot1Q 51
+ ip address 51.51.1.1 255.255.255.0
+ ipv6 address 2001:51:51:1::1/64
+!
+interface GigabitEthernet0/1.59
+ encapsulation dot1Q 59
+ ip address 192.0.59.5 255.255.255.0
+ ipv6 address 2001:192:0:59::5/64
+!
+interface GigabitEthernet0/1.105
+ encapsulation dot1Q 105
+ ip address 192.0.105.5 255.255.255.0
+ ipv6 address 2001:192:0:105::5/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.5 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="IOSv" location="57,474"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R6
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 95OSJ0DCRXR
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.6.6 255.255.255.255
+ ipv6 address 2001::6/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ ip address 169.254.60.1 255.255.255.252
+ ipv6 address 2001:169:254:60::1/126
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1Q 67
+ ip address 192.0.67.6 255.255.255.0
+ ipv6 address 2001:192:0:67::6/64
+!
+interface GigabitEthernet0/1.69
+ encapsulation dot1Q 69
+ ip address 192.0.69.6 255.255.255.0
+ ipv6 address 2001:192:0:69::6/64
+!
+interface GigabitEthernet0/1.106
+ encapsulation dot1Q 106
+ ip address 192.0.106.6 255.255.255.0
+ ipv6 address 2001:192:0:106::6/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.6 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="57,552"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R7
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9433QKU0O4I
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.7.7 255.255.255.255
+ ipv6 address 2001::7/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.67
+ encapsulation dot1Q 67
+ ip address 192.0.67.7 255.255.255.0
+ ipv6 address 2001:192:0:67::7/64
+!
+interface GigabitEthernet0/1.70
+ encapsulation dot1Q 70
+ ip address 169.254.70.1 255.255.255.252
+ ipv6 address 2001:169:254:70::1/126
+!
+interface GigabitEthernet0/1.107
+ encapsulation dot1Q 107
+ ip address 192.0.107.7 255.255.255.0
+ ipv6 address 2001:192:0:107::7/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.7 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="IOSv" location="57,618"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R8
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9O1KOE672K8
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.8.8 255.255.255.255
+ ipv6 address 2001::8/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.800
+ encapsulation dot1Q 800
+ ip address 192.168.8.8 255.255.255.0
+ ipv6 address 2001:192:168:8::8/64
+!
+interface GigabitEthernet0/1.815
+ encapsulation dot1Q 815
+ ip address 172.31.158.8 255.255.255.128
+ ipv6 address 2001:172:31:158::8/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.8 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="IOSv" location="57,675"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R9
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 989PI5Z8M4J
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.9.9 255.255.255.255
+ ipv6 address 2001::9/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.59
+ encapsulation dot1Q 59
+ ip address 192.0.59.9 255.255.255.0
+ ipv6 address 2001:192:0:59::9/64
+!
+interface GigabitEthernet0/1.69
+ encapsulation dot1Q 69
+ ip address 192.0.69.9 255.255.255.0
+ ipv6 address 2001:192:0:69::9/64
+!
+!
+interface GigabitEthernet0/1.912
+ encapsulation dot1Q 912
+ ip address 172.31.129.9 255.255.255.128
+ shutdown
+ ipv6 address 2001:172:31:129::9/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.9 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="IOSv" location="57,741"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:15:53 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9MWA7QEAAU8
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.10.10 255.255.255.255
+ ipv6 address 2001::10/128 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.105
+ encapsulation dot1Q 105
+ ip address 192.0.105.10 255.255.255.0
+ ipv6 address 2001:192:0:105::10/64
+!
+interface GigabitEthernet0/1.106
+ encapsulation dot1Q 106
+ ip address 192.0.106.10 255.255.255.0
+ ipv6 address 2001:192:0:106::10/64
+!
+interface GigabitEthernet0/1.107
+ encapsulation dot1Q 107
+ ip address 192.0.107.10 255.255.255.0
+ ipv6 address 2001:192:0:107::10/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.10 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="326,130"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 02:46:43 UTC Mon Mar 1 1993
+!
+enable
+configure terminal
+version 15.0
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+!
+hostname SW1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+no ip domain-lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.21.21 255.255.255.255
+ ipv6 address 2001::21/128
+!
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no shutdown
+ no ip route-cache
+!
+!
+interface Vlan1921
+ ip address 119.3.192.21 255.255.255.0
+ ipv6 address 2001:119:3:192::21/64
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+        <interface id="6" name="GigabitEthernet1/3"/>
+    </node>
+    <node name="SW2" type="SIMPLE" subtype="IOSvL2" location="560,126"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 02:46:36 UTC Mon Mar 1 1993
+!
+enable
+configure terminal
+version 15.0
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+!
+hostname SW2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+no ip domain-lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.22.22 255.255.255.255
+ ipv6 address 2001::22/128
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no shutdown
+ no ip route-cache
+!
+!
+interface Vlan322
+ ip address 119.3.223.22 255.255.255.0
+ ipv6 address 2001:119:3:223::22/64
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW3" type="SIMPLE" subtype="IOSvL2" location="319,303"><extensions><entry key="config" type="String">
+!
+enable
+configure terminal
+version 12.2
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+!
+hostname SW3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+!
+no aaa new-model
+system mtu routing 1500
+no ip domain-lookup
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+interface Loopback0
+ ip address 150.1.23.23 255.255.255.255
+ ipv6 address 2001::23/128
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no shutdown
+ no ip route-cache
+ no ip mroute-cache
+!
+interface Vlan1623
+ ip address 172.31.236.23 255.255.255.128
+ ipv6 address 2001:172:31:236::23/65
+!
+interface Vlan1723
+ ip address 192.168.237.23 255.255.255.0
+ ipv6 address 2001:192:168:237::23/64
+!
+interface Vlan1823
+ ip address 192.168.238.23 255.255.255.0
+ ipv6 address 2001:192:168:238::23/64
+!
+no ip classless
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="SW4" type="SIMPLE" subtype="IOSvL2" location="560,302"><extensions><entry key="config" type="String">
+!
+enable
+configure terminal
+version 12.2
+no service pad
+no service timestamps debug uptime
+no service timestamps log uptime
+no service password-encryption
+!
+hostname SW4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+!
+no aaa new-model
+system mtu routing 1500
+no ip domain-lookup
+!
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+vlan internal allocation policy ascending
+!
+interface Loopback0
+ ip address 150.1.24.24 255.255.255.255
+ ipv6 address 2001::24/128
+!
+!
+interface FastEthernet0/1
+!
+interface FastEthernet0/2
+!
+interface FastEthernet0/3
+!
+interface FastEthernet0/4
+!
+interface FastEthernet0/5
+!
+interface FastEthernet0/6
+!
+interface FastEthernet0/7
+!
+interface FastEthernet0/8
+!
+interface FastEthernet0/9
+!
+interface FastEthernet0/10
+!
+interface FastEthernet0/11
+!
+interface FastEthernet0/12
+!
+interface FastEthernet0/13
+!
+interface FastEthernet0/14
+!
+interface FastEthernet0/15
+!
+interface FastEthernet0/16
+!
+interface FastEthernet0/17
+!
+interface FastEthernet0/18
+!
+interface FastEthernet0/19
+!
+interface FastEthernet0/20
+!
+interface FastEthernet0/21
+!
+interface FastEthernet0/22
+!
+interface FastEthernet0/23
+!
+interface FastEthernet0/24
+!
+interface GigabitEthernet0/1
+!
+interface GigabitEthernet0/2
+!
+interface Vlan1
+ no shutdown
+ no ip route-cache
+ no ip mroute-cache
+!
+interface Vlan1624
+ ip address 172.31.246.24 255.255.255.128
+ ipv6 address 2001:172:31:246::24/65
+!
+no ip classless
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ logging synchronous
+line vty 0 4
+ login
+line vty 5 15
+ login
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+        <interface id="1" name="GigabitEthernet0/2"/>
+        <interface id="2" name="GigabitEthernet0/3"/>
+        <interface id="3" name="GigabitEthernet1/0"/>
+        <interface id="4" name="GigabitEthernet1/1"/>
+        <interface id="5" name="GigabitEthernet1/2"/>
+    </node>
+    <node name="unmanagedswitch-1" type="SIMPLE" subtype="Unmanaged Switch" location="185,485">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+        <interface id="11" name="link12"/>
+    </node>
+    <node name="unmanagedswitch-2" type="SIMPLE" subtype="Unmanaged Switch" location="457,487">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+    </node>
+    <node name="R11" type="SIMPLE" subtype="IOSv" location="715,135"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9T8WPK3T4YM
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.11.11 255.255.255.255
+ ipv6 address 2001::11/128
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.411
+ encapsulation dot1Q 411
+ ip address 10.254.255.1 255.255.255.254
+ ipv6 address 2001:10:254:255::1/127
+!
+interface GigabitEthernet0/1.1113
+ encapsulation dot1Q 1113
+ ip address 10.254.255.4 255.255.255.254
+ ipv6 address 2001:10:254:255::4/127
+!
+interface GigabitEthernet0/1.1114
+ encapsulation dot1Q 1114
+ ip address 10.254.255.6 255.255.255.254
+ ipv6 address 2001:10:254:255::6/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.11 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R12" type="SIMPLE" subtype="IOSv" location="715,227"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R12
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition RENO
+ rd 150.1.12.12:1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9RIGE0C5F9C
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.12.12 255.255.255.255
+ ipv6 address 2001::12/128
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.412
+ encapsulation dot1Q 412
+ ip address 10.254.255.3 255.255.255.254
+ ipv6 address 2001:10:254:255::3/127
+!
+interface GigabitEthernet0/1.912
+ encapsulation dot1Q 912
+ vrf forwarding RENO
+ ip address 172.31.129.12 255.255.255.128
+ shutdown
+ ipv6 address 2001:172:31:129::12/64
+!
+interface GigabitEthernet0/1.1214
+ encapsulation dot1Q 1214
+ ip address 10.254.255.8 255.255.255.254
+ ipv6 address 2001:10:254:255::8/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.12 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R13" type="SIMPLE" subtype="IOSv" location="715,298"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 97B6YBUT01O
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.13.13 255.255.255.255
+ ipv6 address 2001::13/128 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.1113
+ encapsulation dot1Q 1113
+ ip address 10.254.255.5 255.255.255.254
+ ipv6 address 2001:10:254:255::5/127
+!
+interface GigabitEthernet0/1.1315
+ encapsulation dot1Q 1315
+ ip address 10.254.255.10 255.255.255.254
+ ipv6 address 2001:10:254:255::A/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.13 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R14" type="SIMPLE" subtype="IOSv" location="715,370"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R14
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9CV7ZTTD0F1
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.14.14 255.255.255.255
+ ipv6 address 2001::14/128 
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.1114
+ encapsulation dot1Q 1114
+ ip address 10.254.255.7 255.255.255.254
+ ipv6 address 2001:10:254:255::7/127
+!
+interface GigabitEthernet0/1.1214
+ encapsulation dot1Q 1214
+ ip address 10.254.255.9 255.255.255.254
+ ipv6 address 2001:10:254:255::9/127
+!
+interface GigabitEthernet0/1.1415
+ encapsulation dot1Q 1415
+ ip address 10.254.255.12 255.255.255.254
+ ipv6 address 2001:10:254:255::C/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.14 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R15" type="SIMPLE" subtype="IOSv" location="715,441"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R15
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition HOUSTON
+ rd 150.1.15.15:1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+vrf definition RED
+ rd 150.1.15.15:100
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9FSD6IRBA2E
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface Loopback0
+ ip address 150.1.15.15 255.255.255.255
+ ipv6 address 2001::15/128
+! 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.150
+ encapsulation dot1Q 150
+ ip address 169.254.150.1 255.255.255.252
+ ipv6 address 2001:169:254:150::1/126
+!
+interface GigabitEthernet0/1.215
+ encapsulation dot1Q 215
+ vrf forwarding RED
+ ip address 172.31.215.15 255.255.255.128
+ ipv6 address 2001:172:31:215::15/64
+!
+interface GigabitEthernet0/1.815
+ encapsulation dot1Q 815
+ vrf forwarding RED
+ ip address 172.31.158.15 255.255.255.128
+ ipv6 address 2001:172:31:158::15/64
+!
+interface GigabitEthernet0/1.315
+ encapsulation dot1Q 315
+ vrf forwarding HOUSTON
+ ip address 119.3.153.15 255.255.255.0
+ ipv6 address 2001:119:3:153::15/64
+!
+interface GigabitEthernet0/1.1315
+ encapsulation dot1Q 1315
+ ip address 10.254.255.11 255.255.255.254
+ ipv6 address 2001:10:254:255::B/127
+!
+interface GigabitEthernet0/1.1415
+ encapsulation dot1Q 1415
+ ip address 10.254.255.13 255.255.255.254
+ ipv6 address 2001:10:254:255::D/127
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.15 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R16" type="SIMPLE" subtype="IOSv" location="715,498"><extensions><entry key="config" type="String">	
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R16
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition BLUE
+ rd 150.1.16.16:1
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+vrf definition RED
+ rd 150.1.16.16:100
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 90Y69TXLGPT
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.16.16 255.255.255.255
+ ipv6 address 2001::16/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.160
+ encapsulation dot1Q 160
+ ip address 169.254.160.1 255.255.255.252
+ ipv6 address 2001:169:254:160::1/126
+!
+interface GigabitEthernet0/1.1623
+ encapsulation dot1Q 1623
+ vrf forwarding BLUE
+ ip address 172.31.236.16 255.255.255.128
+ ipv6 address 2001:172:31:236::16/65
+!
+interface GigabitEthernet0/1.1624
+ encapsulation dot1Q 1624
+ vrf forwarding RED
+ ip address 172.31.246.16 255.255.255.128
+ ipv6 address 2001:172:31:246::16/65
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.16 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R17" type="SIMPLE" subtype="IOSv" location="715,575"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R17
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9ZKEEWZ6S6H
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.17.17 255.255.255.255
+ ipv6 address 2001::17/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.1718
+ encapsulation dot1Q 1718
+ ip address 192.168.178.17 255.255.255.0
+ ipv6 address 2001:192:168:178::17/64
+!
+interface GigabitEthernet0/1.1723
+ encapsulation dot1Q 1723
+ ip address 192.168.237.17 255.255.255.0
+ ipv6 address 2001:192:168:237::17/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.17 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R18" type="SIMPLE" subtype="IOSv" location="715,638"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R18
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 99IBUFLFZQE
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.18.18 255.255.255.255
+ ipv6 address 2001::18/128
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.1718
+ encapsulation dot1Q 1718
+ ip address 192.168.178.18 255.255.255.0
+ ipv6 address 2001:192:168:178::18/64
+!
+interface GigabitEthernet0/1.1823
+ encapsulation dot1Q 1823
+ ip address 192.168.238.18 255.255.255.0
+ ipv6 address 2001:192:168:238::18/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.18 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R19" type="SIMPLE" subtype="IOSv" location="715,709"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 03:16:29 UTC Tue Dec 16 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R19
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+
+
+no ip domain lookup
+
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9XAWN25SZ6N
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+interface Loopback0
+ ip address 150.1.19.19 255.255.255.255
+ ipv6 address 2001::19/128 
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.1319
+ encapsulation dot1Q 1319
+ ip address 119.3.0.19 255.255.255.0
+ ipv6 address 2001:119:3::19/64
+!
+interface GigabitEthernet0/1.1921
+ encapsulation dot1Q 1921
+ ip address 119.3.192.19 255.255.255.0
+ ipv6 address 2001:119:3:192::19/64
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.19 255.255.255.0
+ negotiation auto
+!
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ privilege level 15
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="R20" type="SIMPLE" subtype="IOSv" location="715,774"><extensions><entry key="config" type="String">
+!
+! Last configuration change at 16:10:37 UTC Sat Dec 20 2014
+!
+enable
+configure terminal
+version 15.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R20
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition ISP_IECAST
+ rd 50:50
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP_INE&amp;T
+ rd 40:40
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP_LEVEL30
+ rd 30:30
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition MGMT_DO_NOT_CHANGE
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition SERVER1
+ rd 100:100
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition SERVER2
+ rd 200:200
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+no aaa new-model
+!
+!
+no ip domain lookup
+!
+ipv6 unicast-routing
+!
+
+!
+subscriber templating
+!
+multilink bundle-name authenticated
+!
+!
+!
+license udi pid CSR1000V sn 9RVSNJLIZK3
+spanning-tree extend system-id
+!
+!
+redundancy
+ mode none
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+interface Loopback0
+ ip address 150.1.20.20 255.255.255.255
+ ipv6 address 2001::20/128
+!
+interface Loopback30
+ vrf forwarding ISP_LEVEL30
+ ip address 4.2.2.1 255.255.255.255
+!
+interface Loopback31
+ vrf forwarding ISP_LEVEL30
+ ip address 4.2.2.2 255.255.255.255
+!
+interface Loopback40
+ vrf forwarding ISP_INE&amp;T
+ ip address 8.8.4.4 255.255.255.255
+!
+interface Loopback41
+ vrf forwarding ISP_INE&amp;T
+ ip address 8.8.8.8 255.255.255.255
+!
+interface Loopback50
+ vrf forwarding ISP_IECAST
+ ip address 208.67.222.222 255.255.255.255
+!
+interface Loopback51
+ vrf forwarding ISP_IECAST
+ ip address 208.67.223.223 255.255.255.255
+!
+interface GigabitEthernet0/1
+ no shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ vrf forwarding ISP_LEVEL30
+ ip address 10.10.1.20 255.255.255.0
+ ipv6 address 2001:10:10:1::20/64
+!
+interface GigabitEthernet0/1.11
+ encapsulation dot1Q 11
+ vrf forwarding ISP_INE&amp;T
+ ip address 11.11.1.20 255.255.255.0
+ ipv6 address 2001:11:11:1::20/64
+!
+interface GigabitEthernet0/1.40
+ encapsulation dot1Q 40
+ vrf forwarding ISP_LEVEL30
+ ip address 40.40.1.20 255.255.255.0
+ ipv6 address 2001:40:40:1::20/64
+!
+interface GigabitEthernet0/1.41
+ encapsulation dot1Q 41
+ vrf forwarding ISP_INE&amp;T
+ ip address 41.41.1.20 255.255.255.0
+ ipv6 address 2001:41:41:1::20/64
+!
+interface GigabitEthernet0/1.50
+ encapsulation dot1Q 50
+ vrf forwarding ISP_LEVEL30
+ ip address 50.50.1.20 255.255.255.0
+ ipv6 address 2001:50:50:1::20/64
+!
+interface GigabitEthernet0/1.51
+ encapsulation dot1Q 51
+ vrf forwarding ISP_INE&amp;T
+ ip address 51.51.1.20 255.255.255.0
+ ipv6 address 2001:51:51:1::20/64
+!
+interface GigabitEthernet0/1.60
+ encapsulation dot1Q 60
+ vrf forwarding ISP_IECAST
+ ip address 169.254.60.2 255.255.255.252
+ ipv6 address 2001:169:254:60::2/126
+!
+interface GigabitEthernet0/1.70
+ encapsulation dot1Q 70
+ vrf forwarding ISP_IECAST
+ ip address 169.254.70.2 255.255.255.252
+ ipv6 address 2001:169:254:70::2/126
+!
+interface GigabitEthernet0/1.150
+ encapsulation dot1Q 150
+ vrf forwarding ISP_IECAST
+ ip address 169.254.150.2 255.255.255.252
+ ipv6 address 2001:169:254:150::2/126
+!
+interface GigabitEthernet0/1.160
+ encapsulation dot1Q 160
+ vrf forwarding ISP_IECAST
+ ip address 169.254.160.2 255.255.255.252
+ ipv6 address 2001:169:254:160::2/126
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ vrf forwarding SERVER2
+ ip address 192.168.2.100 255.255.255.0
+!
+interface GigabitEthernet0/1.800
+ encapsulation dot1Q 800
+ vrf forwarding SERVER1
+ ip address 192.168.8.100 255.255.255.0
+!
+interface GigabitEthernet2
+ description MGMT INTERFACE - DO NOT CHANGE
+ vrf forwarding MGMT_DO_NOT_CHANGE
+ ip address 192.168.1.20 255.255.255.0
+ negotiation auto
+!
+!
+router bgp 30000
+ template peer-session ISP_INE&amp;T_SESSION
+  local-as 40000 no-prepend replace-as dual-as
+ exit-peer-session
+ !
+ bgp log-neighbor-changes
+ !
+ address-family ipv4 vrf ISP_INE&amp;T
+  bgp router-id auto-assign
+  redistribute connected
+  neighbor 11.11.1.1 remote-as 2000
+  neighbor 11.11.1.1 inherit peer-session ISP_INE&amp;T_SESSION
+  neighbor 11.11.1.1 activate
+  neighbor 11.11.1.1 send-community both
+  neighbor 11.11.1.1 default-originate
+  neighbor 41.41.1.1 remote-as 1000
+  neighbor 41.41.1.1 inherit peer-session ISP_INE&amp;T_SESSION
+  neighbor 41.41.1.1 activate
+  neighbor 41.41.1.1 send-community both
+  neighbor 41.41.1.1 default-originate
+  neighbor 51.51.1.1 remote-as 3000
+  neighbor 51.51.1.1 inherit peer-session ISP_INE&amp;T_SESSION
+  neighbor 51.51.1.1 activate
+  neighbor 51.51.1.1 send-community both
+  neighbor 51.51.1.1 default-originate
+ exit-address-family
+ !
+ address-family ipv4 vrf ISP_LEVEL30
+  bgp router-id auto-assign
+  redistribute connected
+  neighbor 10.10.1.1 remote-as 2000
+  neighbor 10.10.1.1 activate
+  neighbor 10.10.1.1 send-community both
+  neighbor 10.10.1.1 default-originate
+  neighbor 40.40.1.1 remote-as 1000
+  neighbor 40.40.1.1 activate
+  neighbor 40.40.1.1 send-community both
+  neighbor 40.40.1.1 default-originate
+  neighbor 50.50.1.1 remote-as 3000
+  neighbor 50.50.1.1 activate
+  neighbor 50.50.1.1 send-community both
+  neighbor 50.50.1.1 default-originate
+ exit-address-family
+ !
+ address-family ipv6 vrf ISP_LEVEL30
+  bgp router-id auto-assign
+  neighbor 10.10.1.1 remote-as 2000
+  neighbor 10.10.1.1 activate
+  neighbor 40.40.1.1 remote-as 1000
+  neighbor 40.40.1.1 activate
+ exit-address-family
+!
+virtual-service csr_mgmt
+ ip shared host-interface GigabitEthernet2
+ activate
+!
+ip forward-protocol nd
+!
+no ip http server
+no ip http secure-server
+ip route vrf SERVER1 0.0.0.0 0.0.0.0 GigabitEthernet0/1.800 192.168.8.8
+ip route vrf SERVER2 0.0.0.0 0.0.0.0 GigabitEthernet0/1.200 192.168.2.2
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ exec-timeout 0 0
+ stopbits 1
+line vty 0 4
+ no login
+line vty 5 10
+ privilege level 15
+ logging synchronous
+ no login
+ rotary 1
+!
+!
+end
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[3]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[7]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[8]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[9]" src="/virl:topology/virl:node[9]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[10]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[11]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[2]" src="/virl:topology/virl:node[11]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[12]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[2]" src="/virl:topology/virl:node[12]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[11]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[3]" src="/virl:topology/virl:node[13]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[4]" src="/virl:topology/virl:node[13]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[5]" src="/virl:topology/virl:node[11]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[6]" src="/virl:topology/virl:node[11]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[5]" src="/virl:topology/virl:node[13]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[6]" src="/virl:topology/virl:node[13]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[11]" src="/virl:topology/virl:node[11]/virl:interface[7]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[12]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[4]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[5]" src="/virl:topology/virl:node[20]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[6]" src="/virl:topology/virl:node[21]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[7]" src="/virl:topology/virl:node[22]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[8]" src="/virl:topology/virl:node[23]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[9]" src="/virl:topology/virl:node[24]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[10]" src="/virl:topology/virl:node[25]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[1]" src="/virl:topology/virl:node[16]/virl:interface[11]"/>
+</topology>
