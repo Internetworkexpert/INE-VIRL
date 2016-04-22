@@ -1,166 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
-    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72"><extensions><entry key="config" type="String">hostname R1
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface Loopback0
- ip address 1.1.1.1 255.255.255.255
-!
-interface GigabitEthernet2
- no shutdown
-!
-interface GigabitEthernet2.13
- encapsulation dot1q 13
- ip address 10.1.3.1 255.255.255.0
-!
-interface GigabitEthernet2.30
- encapsulation dot1q 30
- ip address 30.1.19.1 255.255.255.0
-!
-interface GigabitEthernet2.40
- encapsulation dot1q 40
- ip address 40.1.19.1 255.255.255.0
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
- transport preferred none
-line vty 0 4
- no login
-!
-end
-
-
-</entry></extensions>
+    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180"><extensions><entry key="config" type="String">hostname R2
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface Loopback0
- ip address 2.2.2.2 255.255.255.255
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-interface GigabitEthernet2.23
- encapsulation dot1Q 23
- ip address 10.2.3.2 255.255.255.0
-!
-interface GigabitEthernet2.27
- encapsulation dot1Q 27
- ip address 40.2.7.2 255.255.255.0
-!
-interface GigabitEthernet2.29
- encapsulation dot1Q 29
- ip address 30.2.9.2 255.255.255.0
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
- transport preferred none
-line vty 0 4
- no login
-!
-end
-
-
-</entry></extensions>
+    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
         <interface id="2" name="GigabitEthernet4"/>
     </node>
-    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359"><extensions><entry key="config" type="String">hostname R3
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface Loopback0
- ip address 3.3.3.3 255.255.255.255
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-interface GigabitEthernet2.13
- encapsulation dot1Q 13
- ip address 10.1.3.3 255.255.255.0
-!
-interface GigabitEthernet2.23
- encapsulation dot1Q 23
- ip address 10.2.3.3 255.255.255.0
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
- transport preferred none
-line vty 0 4
- no login
-!
-end
-
-
-</entry></extensions>
+    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468"><extensions><entry key="config" type="String">hostname R4
-!
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface Loopback0
- ip address 4.4.4.4 255.255.255.255
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-interface GigabitEthernet2.419
- encapsulation dot1Q 419
- ip address 20.4.19.4 255.255.255.0
-!
-interface GigabitEthernet2.420
- encapsulation dot1Q 420
- ip address 20.4.20.4 255.255.255.0
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
- transport preferred none
-line vty 0 4
- no login
-!
-end
-
-
-</entry></extensions>
+    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
@@ -171,78 +23,19 @@ end
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="496,75">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,278"><extensions><entry key="config" type="String">hostname R9
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-interface GigabitEthernet2.29
- encapsulation dot1Q 29
- ip address 30.2.9.9 255.255.255.0
- no shutdown
-!
-interface Loopback0
- ip address 9.9.9.9 255.255.255.255
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
-line vty 0 4
- no login
-!
-!
-end
-
-
-
-
-</entry></extensions>
+    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,278">
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="570,79"><extensions><entry key="config" type="String">hostname R10
-!
-no service timestamp
-enable password cisco
-no ip domain lookup
-ip cef distributed
-!
-interface GigabitEthernet2
- no ip address
- no shutdown
-!
-!
-interface GigabitEthernet2.1020
- encapsulation dot1Q 1020
- ip address 30.10.20.10 255.255.255.0
- no shutdown
-!
-interface Loopback0
- ip address 10.10.10.10 255.255.255.255
-!
-line con 0
- exec-timeout 0 0
- logging synchronous
-line vty 0 4
- no login
-!
-!
-end
-</entry></extensions>
+    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="570,79">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="587,254" excludeFromLaunch="true">
@@ -275,64 +68,11 @@ end
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="757,415" excludeFromLaunch="true">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143"><extensions><entry key="config" type="String">hostname XR1
-cdp
-line console
- exec-timeout 0 0
-!
-interface Loopback0
- ipv4 address 19.19.19.19 255.255.255.255
-!
-interface GigabitEthernet0/0/0/0
- cdp
-!
-interface GigabitEthernet0/0/0/0.419
- ipv4 address 20.4.19.19 255.255.255.0
- dot1q vlan 419
-!
-interface GigabitEthernet0/0/0/0.30
- ipv4 address 30.1.19.19 255.255.255.0
- dot1q vlan 30
-!
-interface GigabitEthernet0/0/0/0.40
- ipv4 address 40.1.19.19 255.255.255.0
- dot1q vlan 40
-!
-commit
-
-end
-
-</entry></extensions>
+    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143">
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
-    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199"><extensions><entry key="config" type="String">hostname XR2
-cdp
-line console
- exec-timeout 0 0
-!
-interface Loopback0
- ipv4 address 20.20.20.20 255.255.255.255
-!
-interface GigabitEthernet0/0/0/0
- cdp
-!
-interface GigabitEthernet0/0/0/0.420
- ipv4 address 20.4.20.20 255.255.255.0
- dot1q vlan 420
-!
-interface GigabitEthernet0/0/0/0.820
- ipv4 address 40.8.20.20 255.255.255.0
- dot1q vlan 820
-!
-interface GigabitEthernet0/0/0/0.1020
- ipv4 address 30.10.20.20 255.255.255.0
- dot1q vlan 1020
-!
-commit
-end
-
-</entry></extensions>
+    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199">
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>

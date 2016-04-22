@@ -217,11 +217,11 @@ end
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="config" type="String">Ã¿Ã¾h</entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="config" type="String">Ã¿Ã¾h</entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
