@@ -1331,13 +1331,13 @@ event manager applet noname
  event timer watchdog name timer time 12
  action 0 cli command "enable"
  action 1 cli command "conf t"
- action 2 cli command "interface gig1.35"
+ action 2 cli command "interface gig0/1.35"
  action 3 cli command "shut"
 event manager applet noname1
  event timer watchdog name timer time 6
  action 0 cli command "enable"
  action 1 cli command "conf t"
- action 2 cli command "interface gig1.35"
+ action 2 cli command "interface gig0/1.35"
  action 3 cli command "no shut"
 !
 end

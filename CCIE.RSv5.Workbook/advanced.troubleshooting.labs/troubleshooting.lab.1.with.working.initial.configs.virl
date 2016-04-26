@@ -1322,13 +1322,13 @@ event manager applet noname
  event none
  action 0 cli command "enable"
  action 1 cli command "conf t"
- action 2 cli command "interface gig1.35"
+ action 2 cli command "interface gig0/1.35"
  action 3 cli command "shut"
 event manager applet noname1
  event none
  action 0 cli command "enable"
  action 1 cli command "conf t"
- action 2 cli command "interface gig1.35"
+ action 2 cli command "interface gig0/1.35"
  action 3 cli command "no shut"
 !
 end
