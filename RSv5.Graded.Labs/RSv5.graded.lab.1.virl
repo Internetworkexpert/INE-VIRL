@@ -168,7 +168,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -332,7 +332,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -501,7 +501,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -664,7 +664,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -826,7 +826,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -974,7 +974,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1127,7 +1127,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1288,7 +1288,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1443,7 +1443,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1597,7 +1597,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1765,7 +1765,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -1942,7 +1942,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2092,7 +2092,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2245,7 +2245,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2392,7 +2392,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2538,7 +2538,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2684,7 +2684,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2837,7 +2837,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -2991,7 +2991,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3138,7 +3138,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3291,7 +3291,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3438,7 +3438,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3584,7 +3584,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3744,7 +3744,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -3906,7 +3906,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4054,7 +4054,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4207,7 +4207,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4356,7 +4356,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4506,7 +4506,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4670,7 +4670,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4812,7 +4812,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -4950,7 +4950,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5088,7 +5088,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5226,7 +5226,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5364,7 +5364,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5502,7 +5502,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5640,7 +5640,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5778,7 +5778,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -5916,7 +5916,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6054,7 +6054,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6192,7 +6192,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6330,7 +6330,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6468,7 +6468,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6606,7 +6606,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6744,7 +6744,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -6882,7 +6882,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7020,7 +7020,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7158,7 +7158,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7296,7 +7296,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7434,7 +7434,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7572,7 +7572,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7710,7 +7710,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7848,7 +7848,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -7986,7 +7986,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8124,7 +8124,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8247,7 +8247,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8370,7 +8370,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8493,7 +8493,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8616,7 +8616,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
@@ -8739,7 +8739,7 @@ event manager applet CLI_AFTER_BOOT
  action 3.0 cli command "no banner motd"
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
- action 6.0 cli command "interface loopback1234"
+ action 6.0 cli command "no banner exec"
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
