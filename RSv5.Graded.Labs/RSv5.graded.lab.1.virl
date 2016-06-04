@@ -161,9 +161,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -314,9 +325,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -472,9 +494,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -624,9 +657,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -775,9 +819,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -912,9 +967,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1054,9 +1120,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1204,9 +1281,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1348,9 +1436,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1491,9 +1590,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1648,9 +1758,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1814,9 +1935,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -1953,9 +2085,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2095,9 +2238,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2231,9 +2385,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2366,9 +2531,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2501,9 +2677,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2643,9 +2830,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2786,9 +2984,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -2922,9 +3131,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3064,9 +3284,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3200,9 +3431,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3335,9 +3577,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3484,9 +3737,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3635,9 +3899,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3772,9 +4047,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -3914,9 +4200,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -4052,9 +4349,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -4191,9 +4499,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -4344,9 +4663,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -4475,9 +4805,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -4602,9 +4943,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -4729,9 +5081,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -4856,9 +5219,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -4983,9 +5357,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5110,9 +5495,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5237,9 +5633,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5364,9 +5771,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5491,9 +5909,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5618,9 +6047,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5745,9 +6185,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5872,9 +6323,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -5999,9 +6461,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6126,9 +6599,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6253,9 +6737,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6380,9 +6875,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6507,9 +7013,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6634,9 +7151,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6761,9 +7289,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -6888,9 +7427,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7015,9 +7565,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7142,9 +7703,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7269,9 +7841,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7396,9 +7979,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7523,9 +8117,20 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7635,9 +8240,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7747,9 +8363,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7859,9 +8486,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -7971,9 +8609,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -8083,9 +8732,20 @@ line vty 5 100
  rotary 23
  transport input telnet
 !
-no banner login
-no banner incoming
-no banner motd
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "interface loopback1234"
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
+kron occurrence KRONJOB in 1 oneshot 
+ policy-list KRONPOLICY
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
