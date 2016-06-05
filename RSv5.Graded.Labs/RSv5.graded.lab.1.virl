@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
     <extensions>
         <entry key="lxc.node.static_ip" type="String">172.16.11.99</entry>
@@ -10,9 +10,9 @@
         <extensions>
             <entry key="static_ip" type="String">172.16.11.101</entry>
             <entry key="static_serial_port_0" type="Integer">11001</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:51 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:25 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -70,7 +70,6 @@ username cisco privilege 15 secret 5 $1$XHtl$P5i0JxmgmSVPUVrAB9Oxq.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -87,7 +86,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.1.1.1 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -96,41 +96,54 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R2
- no ip address
+ ip address 184.17.12.0 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to TS-R3
- no ip address
+ ip address 184.17.12.2 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/3
  description to TS-R4
- no ip address
+ ip address 184.17.12.4 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/4
  description to TS-R5
- no ip address
+ ip address 184.17.12.6 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/5
  description to TS-R6
- no ip address
+ ip address 184.17.12.8 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
+!
+router ospf 1
 !
 ip forward-protocol nd
 !
@@ -139,6 +152,14 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -149,13 +170,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 5 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -170,12 +199,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -188,9 +211,9 @@ end</entry>
         <extensions>
             <entry key="static_ip" type="String">172.16.11.102</entry>
             <entry key="static_serial_port_0" type="Integer">11002</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:59 UTC Sat Jun 4 2016
+! Last configuration change at 18:50:42 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -202,6 +225,31 @@ hostname TS-R2
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition BRANCH-SITE-1
+ rd 10.2.2.2:172
+ route-target export 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.3.3.3:172
+ route-target import 10.5.5.5:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP-C
+ rd 10.2.2.2:1282
+ route-target export 10.2.2.2:1282
+ route-target export 18417:1000
+ route-target import 18417:1000
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -248,7 +296,6 @@ username cisco privilege 15 secret 5 $1$NA5J$CG086YPAujBosht/faqf20
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -265,7 +312,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.2.2.2 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -274,27 +322,94 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R1
- no ip address
+ ip address 184.17.12.1 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to TS-R12
- no ip address
+ vrf forwarding ISP-C
+ ip address 12.18.255.3 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::3/127
 !
 interface GigabitEthernet0/3
  description to TS-R15
- no ip address
+ vrf forwarding BRANCH-SITE-1
+ ip address 184.17.13.1 255.255.255.252
+ ip ospf 15 area 15
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::1/126
+ ospfv3 15 ipv6 area 15
+!
+router ospfv3 15
+ !
+ address-family ipv6 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf BRANCH-SITE-1
+  redistribute bgp 18417 metric 20
+ exit-address-family
+!
+router ospf 15 vrf BRANCH-SITE-1
+ redistribute bgp 18417 subnets
+!
+router ospf 1
+!
+router bgp 18417
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf BRANCH-SITE-1
+  redistribute ospf 15
+ exit-address-family
+ !
+ address-family ipv6 vrf BRANCH-SITE-1
+  redistribute ospf 15 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf ISP-C
+  redistribute connected
+  neighbor 12.18.255.2 remote-as 786514
+  neighbor 12.18.255.2 ttl-security hops 1
+  neighbor 12.18.255.2 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf ISP-C
+  redistribute connected
+  neighbor 2001:12:18:255::2 remote-as 786514
+  neighbor 2001:12:18:255::2 ttl-security hops 1
+  neighbor 2001:12:18:255::2 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -303,6 +418,14 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -313,13 +436,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 5 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -334,12 +465,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -350,9 +475,9 @@ end</entry>
         <extensions>
             <entry key="static_ip" type="String">172.16.11.103</entry>
             <entry key="static_serial_port_0" type="Integer">11003</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:33 UTC Sat Jun 4 2016
+! Last configuration change at 18:46:24 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -365,7 +490,44 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition HQ-SITE-1
+ rd 10.3.3.3:172
+ route-target export 10.3.3.3:172
+ route-target import 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.5.5.5:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP-C
+ rd 10.3.3.3:1282
+ route-target export 10.3.3.3:1282
+ route-target export 18417:1000
+ route-target import 18417:1000
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition REMOTE-SITE-2
+ rd 18417:8593
+ route-target export 10.3.3.3:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -410,7 +572,6 @@ username cisco privilege 15 secret 5 $1$yWBz$JdSRtknG9Yq3TOBhYNAGf/
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -427,7 +588,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.3.3.3 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -436,34 +598,120 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R1
- no ip address
+ ip address 184.17.12.3 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to TS-R14
- no ip address
+ vrf forwarding REMOTE-SITE-2
+ ip address 184.17.13.25 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::25/126
 !
 interface GigabitEthernet0/3
  description to TS-R12
- no ip address
+ vrf forwarding ISP-C
+ ip address 12.18.255.1 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::1/127
 !
 interface GigabitEthernet0/4
  description to TS-R18
- no ip address
+ vrf forwarding HQ-SITE-1
+ ip address 184.17.13.9 255.255.255.252
+ ip ospf 3 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::9/127
+ ospfv3 3 ipv6 area 0
+!
+router ospfv3 3
+ !
+ address-family ipv6 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf HQ-SITE-1
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 3 vrf HQ-SITE-1
+ redistribute bgp 18417 subnets
+!
+router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf HQ-SITE-1
+  redistribute ospf 3
+ exit-address-family
+ !
+ address-family ipv6 vrf HQ-SITE-1
+  redistribute ospf 3 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf ISP-C
+  redistribute connected
+  neighbor 12.18.255.0 remote-as 12.82
+  neighbor 12.18.255.0 ttl-security hops 1
+  neighbor 12.18.255.0 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf ISP-C
+  redistribute connected
+  neighbor 2001:12:18:255:: remote-as 12.82
+  neighbor 2001:12:18:255:: ttl-security hops 1
+  neighbor 2001:12:18:255:: activate
+ exit-address-family
+ !
+ address-family ipv4 vrf REMOTE-SITE-2
+  redistribute connected
+  neighbor 184.17.13.26 remote-as 8593.2
+  neighbor 184.17.13.26 activate
+  neighbor 184.17.13.26 default-originate
+  neighbor 184.17.13.26 route-map V4-DEFAULT-ONLY out
+ exit-address-family
+ !
+ address-family ipv6 vrf REMOTE-SITE-2
+  redistribute connected
+  neighbor 2001:184:17:13::26 remote-as 8593.2
+  neighbor 2001:184:17:13::26 activate
+  neighbor 2001:184:17:13::26 default-originate
+  neighbor 2001:184:17:13::26 route-map V6-DEFAULT-ONLY out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -474,6 +722,24 @@ ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
 !
+ip prefix-list V4-DEFAULT seq 5 permit 0.0.0.0/0
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+!
+ipv6 prefix-list V6-DEFAULT seq 5 permit ::/0
+route-map V4-DEFAULT-ONLY permit 10
+ match ip address prefix-list V4-DEFAULT
+!
+route-map V6-DEFAULT-ONLY permit 20
+ match ipv6 address prefix-list V6-DEFAULT
+!
 !
 !
 control-plane
@@ -482,13 +748,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 5 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -503,12 +777,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -518,11 +786,11 @@ end</entry>
     </node>
     <node name="TS-R4" type="SIMPLE" subtype="IOSv" location="1090,221">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.104</entry>
             <entry key="static_serial_port_0" type="Integer">11004</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:57 UTC Sat Jun 4 2016
+! Last configuration change at 18:43:16 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -535,7 +803,32 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition BRANCH-SITE-2
+ rd 10.4.4.4:172
+ route-target export 10.4.4.4:172
+ route-target import 10.2.2.2:172
+ route-target import 10.3.3.3:172
+ route-target import 10.5.5.5:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition PRIMARY-DC
+ rd 10.4.4.4:8593
+ route-target export 10.4.4.4:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -580,7 +873,6 @@ username cisco privilege 15 secret 5 $1$szQP$deS4xJkNaFnxsQ9XqGsJg/
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -597,7 +889,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.4.4.4 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -606,27 +899,93 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R1
- no ip address
+ ip address 184.17.12.5 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to TS-R16
- no ip address
+ vrf forwarding BRANCH-SITE-2
+ ip address 184.17.13.5 255.255.255.252
+ ip ospf 16 area 16
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::5/126
+ ospfv3 16 ipv6 area 16
 !
 interface GigabitEthernet0/3
  description to TS-R24
- no ip address
+ vrf forwarding PRIMARY-DC
+ ip address 184.17.13.17 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::17/64
+!
+router ospfv3 16
+ !
+ address-family ipv6 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf BRANCH-SITE-2
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 16 vrf BRANCH-SITE-2
+ redistribute bgp 18417 subnets
+!
+router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf BRANCH-SITE-2
+  redistribute ospf 16
+ exit-address-family
+ !
+ address-family ipv6 vrf BRANCH-SITE-2
+  redistribute ospf 16 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 184.17.13.18 remote-as 8593.1
+  neighbor 184.17.13.18 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 2001:184:17:13::18 remote-as 8593.1
+  neighbor 2001:184:17:13::18 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -635,6 +994,14 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -645,13 +1012,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 5 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -666,12 +1041,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -680,11 +1049,11 @@ end</entry>
     </node>
     <node name="TS-R5" type="SIMPLE" subtype="IOSv" location="1096,385">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.105</entry>
             <entry key="static_serial_port_0" type="Integer">11005</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:51 UTC Sat Jun 4 2016
+! Last configuration change at 18:56:01 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -697,7 +1066,32 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition HQ-SITE-1
+ rd 10.5.5.5:172
+ route-target export 10.5.5.5:172
+ route-target import 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.3.3.3:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition PRIMARY-DC
+ rd 10.5.5.5:8593
+ route-target export 10.5.5.5:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -742,7 +1136,6 @@ username cisco privilege 15 secret 5 $1$HCjf$jsD8fy6sDW29BU.HD6MF30
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -759,7 +1152,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.5.5.5 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -768,27 +1162,93 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R1
- no ip address
+ ip address 184.17.12.7 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to TS-R25
- no ip address
+ vrf forwarding PRIMARY-DC
+ ip address 184.17.13.21 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:113::21/64
 !
 interface GigabitEthernet0/3
  description to TS-R19
- no ip address
+ vrf forwarding HQ-SITE-1
+ ip address 184.17.13.13 255.255.255.252
+ ip ospf 3 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::D/127
+ ospfv3 3 ipv6 area 0
+!
+router ospfv3 3
+ !
+ address-family ipv6 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf HQ-SITE-1
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 3 vrf HQ-SITE-1
+ redistribute bgp 18417 subnets
+!
+router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf HQ-SITE-1
+  redistribute ospf 3
+ exit-address-family
+ !
+ address-family ipv6 vrf HQ-SITE-1
+  redistribute ospf 3 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 184.17.13.22 remote-as 8593.1
+  neighbor 184.17.13.22 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 2001:184:17:113::22 remote-as 8593.1
+  neighbor 2001:184:17:113::22 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -797,6 +1257,14 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -807,13 +1275,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 5 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -828,12 +1304,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -842,11 +1312,11 @@ end</entry>
     </node>
     <node name="TS-R6" type="SIMPLE" subtype="IOSv" location="1003,220">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.106</entry>
             <entry key="static_serial_port_0" type="Integer">11006</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:32:00 UTC Sat Jun 4 2016
+! Last configuration change at 18:38:57 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -904,7 +1374,6 @@ username cisco privilege 15 secret 5 $1$38DN$S5VJsxgTqtJ/YIhYAbg7b1
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -921,7 +1390,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.6.6.6 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -930,13 +1400,80 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R1
- no ip address
+ ip address 184.17.12.9 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
+!
+router ospf 1
+!
+router bgp 18417
+ template peer-policy AS18417_IPV4
+  route-reflector-client
+ exit-peer-policy
+ !
+ template peer-policy AS18417_VPNV4
+  route-reflector-client
+ exit-peer-policy
+ !
+ template peer-session AS18417
+  remote-as 18417
+  password 18417beegeepeep4ss
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp log-neighbor-changes
+ neighbor 10.2.2.2 inherit peer-session AS18417
+ neighbor 10.3.3.3 inherit peer-session AS18417
+ neighbor 10.4.4.4 inherit peer-session AS18417
+ neighbor 10.5.5.5 inherit peer-session AS18417
+ !
+ address-family ipv4
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 inherit peer-policy AS18417_IPV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 inherit peer-policy AS18417_IPV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 inherit peer-policy AS18417_IPV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 inherit peer-policy AS18417_IPV4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 send-community extended
+  neighbor 10.2.2.2 inherit peer-policy AS18417_VPNV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 send-community extended
+  neighbor 10.3.3.3 inherit peer-policy AS18417_VPNV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_VPNV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 send-community extended
+  neighbor 10.5.5.5 inherit peer-policy AS18417_VPNV4
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 send-community extended
+  neighbor 10.2.2.2 inherit peer-policy AS18417_VPNV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 send-community extended
+  neighbor 10.3.3.3 inherit peer-policy AS18417_VPNV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_VPNV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 send-community extended
+  neighbor 10.5.5.5 inherit peer-policy AS18417_VPNV4
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -945,6 +1482,14 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -955,13 +1500,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -976,23 +1529,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R7" type="SIMPLE" subtype="IOSv" location="1254,33">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.107</entry>
             <entry key="static_serial_port_0" type="Integer">11007</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:59 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:56 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1050,7 +1597,6 @@ username cisco privilege 15 secret 5 $1$Szb5$VOF05olVGqzTk00ZtQXVx.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1067,7 +1613,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.7.7.7 255.255.255.255
+ ipv6 address 2001:10:7:7:7::7/128
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1076,20 +1625,82 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R8
- no ip address
+ ip address 29.11.1.1 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::1/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R12
- no ip address
+ ip address 12.18.255.5 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::5/127
+!
+router ospfv3 1
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router bgp 1101
+ template peer-policy IBGP-MESH
+  weight 55555
+  next-hop-self
+ exit-peer-policy
+ !
+ template peer-session IBGP-MESH
+  remote-as 1101
+  password 1101-IBGP-MESH
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ neighbor 10.8.8.8 inherit peer-session IBGP-MESH
+ neighbor 10.9.9.9 inherit peer-session IBGP-MESH
+ neighbor 10.10.10.10 inherit peer-session IBGP-MESH
+ neighbor 12.18.255.4 remote-as 12.82
+ neighbor 12.18.255.4 ttl-security hops 1
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+  neighbor 12.18.255.4 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.8.8.8 weight 55555
+  neighbor 10.8.8.8 route-map IPV6-NEXT-HOP out
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 weight 55555
+  neighbor 10.9.9.9 route-map IPV6-NEXT-HOP out
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 weight 55555
+  neighbor 10.10.10.10 route-map IPV6-NEXT-HOP out
+  neighbor 12.18.255.4 activate
+  neighbor 12.18.255.4 route-map TO-ISP-C out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1099,6 +1710,19 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+route-map TO-ISP-C permit 10
+ set ipv6 next-hop 2001:12:18:255::5
+!
+route-map IPV6-NEXT-HOP permit 10
+ set ipv6 next-hop 2001:10:7:7:7::7
 !
 !
 !
@@ -1108,13 +1732,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1129,12 +1761,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1142,11 +1768,11 @@ end</entry>
     </node>
     <node name="TS-R8" type="SIMPLE" subtype="IOSv" location="1365,30">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.108</entry>
             <entry key="static_serial_port_0" type="Integer">11008</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:55 UTC Sat Jun 4 2016
+! Last configuration change at 18:50:07 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1204,7 +1830,6 @@ username cisco privilege 15 secret 5 $1$Vdyh$My5M5ifGZXMqJGcRVP1YG1
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1221,7 +1846,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.8.8.8 255.255.255.255
+ ipv6 address 2001:10:8:8:8::8/128
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1230,27 +1858,89 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R7
- no ip address
+ ip address 29.11.1.0 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R9
- no ip address
+ ip address 29.11.1.2 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::2/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/3
  description to TS-R10
- no ip address
+ ip address 29.11.1.4 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::4/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
+!
+router ospfv3 1
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router bgp 1101
+ template peer-policy IBGP-MESH
+  weight 55555
+  next-hop-self
+ exit-peer-policy
+ !
+ template peer-session IBGP-MESH
+  remote-as 1101
+  password 1101-IBGP-MESH
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ neighbor 10.7.7.7 inherit peer-session IBGP-MESH
+ neighbor 10.9.9.9 inherit peer-session IBGP-MESH
+ neighbor 10.10.10.10 inherit peer-session IBGP-MESH
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.7.7.7 weight 55555
+  neighbor 10.7.7.7 route-map IPV6-NEXT-HOP out
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 weight 55555
+  neighbor 10.9.9.9 route-map IPV6-NEXT-HOP out
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 weight 55555
+  neighbor 10.10.10.10 route-map IPV6-NEXT-HOP out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1260,6 +1950,16 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+route-map IPV6-NEXT-HOP permit 10
+ set ipv6 next-hop 2001:10:8:8:8::8
 !
 !
 !
@@ -1269,13 +1969,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1290,12 +1998,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1304,11 +2006,11 @@ end</entry>
     </node>
     <node name="TS-R9" type="SIMPLE" subtype="IOSv" location="1481,28">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.109</entry>
             <entry key="static_serial_port_0" type="Integer">11009</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:34 UTC Sat Jun 4 2016
+! Last configuration change at 18:43:08 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1366,7 +2068,6 @@ username cisco privilege 15 secret 5 $1$fKbJ$2WcDPd0zTZ9usqEkc2abM.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1383,7 +2084,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.9.9.9 255.255.255.255
+ ipv6 address 2001:10:9:9:9::9/128
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1392,20 +2096,82 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R8
- no ip address
+ ip address 29.11.1.3 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::3/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R24
- no ip address
+ ip address 29.11.1.6 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::6/127
+!
+router ospfv3 1
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router bgp 1101
+ template peer-policy IBGP-MESH
+  weight 55555
+  next-hop-self
+ exit-peer-policy
+ !
+ template peer-session IBGP-MESH
+  remote-as 1101
+  password 1101-IBGP-MESH
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.7.7.7 inherit peer-session IBGP-MESH
+ neighbor 10.8.8.8 inherit peer-session IBGP-MESH
+ neighbor 10.10.10.10 inherit peer-session IBGP-MESH
+ neighbor 29.11.1.7 remote-as 8593.1
+ neighbor 2001:29:11:1::7 remote-as 8593.1
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+  neighbor 29.11.1.7 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.7.7.7 weight 55555
+  neighbor 10.7.7.7 route-map IPV6-NEXT-HOP out
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.8.8.8 weight 55555
+  neighbor 10.8.8.8 route-map IPV6-NEXT-HOP out
+  neighbor 10.10.10.10 activate
+  neighbor 10.10.10.10 inherit peer-policy IBGP-MESH
+  neighbor 10.10.10.10 weight 55555
+  neighbor 10.10.10.10 route-map IPV6-NEXT-HOP out
+  neighbor 2001:29:11:1::7 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1415,6 +2181,16 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+route-map IPV6-NEXT-HOP permit 10
+ set ipv6 next-hop 2001:10:9:9:9::9
 !
 !
 !
@@ -1424,13 +2200,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1445,12 +2229,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1458,11 +2236,11 @@ end</entry>
     </node>
     <node name="TS-R10" type="SIMPLE" subtype="IOSv" location="1363,131">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.110</entry>
             <entry key="static_serial_port_0" type="Integer">11010</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:58 UTC Sat Jun 4 2016
+! Last configuration change at 18:44:28 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1520,7 +2298,6 @@ username cisco privilege 15 secret 5 $1$TzED$UxUax3BS0euxm21OzQ.600
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1537,7 +2314,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.10.10.10 255.255.255.255
+ ipv6 address 2001:10:10:10:10::10/128
+ ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1546,20 +2326,82 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R8
- no ip address
+ ip address 29.11.1.5 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::5/127
+ ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R11
- no ip address
+ ip address 167.22.2.1 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::1/127
+!
+router ospfv3 1
+ !
+ address-family ipv4 unicast
+ exit-address-family
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router bgp 1101
+ template peer-policy IBGP-MESH
+  weight 55555
+  next-hop-self
+ exit-peer-policy
+ !
+ template peer-session IBGP-MESH
+  remote-as 1101
+  password 1101-IBGP-MESH
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ neighbor 10.7.7.7 inherit peer-session IBGP-MESH
+ neighbor 10.8.8.8 inherit peer-session IBGP-MESH
+ neighbor 10.9.9.9 inherit peer-session IBGP-MESH
+ neighbor 167.22.2.0 remote-as 2202
+ neighbor 167.22.2.0 ttl-security hops 1
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 167.22.2.0 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 10.7.7.7 activate
+  neighbor 10.7.7.7 inherit peer-policy IBGP-MESH
+  neighbor 10.7.7.7 weight 55555
+  neighbor 10.7.7.7 route-map IPV6-NEXT-HOP out
+  neighbor 10.8.8.8 activate
+  neighbor 10.8.8.8 inherit peer-policy IBGP-MESH
+  neighbor 10.8.8.8 weight 55555
+  neighbor 10.8.8.8 route-map IPV6-NEXT-HOP out
+  neighbor 10.9.9.9 activate
+  neighbor 10.9.9.9 inherit peer-policy IBGP-MESH
+  neighbor 10.9.9.9 weight 55555
+  neighbor 10.9.9.9 route-map IPV6-NEXT-HOP out
+  neighbor 167.22.2.0 activate
+  neighbor 167.22.2.0 route-map TO-ISP-B out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1569,6 +2411,19 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+route-map TO-ISP-B permit 10
+ set ipv6 next-hop 2001:167:22:2::1
+!
+route-map IPV6-NEXT-HOP permit 10
+ set ipv6 next-hop 2001:10:10:10:10::10
 !
 !
 !
@@ -1578,13 +2433,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1599,12 +2462,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1612,11 +2469,11 @@ end</entry>
     </node>
     <node name="TS-R11" type="SIMPLE" subtype="IOSv" location="1315,322">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.111</entry>
             <entry key="static_serial_port_0" type="Integer">11011</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:43 UTC Sat Jun 4 2016
+! Last configuration change at 18:49:35 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1674,7 +2531,6 @@ username cisco privilege 15 secret 5 $1$oaI3$kDqhT/qjBs0di10E5IHyY0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1691,7 +2547,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.11.11.11 255.255.255.255
+ ipv6 address 2001:10:11:11:11::11/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1700,34 +2557,74 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R21
- no ip address
+ ip address 167.22.2.2 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::2/127
 !
 interface GigabitEthernet0/2
  description to TS-R10
- no ip address
+ ip address 167.22.2.0 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::/127
 !
 interface GigabitEthernet0/3
  description to TS-R25
- no ip address
+ ip address 167.22.2.4 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::4/127
 !
 interface GigabitEthernet0/4
  description to TS-R12
- no ip address
+ ip address 12.18.255.9 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::9/127
+!
+router bgp 2202
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 12.18.255.8 remote-as 12.82
+ neighbor 12.18.255.8 ttl-security hops 1
+ neighbor 2001:167:22:2::3 remote-as 8593.3
+ neighbor 2001:167:22:2::5 remote-as 8593.1
+ neighbor 167.22.2.1 remote-as 1101
+ neighbor 167.22.2.1 ttl-security hops 1
+ neighbor 167.22.2.3 remote-as 8593.3
+ neighbor 167.22.2.5 remote-as 8593.1
+ !
+ address-family ipv4
+  redistribute connected
+  neighbor 12.18.255.8 activate
+  neighbor 167.22.2.1 activate
+  neighbor 167.22.2.3 activate
+  neighbor 167.22.2.3 default-originate
+  neighbor 167.22.2.3 route-map V4-DEFAULT-ONLY out
+  neighbor 167.22.2.5 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  neighbor 12.18.255.8 activate
+  neighbor 12.18.255.8 route-map TO-ISP-C out
+  neighbor 2001:167:22:2::3 activate
+  neighbor 2001:167:22:2::3 default-originate
+  neighbor 2001:167:22:2::3 route-map V6-DEFAULT-ONLY out
+  neighbor 2001:167:22:2::5 activate
+  neighbor 167.22.2.1 activate
+  neighbor 167.22.2.1 route-map TO-ISP-A out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1738,6 +2635,29 @@ ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
 !
+ip prefix-list V4-DEFAULT seq 5 permit 0.0.0.0/0
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+!
+ipv6 prefix-list V6-DEFAULT seq 5 permit ::/0
+route-map TO-ISP-A permit 10
+ set ipv6 next-hop 2001:167:22:2::
+!
+route-map TO-ISP-C permit 10
+ set ipv6 next-hop 2001:12:18:255::9
+!
+route-map V4-DEFAULT-ONLY permit 10
+ match ip address prefix-list V4-DEFAULT
+!
+route-map V6-DEFAULT-ONLY permit 20
+ match ipv6 address prefix-list V6-DEFAULT
+!
 !
 !
 control-plane
@@ -1746,13 +2666,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1767,12 +2695,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1782,11 +2704,11 @@ end</entry>
     </node>
     <node name="TS-R12" type="SIMPLE" subtype="IOSv" location="704,211">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.112</entry>
             <entry key="static_serial_port_0" type="Integer">11012</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:51 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:22 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1844,7 +2766,6 @@ username cisco privilege 15 secret 5 $1$PuwN$HJrpYfaCTsTGMbxDYg5fU1
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -1861,7 +2782,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.12.12.12 255.255.255.255
+ ipv6 address 2001:10:12:12:12::12/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1870,41 +2792,92 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R3
- no ip address
+ ip address 12.18.255.0 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::/127
 !
 interface GigabitEthernet0/2
  description to TS-R2
- no ip address
+ ip address 12.18.255.2 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::2/127
 !
 interface GigabitEthernet0/3
  description to TS-R7
- no ip address
+ ip address 12.18.255.4 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::4/127
 !
 interface GigabitEthernet0/4
  description to TS-R13
- no ip address
+ ip address 12.18.255.6 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::6/127
 !
 interface GigabitEthernet0/5
  description to TS-R11
- no ip address
+ ip address 12.18.255.8 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::8/127
+!
+router bgp 12.82
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 12.18.255.1 remote-as 18417
+ neighbor 12.18.255.1 ttl-security hops 1
+ neighbor 12.18.255.3 remote-as 18417
+ neighbor 12.18.255.3 ttl-security hops 1
+ neighbor 12.18.255.5 remote-as 1101
+ neighbor 12.18.255.5 ttl-security hops 1
+ neighbor 12.18.255.7 remote-as 8593.1
+ neighbor 12.18.255.9 remote-as 2202
+ neighbor 12.18.255.9 ttl-security hops 1
+ neighbor 2001:12:18:255::1 remote-as 18417
+ neighbor 2001:12:18:255::1 ttl-security hops 1
+ neighbor 2001:12:18:255::3 remote-as 18417
+ neighbor 2001:12:18:255::3 ttl-security hops 1
+ neighbor 2001:12:18:255::7 remote-as 8593.1
+ !
+ address-family ipv4
+  aggregate-address 12.18.255.0 255.255.255.248 summary-only
+  redistribute connected
+  neighbor 12.18.255.1 activate
+  neighbor 12.18.255.3 activate
+  neighbor 12.18.255.5 activate
+  neighbor 12.18.255.7 activate
+  neighbor 12.18.255.7 default-originate
+  neighbor 12.18.255.7 route-map V4-DEFAULT-ONLY out
+  neighbor 12.18.255.9 activate
+ exit-address-family
+ !
+ address-family ipv6
+  redistribute connected
+  aggregate-address 2001:12:18:255::/125 summary-only
+  neighbor 12.18.255.5 activate
+  neighbor 12.18.255.5 route-map TO-ISP-A out
+  neighbor 12.18.255.9 activate
+  neighbor 12.18.255.9 route-map TO-ISP-B out
+  neighbor 2001:12:18:255::1 activate
+  neighbor 2001:12:18:255::3 activate
+  neighbor 2001:12:18:255::7 activate
+  neighbor 2001:12:18:255::7 default-originate
+  neighbor 2001:12:18:255::7 route-map V6-DEFAULT-ONLY out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1915,6 +2888,33 @@ ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
 !
+ip prefix-list 12 seq 5 permit 12.18.255.0/24 le 32
+!
+ip prefix-list V4-DEFAULT seq 5 permit 0.0.0.0/0
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+!
+ipv6 prefix-list 12 seq 5 permit 2001:12:18:255::/125 le 128
+!
+ipv6 prefix-list V6-DEFAULT seq 5 permit ::/0
+route-map TO-ISP-A permit 10
+ set ipv6 next-hop 2001:12:18:255::4
+!
+route-map TO-ISP-B permit 10
+ set ipv6 next-hop 2001:12:18:255::8
+!
+route-map V4-DEFAULT-ONLY permit 10
+ match ip address prefix-list V4-DEFAULT
+!
+route-map V6-DEFAULT-ONLY permit 20
+ match ipv6 address prefix-list V6-DEFAULT
+!
 !
 !
 control-plane
@@ -1923,13 +2923,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -1944,12 +2952,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -1960,11 +2962,11 @@ end</entry>
     </node>
     <node name="TS-R13" type="SIMPLE" subtype="IOSv" location="705,42">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.113</entry>
             <entry key="static_serial_port_0" type="Integer">11013</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:51 UTC Sat Jun 4 2016
+! Last configuration change at 18:41:13 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2022,14 +3024,25 @@ username cisco privilege 15 secret 5 $1$RaaQ$iJaI7/RGblAZmDf/fP95n0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
 !
 !
 !
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key dmvpnpass address 0.0.0.0        
 !
+!
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+ mode transport
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP-AES-256-SHA-512 
 !
 !
 !
@@ -2039,7 +3052,52 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.13.13.13 255.255.255.255
+ ipv6 address 2001:10:13:13:13::13/128
+!
+interface Tunnel101
+ ip address 10.1.101.13 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.101.24 nbma 10.24.24.24 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::13 link-local
+ ipv6 address 2001:10:1:101::13/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:101::24 nbma 10.24.24.24 multicast
+ ipv6 nhrp shortcut
+ tunnel source GigabitEthernet0/1
+ tunnel mode gre multipoint
+ tunnel key 101
+ tunnel protection ipsec profile DMVPN_PROFILE shared
+!
+interface Tunnel102
+ ip address 10.1.102.13 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.102.25 nbma 10.25.25.25 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::13 link-local
+ ipv6 address 2001:10:1:102::13/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:102::25 nbma 10.25.25.25 multicast
+ ipv6 nhrp shortcut
+ tunnel source GigabitEthernet0/1
+ tunnel mode gre multipoint
+ tunnel key 102
+ tunnel protection ipsec profile DMVPN_PROFILE shared
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2048,21 +3106,65 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R12
- no ip address
+ ip address 12.18.255.7 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:12:18:255::7/127
+!
+!
+router eigrp REMOTE-SITE-1
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 8593.1
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 12.18.255.6 remote-as 12.82
+ neighbor 2001:12:18:255::6 remote-as 12.82
+ !
+ address-family ipv4
+  neighbor 12.18.255.6 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:12:18:255::6 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip route 10.24.24.24 255.255.255.255 12.18.255.6
+ip route 10.25.25.25 255.255.255.255 12.18.255.6
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2073,13 +3175,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2094,23 +3204,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R14" type="SIMPLE" subtype="IOSv" location="709,389">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.114</entry>
             <entry key="static_serial_port_0" type="Integer">11014</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:50 UTC Sat Jun 4 2016
+! Last configuration change at 18:52:36 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2168,14 +3272,25 @@ username cisco privilege 15 secret 5 $1$KM7z$oUfrKEP1VfL41f.lrPh.p1
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
 !
 !
 !
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key dmvpnpass address 0.0.0.0        
 !
+!
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+ mode transport
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP-AES-256-SHA-512 
 !
 !
 !
@@ -2185,7 +3300,54 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.14.14.14 255.255.255.255
+ ipv6 address 2001:10:14:14:14::14/128
+!
+interface Tunnel101
+ ip address 10.1.101.14 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.101.24 nbma 10.24.24.24 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::14 link-local
+ ipv6 address 2001:10:1:101::14/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp map multicast dynamic
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:101::24 nbma 10.24.24.24 multicast
+ ipv6 nhrp shortcut
+ ipv6 nhrp redirect
+ tunnel source GigabitEthernet0/2
+ tunnel mode gre multipoint
+ tunnel key 101
+ tunnel protection ipsec profile DMVPN_PROFILE shared
+!
+interface Tunnel102
+ ip address 10.1.102.14 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.102.25 nbma 10.25.25.25 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::14 link-local
+ ipv6 address 2001:10:1:102::14/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:102::25 nbma 10.25.25.25 multicast
+ ipv6 nhrp shortcut
+ tunnel source GigabitEthernet0/2
+ tunnel mode gre multipoint
+ tunnel key 102
+ tunnel protection ipsec profile DMVPN_PROFILE shared
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2194,28 +3356,73 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R17
- no ip address
+ ip address 10.1.2.14 255.255.255.0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:10:1:2::14/64
 !
 interface GigabitEthernet0/2
  description to TS-R3
- no ip address
+ ip address 184.17.13.26 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::26/126
+!
+!
+router eigrp REMOTE-SITE-2
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 8593.2
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2001:184:17:13::25 remote-as 18417
+ neighbor 184.17.13.25 remote-as 18417
+ !
+ address-family ipv4
+  neighbor 184.17.13.25 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:184:17:13::25 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip route 10.24.24.24 255.255.255.255 184.17.13.25
+ip route 10.25.25.25 255.255.255.255 184.17.13.25
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2226,13 +3433,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2247,12 +3462,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -2260,11 +3469,11 @@ end</entry>
     </node>
     <node name="TS-R15" type="SIMPLE" subtype="IOSv" location="905,44">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.115</entry>
             <entry key="static_serial_port_0" type="Integer">11015</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:46 UTC Sat Jun 4 2016
+! Last configuration change at 18:48:12 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2322,7 +3531,6 @@ username cisco privilege 15 secret 5 $1$hMZr$MhP.Cp5vZ.eQbd/8Q7ZOS0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -2339,7 +3547,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.15.15.15 255.255.255.255
+ ip ospf 15 area 15
+ ipv6 address 2001:10:15:15:15::15/128
+ ospfv3 15 ipv6 area 15
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2348,13 +3559,32 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R2
- no ip address
+ ip address 184.17.13.2 255.255.255.252
+ ip ospf 15 area 15
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::2/126
+ ospfv3 15 ipv6 area 15
+!
+interface GigabitEthernet0/1.15
+ encapsulation dot1Q 15
+ ip address 172.16.15.15 255.255.255.0
+ ip ospf 15 area 15
+ ipv6 address 2001:172:16:15::15/64
+ ospfv3 15 ipv6 area 15
+ no cdp enable
+!
+router ospfv3 15
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 15
 !
 ip forward-protocol nd
 !
@@ -2363,6 +3593,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2373,13 +3612,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2394,23 +3641,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R16" type="SIMPLE" subtype="IOSv" location="1087,31">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.116</entry>
             <entry key="static_serial_port_0" type="Integer">11016</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:50 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:36 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2468,7 +3709,6 @@ username cisco privilege 15 secret 5 $1$rIk0$Kg8lRP0I2iC/5ZCriTt6a1
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -2485,7 +3725,10 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.16.16.16 255.255.255.255
+ ip ospf 16 area 16
+ ipv6 address 2001:10:16:16:16::16/128
+ ospfv3 16 ipv6 area 16
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2494,13 +3737,32 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R4
- no ip address
+ ip address 184.17.13.6 255.255.255.252
+ ip ospf 16 area 16
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::6/126
+ ospfv3 16 ipv6 area 16
+!
+interface GigabitEthernet0/1.16
+ encapsulation dot1Q 16
+ ip address 172.16.16.16 255.255.255.0
+ ip ospf 16 area 16
+ ipv6 address 2001:172:16:16::16/64
+ ospfv3 16 ipv6 area 16
+ no cdp enable
+!
+router ospfv3 16
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 16
 !
 ip forward-protocol nd
 !
@@ -2509,6 +3771,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2519,13 +3790,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2540,23 +3819,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R17" type="SIMPLE" subtype="IOSv" location="548,386">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.117</entry>
             <entry key="static_serial_port_0" type="Integer">11017</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:58 UTC Sat Jun 4 2016
+! Last configuration change at 18:49:04 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2614,7 +3887,6 @@ username cisco privilege 15 secret 5 $1$6uMj$xkE7JawIgA39uW1G5pzdn0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -2631,7 +3903,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.17.17.17 255.255.255.255
+ ipv6 address 2001:10:17:17:17::17/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2640,13 +3913,31 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-R14
- no ip address
+ ip address 10.1.2.17 255.255.255.0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:10:1:2::17/64
+!
+!
+router eigrp REMOTE-SITE-2
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -2655,6 +3946,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2665,13 +3965,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2686,23 +3994,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R18" type="SIMPLE" subtype="IOSv" location="915,535">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.118</entry>
             <entry key="static_serial_port_0" type="Integer">11018</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:43 UTC Sat Jun 4 2016
+! Last configuration change at 18:49:47 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2760,7 +4062,6 @@ username cisco privilege 15 secret 5 $1$tZFu$HcAipe1wRL6VCHT2vpxEy0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -2777,7 +4078,17 @@ no cdp run
 !
 interface Loopback0
  description Loopback
+ ip address 10.18.18.18 255.255.255.255
+ ip ospf 18 area 18
+ ipv6 address 2001:10:18:18:18::18/128
+ ospfv3 1 ipv6 area 0
+!
+interface Tunnel1820
  no ip address
+ ipv6 enable
+ ospfv3 1 ipv6 area 0
+ tunnel source Loopback0
+ tunnel destination 10.20.20.20
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2786,20 +4097,34 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW1
- no ip address
+ ip address 172.16.18.18 255.255.255.0
+ ip ospf 18 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:172:16:18::18/64
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R3
- no ip address
+ ip address 184.17.13.10 255.255.255.252
+ ip ospf 18 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::A/126
+ ospfv3 1 ipv6 area 0
+!
+router ospfv3 1
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 18
 !
 ip forward-protocol nd
 !
@@ -2808,6 +4133,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2818,13 +4152,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2839,12 +4181,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -2852,11 +4188,11 @@ end</entry>
     </node>
     <node name="TS-R19" type="SIMPLE" subtype="IOSv" location="1108,534">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.119</entry>
             <entry key="static_serial_port_0" type="Integer">11019</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:46 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:57 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2914,7 +4250,6 @@ username cisco privilege 15 secret 5 $1$eQc4$1QZZEj9fklVh/DrlZyEgP0
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -2931,7 +4266,17 @@ no cdp run
 !
 interface Loopback0
  description Loopback
+ ip address 10.19.19.19 255.255.255.255
+ ip ospf 19 area 19
+ ipv6 address 2001:10:19:19:19::19/128
+ ospfv3 1 ipv6 area 0
+!
+interface Tunnel1920
  no ip address
+ ipv6 enable
+ ospfv3 1 ipv6 area 0
+ tunnel source Loopback0
+ tunnel destination 10.20.20.20
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2940,20 +4285,34 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW1
- no ip address
+ ip address 172.16.19.19 255.255.255.0
+ ip ospf 19 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:172:16:19::19/64
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R5
- no ip address
+ ip address 184.17.13.14 255.255.255.252
+ ip ospf 19 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::E/126
+ ospfv3 1 ipv6 area 0
+!
+router ospfv3 1
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 19
 !
 ip forward-protocol nd
 !
@@ -2962,6 +4321,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -2972,13 +4340,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -2993,12 +4369,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -3006,11 +4376,11 @@ end</entry>
     </node>
     <node name="TS-R20" type="SIMPLE" subtype="IOSv" location="1016,722">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.120</entry>
             <entry key="static_serial_port_0" type="Integer">11020</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:53 UTC Sat Jun 4 2016
+! Last configuration change at 18:47:29 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3068,7 +4438,6 @@ username cisco privilege 15 secret 5 $1$VQdX$hxmiSR.6T/uoT.Ag9WSw00
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -3085,7 +4454,24 @@ no cdp run
 !
 interface Loopback0
  description Loopback
+ ip address 10.20.20.20 255.255.255.255
+ ip ospf 20 area 20
+ ipv6 address 2001:10:20:20:20::20/128
+ ospfv3 1 ipv6 area 0
+!
+interface Tunnel1820
  no ip address
+ ipv6 enable
+ ospfv3 1 ipv6 area 0
+ tunnel source Loopback0
+ tunnel destination 10.18.18.18
+!
+interface Tunnel1920
+ no ip address
+ ipv6 enable
+ ospfv3 1 ipv6 area 0
+ tunnel source Loopback0
+ tunnel destination 10.19.19.19
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3094,13 +4480,24 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW1
- no ip address
+ ip address 172.16.20.20 255.255.255.0
+ ip ospf 20 area 0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:172:16:20::20/64
+ ospfv3 1 ipv6 area 0
+!
+router ospfv3 1
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 20
 !
 ip forward-protocol nd
 !
@@ -3109,6 +4506,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3119,13 +4525,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3140,23 +4554,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R21" type="SIMPLE" subtype="IOSv" location="1372,523">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.121</entry>
             <entry key="static_serial_port_0" type="Integer">11021</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:39 UTC Sat Jun 4 2016
+! Last configuration change at 18:52:01 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3214,14 +4622,25 @@ username cisco privilege 15 secret 5 $1$PwME$tSJAY2ceWEg0OCtAzYp6T.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
 !
 !
 !
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key dmvpnpass address 0.0.0.0        
 !
+!
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+ mode transport
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP-AES-256-SHA-512 
 !
 !
 !
@@ -3231,7 +4650,51 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.21.21.21 255.255.255.255
+ ipv6 address 2001:10:21:21:21::21/128
+!
+interface Tunnel101
+ ip address 10.1.101.21 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.101.24 nbma 10.24.24.24 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::21 link-local
+ ipv6 address 2001:10:1:101::21/64
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:101::24 nbma 10.24.24.24 multicast
+ ipv6 nhrp shortcut
+ tunnel source GigabitEthernet0/2
+ tunnel mode gre multipoint
+ tunnel key 101
+ tunnel protection ipsec profile DMVPN_PROFILE shared
+!
+interface Tunnel102
+ ip address 10.1.102.21 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp network-id 1
+ ip nhrp nhs 10.1.102.25 nbma 10.25.25.25 multicast
+ ip nhrp shortcut
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::21 link-local
+ ipv6 address 2001:10:1:102::21/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp network-id 1
+ ipv6 nhrp nhs 2001:10:1:102::25 nbma 10.25.25.25 multicast
+ ipv6 nhrp shortcut
+ tunnel source GigabitEthernet0/2
+ tunnel mode gre multipoint
+ tunnel key 102
+ tunnel protection ipsec profile DMVPN_PROFILE shared
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3240,28 +4703,72 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW2
- no ip address
+ ip address 10.1.3.21 255.255.255.0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:10:1:3::21/64
 !
 interface GigabitEthernet0/2
  description to TS-R11
- no ip address
+ ip address 167.22.2.3 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::3/127
+!
+!
+router eigrp REMOTE-SITE-3
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 563150851
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2001:167:22:2::2 remote-as 2202
+ neighbor 167.22.2.2 remote-as 2202
+ !
+ address-family ipv4
+  neighbor 167.22.2.2 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:167:22:2::2 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip route 10.24.24.24 255.255.255.255 167.22.2.2
+ip route 10.25.25.25 255.255.255.255 167.22.2.2
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3272,13 +4779,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3293,12 +4808,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -3306,11 +4815,11 @@ end</entry>
     </node>
     <node name="TS-R22" type="SIMPLE" subtype="IOSv" location="1280,714">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.122</entry>
             <entry key="static_serial_port_0" type="Integer">11022</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:45 UTC Sat Jun 4 2016
+! Last configuration change at 18:46:45 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3368,7 +4877,6 @@ username cisco privilege 15 secret 5 $1$Pz81$D3dFvVPIYOfsmJ1O9hC8l.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -3385,7 +4893,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.22.22.22 255.255.255.255
+ ipv6 address 2001:10:22:22:22::22/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3394,13 +4903,31 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW2
- no ip address
+ ip address 10.1.3.22 255.255.255.0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:10:1:3::22/64
+!
+!
+router eigrp REMOTE-SITE-3
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3409,6 +4936,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3419,13 +4955,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3440,23 +4984,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R23" type="SIMPLE" subtype="IOSv" location="1478,710">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.123</entry>
             <entry key="static_serial_port_0" type="Integer">11023</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:53 UTC Sat Jun 4 2016
+! Last configuration change at 18:49:06 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3514,7 +5052,6 @@ username cisco privilege 15 secret 5 $1$htn9$mWXIlb3D3fDxesWECPPrw.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -3531,7 +5068,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.23.23.23 255.255.255.255
+ ipv6 address 2001:10:23:23:23::23/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3540,13 +5078,31 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW2
- no ip address
+ ip address 10.1.3.23 255.255.255.0
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:10:1:3::23/64
+!
+!
+router eigrp REMOTE-SITE-3
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3555,6 +5111,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3565,13 +5130,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3586,23 +5159,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R24" type="SIMPLE" subtype="IOSv" location="1516,227">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.124</entry>
             <entry key="static_serial_port_0" type="Integer">11024</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:32:00 UTC Sat Jun 4 2016
+! Last configuration change at 18:45:21 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3660,14 +5227,25 @@ username cisco privilege 15 secret 5 $1$b1MQ$c1l8JE8fqcYAeVjOmfJlu/
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
 !
 !
 !
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key dmvpnpass address 0.0.0.0        
 !
+!
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+ mode transport
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP-AES-256-SHA-512 
 !
 !
 !
@@ -3677,7 +5255,31 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.24.24.24 255.255.255.255
+ ipv6 address 2001:10:24:24:24::24/128
+!
+interface Tunnel101
+ ip address 10.1.101.24 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 1
+ ip nhrp redirect
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::24 link-local
+ ipv6 address 2001:10:1:101::24/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp map multicast dynamic
+ ipv6 nhrp network-id 1
+ ipv6 nhrp shortcut
+ ipv6 nhrp redirect
+ tunnel source Loopback0
+ tunnel mode gre multipoint
+ tunnel key 101
+ tunnel protection ipsec profile DMVPN_PROFILE
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3686,6 +5288,7 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW3
@@ -3694,19 +5297,77 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
 !
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 10.1.100.24 255.255.255.0
+ ipv6 address 2001:10:1:100::24/64
+ no cdp enable
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 10.1.200.24 255.255.255.0
+ ipv6 address 2001:10:1:200::24/64
+ no cdp enable
+!
 interface GigabitEthernet0/2
  description to TS-R9
- no ip address
+ ip address 29.11.1.7 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:29:11:1::7/127
 !
 interface GigabitEthernet0/3
  description to TS-R4
- no ip address
+ ip address 184.17.13.18 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::18/64
+!
+!
+router eigrp PRIMARY-DC
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  af-interface Tunnel101
+   summary-address 10.0.0.0 255.0.0.0
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  af-interface Tunnel101
+   summary-address 2001:10::/32
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 8593.1
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 29.11.1.6 remote-as 1101
+ neighbor 2001:29:11:1::6 remote-as 1101
+ neighbor 2001:184:17:13::17 remote-as 18417
+ neighbor 184.17.13.17 remote-as 18417
+ !
+ address-family ipv4
+  network 10.24.24.24 mask 255.255.255.255
+  neighbor 29.11.1.6 activate
+  neighbor 184.17.13.17 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:29:11:1::6 activate
+  neighbor 2001:184:17:13::17 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3715,6 +5376,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3725,13 +5395,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3746,12 +5424,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -3760,11 +5432,11 @@ end</entry>
     </node>
     <node name="TS-R25" type="SIMPLE" subtype="IOSv" location="1507,399">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.125</entry>
             <entry key="static_serial_port_0" type="Integer">11025</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:58 UTC Sat Jun 4 2016
+! Last configuration change at 18:44:36 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3822,14 +5494,25 @@ username cisco privilege 15 secret 5 $1$fyWJ$sKZro.xdA4F5/vFBYluCt.
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
 !
 !
 !
+crypto isakmp policy 10
+ encr 3des
+ hash md5
+ authentication pre-share
+ group 5
+crypto isakmp key dmvpnpass address 0.0.0.0        
 !
+!
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+ mode transport
+!
+crypto ipsec profile DMVPN_PROFILE
+ set transform-set ESP-AES-256-SHA-512 
 !
 !
 !
@@ -3839,7 +5522,31 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.25.25.25 255.255.255.255
+ ipv6 address 2001:10:25:25:25::25/128
+!
+interface Tunnel102
+ ip address 10.1.102.25 255.255.255.0
+ no ip redirects
+ ip mtu 1400
+ ip nhrp authentication NHRPAUTH
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 1
+ ip nhrp redirect
+ ip tcp adjust-mss 1360
+ ipv6 address FE80::25 link-local
+ ipv6 address 2001:10:1:102::25/64
+ ipv6 enable
+ ipv6 mtu 1400
+ ipv6 nhrp authentication NHRPAUTH
+ ipv6 nhrp map multicast dynamic
+ ipv6 nhrp network-id 1
+ ipv6 nhrp shortcut
+ ipv6 nhrp redirect
+ tunnel source Loopback0
+ tunnel mode gre multipoint
+ tunnel key 102
+ tunnel protection ipsec profile DMVPN_PROFILE
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3848,6 +5555,7 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW3
@@ -3856,19 +5564,77 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
 !
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 10.1.100.25 255.255.255.0
+ ipv6 address 2001:10:1:100::25/64
+ no cdp enable
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 10.1.200.25 255.255.255.0
+ ipv6 address 2001:10:1:200::25/64
+ no cdp enable
+!
 interface GigabitEthernet0/2
  description to TS-R11
- no ip address
+ ip address 167.22.2.5 255.255.255.254
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:167:22:2::5/127
 !
 interface GigabitEthernet0/3
  description to TS-R5
- no ip address
+ ip address 184.17.13.22 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:113::22/64
+!
+!
+router eigrp PRIMARY-DC
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  af-interface Tunnel102
+   summary-address 10.0.0.0 255.0.0.0
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  af-interface Tunnel102
+   summary-address 2001:10::/32
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router bgp 8593.1
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 2001:167:22:2::4 remote-as 2202
+ neighbor 2001:184:17:113::21 remote-as 18417
+ neighbor 167.22.2.4 remote-as 2202
+ neighbor 184.17.13.21 remote-as 18417
+ !
+ address-family ipv4
+  network 10.25.25.25 mask 255.255.255.255
+  neighbor 167.22.2.4 activate
+  neighbor 184.17.13.21 activate
+ exit-address-family
+ !
+ address-family ipv6
+  neighbor 2001:167:22:2::4 activate
+  neighbor 2001:184:17:113::21 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3877,6 +5643,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -3887,13 +5662,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -3908,12 +5691,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -3922,11 +5699,11 @@ end</entry>
     </node>
     <node name="TS-R26" type="SIMPLE" subtype="IOSv" location="1691,239">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.126</entry>
             <entry key="static_serial_port_0" type="Integer">11026</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:43 UTC Sat Jun 4 2016
+! Last configuration change at 18:56:03 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3984,7 +5761,6 @@ username cisco privilege 15 secret 5 $1$lfQP$bfsTIOUlcVYwYJEfaHlz71
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -4001,7 +5777,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.26.26.26 255.255.255.255
+ ipv6 address 2001:10:26:26:26::26/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -4010,6 +5787,7 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW3
@@ -4018,6 +5796,34 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
 !
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 10.1.100.26 255.255.255.0
+ ipv6 address 2001:10:1:100::26/64
+ no cdp enable
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 10.1.200.26 255.255.255.0
+ ipv6 address 2001:10:1:200::26/64
+ no cdp enable
+!
+!
+router eigrp PRIMARY-DC
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
 ip forward-protocol nd
 !
 !
@@ -4025,6 +5831,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -4035,13 +5850,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -4056,23 +5879,17 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="TS-R27" type="SIMPLE" subtype="IOSv" location="1701,403">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.127</entry>
             <entry key="static_serial_port_0" type="Integer">11027</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:32:03 UTC Sat Jun 4 2016
+! Last configuration change at 18:52:21 UTC Sun Jun 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4130,7 +5947,6 @@ username cisco privilege 15 secret 5 $1$SAQN$MiZh1/li0yyXMFcUL1YHu/
 !
 redundancy
 !
-no cdp run
 !
 ! 
 !
@@ -4147,7 +5963,8 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.27.27.27 255.255.255.255
+ ipv6 address 2001:10:27:27:27::27/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -4156,6 +5973,7 @@ interface GigabitEthernet0/0
  duplex full
  speed auto
  media-type rj45
+ no cdp enable
 !
 interface GigabitEthernet0/1
  description to TS-SW3
@@ -4164,12 +5982,38 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
 !
+interface GigabitEthernet0/1.100
+ encapsulation dot1Q 100
+ ip address 10.1.100.27 255.255.255.0
+ ipv6 address 2001:10:1:100::27/64
+ no cdp enable
+!
+interface GigabitEthernet0/1.200
+ encapsulation dot1Q 200
+ ip address 10.1.200.27 255.255.255.0
+ ipv6 address 2001:10:1:200::27/64
+ no cdp enable
+!
 interface GigabitEthernet0/2
- description to TS-SW3
  no ip address
- duplex full
+ duplex auto
  speed auto
- media-type rj45
+!
+!
+router eigrp PRIMARY-DC
+ !
+ address-family ipv4 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 8593
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -4178,6 +6022,15 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -4188,13 +6041,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -4209,12 +6070,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -4222,11 +6077,11 @@ end</entry>
     </node>
     <node name="TS-SW1" type="SIMPLE" subtype="IOSvL2" location="1018,620">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.128</entry>
             <entry key="static_serial_port_0" type="Integer">11028</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:32:05 UTC Sat Jun 4 2016
+! Last configuration change at 18:43:00 UTC Sun Jun 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -4274,7 +6129,8 @@ vlan internal allocation policy ascending
 !
 vlan 2
  name ank_vlan2
-no cdp run
+!
+vlan 18-20 
 !
 ! 
 !
@@ -4291,28 +6147,32 @@ no cdp run
 !
 interface Loopback0
  description Loopback
- no ip address
+ ip address 10.28.28.28 255.255.255.255
+ ip ospf 28 area 0
 !
 interface GigabitEthernet0/1
  description to TS-R18
- switchport access vlan 2
+ switchport access vlan 18
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/2
  description to TS-R19
- switchport access vlan 2
+ switchport access vlan 19
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/3
  description to TS-R20
- switchport access vlan 2
+ switchport access vlan 20
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/0
  description OOB management
@@ -4320,6 +6180,21 @@ interface GigabitEthernet0/0
  vrf forwarding Mgmt-intf
  ip address 172.16.11.128 255.255.255.0
  negotiation auto
+ no cdp enable
+!
+interface Vlan18
+ ip address 172.16.18.254 255.255.255.0
+ ip ospf 28 area 0
+!
+interface Vlan19
+ ip address 172.16.19.254 255.255.255.0
+ ip ospf 28 area 0
+!
+interface Vlan20
+ ip address 172.16.20.254 255.255.255.0
+ ip ospf 28 area 0
+!
+router ospf 28
 !
 ip forward-protocol nd
 !
@@ -4328,6 +6203,14 @@ no ip http secure-server
 !
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -4338,13 +6221,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -4358,12 +6249,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -4372,11 +6257,11 @@ end</entry>
     </node>
     <node name="TS-SW2" type="SIMPLE" subtype="IOSvL2" location="1369,631">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.129</entry>
             <entry key="static_serial_port_0" type="Integer">11029</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:44 UTC Sat Jun 4 2016
+! Last configuration change at 18:40:14 UTC Sun Jun 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -4424,7 +6309,8 @@ vlan internal allocation policy ascending
 !
 vlan 2
  name ank_vlan2
-no cdp run
+!
+vlan 1013 
 !
 ! 
 !
@@ -4445,24 +6331,27 @@ interface Loopback0
 !
 interface GigabitEthernet0/1
  description to TS-R21
- switchport access vlan 2
+ switchport access vlan 1013
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/2
  description to TS-R22
- switchport access vlan 2
+ switchport access vlan 1013
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/3
  description to TS-R23
- switchport access vlan 2
+ switchport access vlan 1013
  switchport mode access
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
 !
 interface GigabitEthernet0/0
  description OOB management
@@ -4470,6 +6359,7 @@ interface GigabitEthernet0/0
  vrf forwarding Mgmt-intf
  ip address 172.16.11.129 255.255.255.0
  negotiation auto
+ no cdp enable
 !
 ip forward-protocol nd
 !
@@ -4478,6 +6368,15 @@ no ip http secure-server
 !
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -4488,13 +6387,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -4508,12 +6415,6 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
@@ -4522,11 +6423,11 @@ end</entry>
     </node>
     <node name="TS-SW3" type="SIMPLE" subtype="IOSvL2" location="1610,313">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="static_ip" type="String">172.16.11.130</entry>
             <entry key="static_serial_port_0" type="Integer">11030</entry>
             <entry key="config" type="String">!
-! Last configuration change at 14:31:52 UTC Sat Jun 4 2016
+! Last configuration change at 18:50:04 UTC Sun Jun 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -4567,14 +6468,15 @@ no ipv6 cef
 !
 !
 !
-spanning-tree mode pvst
+spanning-tree mode rapid-pvst
 spanning-tree extend system-id
 !
 vlan internal allocation policy ascending
 !
 vlan 2
  name ank_vlan2
-no cdp run
+!
+vlan 100,200 
 !
 ! 
 !
@@ -4596,23 +6498,38 @@ interface Loopback0
 interface GigabitEthernet0/1
  description to TS-R24
  switchport access vlan 2
- switchport mode access
+ switchport trunk allowed vlan 100,200
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
+ spanning-tree portfast edge trunk
+ spanning-tree link-type point-to-point
 !
 interface GigabitEthernet0/2
  description to TS-R25
  switchport access vlan 2
- switchport mode access
+ switchport trunk allowed vlan 100,200
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
+ spanning-tree portfast edge trunk
+ spanning-tree link-type point-to-point
 !
 interface GigabitEthernet0/3
  description to TS-R26
  switchport access vlan 2
- switchport mode access
+ switchport trunk allowed vlan 100,200
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
+ spanning-tree portfast edge trunk
+ spanning-tree link-type point-to-point
 !
 interface GigabitEthernet0/0
  description OOB management
@@ -4620,20 +6537,31 @@ interface GigabitEthernet0/0
  vrf forwarding Mgmt-intf
  ip address 172.16.11.130 255.255.255.0
  negotiation auto
+ no cdp enable
 !
 interface GigabitEthernet1/0
  description to TS-R27
  switchport access vlan 2
- switchport mode access
+ switchport trunk allowed vlan 100,200
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
+ spanning-tree portfast edge trunk
+ spanning-tree link-type point-to-point
 !
 interface GigabitEthernet1/1
  description to TS-R27
  switchport access vlan 2
- switchport mode access
+ switchport trunk allowed vlan 100,200
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
  media-type rj45
- negotiation auto
+ duplex full
+ no negotiation auto
+ spanning-tree portfast edge trunk
+ spanning-tree link-type point-to-point
 !
 ip forward-protocol nd
 !
@@ -4642,6 +6570,15 @@ no ip http secure-server
 !
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
 !
 !
 !
@@ -4652,13 +6589,21 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 4
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
  exec-timeout 720 0
  password cisco
  login
  transport input telnet ssh
 line vty 5 100
+ exec-timeout 60 0
  privilege level 15
+ logging synchronous
  no login
  rotary 23
  transport input telnet
@@ -4671,12 +6616,6 @@ event manager applet CLI_AFTER_BOOT
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
-!
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
 !
 end</entry>
         </extensions>
@@ -4691,7 +6630,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.201</entry>
             <entry key="static_serial_port_0" type="Integer">12001</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:05 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:43 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4784,6 +6723,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -4797,6 +6739,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -4814,14 +6757,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R2" type="SIMPLE" subtype="IOSv" location="62,167">
@@ -4829,7 +6766,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.202</entry>
             <entry key="static_serial_port_0" type="Integer">12002</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:10 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:36 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4922,6 +6859,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -4935,6 +6875,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -4952,14 +6893,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R3" type="SIMPLE" subtype="IOSv" location="60,236">
@@ -4967,7 +6902,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.203</entry>
             <entry key="static_serial_port_0" type="Integer">12003</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:01 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:30 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5060,6 +6995,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5073,6 +7011,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5090,14 +7029,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R4" type="SIMPLE" subtype="IOSv" location="61,297">
@@ -5105,7 +7038,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.204</entry>
             <entry key="static_serial_port_0" type="Integer">12004</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:59 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:25 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5198,6 +7131,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5211,6 +7147,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5228,14 +7165,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R5" type="SIMPLE" subtype="IOSv" location="61,360">
@@ -5243,7 +7174,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.205</entry>
             <entry key="static_serial_port_0" type="Integer">12005</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:01 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:21 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5336,6 +7267,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5349,6 +7283,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5366,14 +7301,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R6" type="SIMPLE" subtype="IOSv" location="56,437">
@@ -5381,7 +7310,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.206</entry>
             <entry key="static_serial_port_0" type="Integer">12006</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:09 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:14 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5474,6 +7403,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5487,6 +7419,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5504,14 +7437,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R7" type="SIMPLE" subtype="IOSv" location="63,510">
@@ -5519,7 +7446,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.207</entry>
             <entry key="static_serial_port_0" type="Integer">12007</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:12 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:08 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5612,6 +7539,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5625,6 +7555,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5642,14 +7573,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R8" type="SIMPLE" subtype="IOSv" location="68,574">
@@ -5657,7 +7582,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.208</entry>
             <entry key="static_serial_port_0" type="Integer">12008</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:08 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:39 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5750,6 +7675,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5763,6 +7691,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5780,14 +7709,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R9" type="SIMPLE" subtype="IOSv" location="68,648">
@@ -5795,7 +7718,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.209</entry>
             <entry key="static_serial_port_0" type="Integer">12009</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:06 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:17 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5888,6 +7811,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -5901,6 +7827,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -5918,14 +7845,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R10" type="SIMPLE" subtype="IOSv" location="70,718">
@@ -5933,7 +7854,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.210</entry>
             <entry key="static_serial_port_0" type="Integer">12010</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:57 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:51 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6026,6 +7947,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6039,6 +7963,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6056,14 +7981,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R11" type="SIMPLE" subtype="IOSv" location="124,100">
@@ -6071,7 +7990,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.211</entry>
             <entry key="static_serial_port_0" type="Integer">12011</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:01 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:45 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6164,6 +8083,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6177,6 +8099,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6194,14 +8117,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R12" type="SIMPLE" subtype="IOSv" location="134,182">
@@ -6209,7 +8126,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.212</entry>
             <entry key="static_serial_port_0" type="Integer">12012</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:49 UTC Sat Jun 4 2016
+! Last configuration change at 22:42:01 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6302,6 +8219,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6315,6 +8235,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6332,14 +8253,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R13" type="SIMPLE" subtype="IOSv" location="140,258">
@@ -6347,7 +8262,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.213</entry>
             <entry key="static_serial_port_0" type="Integer">12013</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:00 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:56 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6440,6 +8355,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6453,6 +8371,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6470,14 +8389,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R14" type="SIMPLE" subtype="IOSv" location="143,324">
@@ -6485,7 +8398,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.214</entry>
             <entry key="static_serial_port_0" type="Integer">12014</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:56 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:28 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6578,6 +8491,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6591,6 +8507,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6608,14 +8525,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R15" type="SIMPLE" subtype="IOSv" location="146,392">
@@ -6623,7 +8534,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.215</entry>
             <entry key="static_serial_port_0" type="Integer">12015</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:08 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:22 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6716,6 +8627,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6729,6 +8643,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6746,14 +8661,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R16" type="SIMPLE" subtype="IOSv" location="150,457">
@@ -6761,7 +8670,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.216</entry>
             <entry key="static_serial_port_0" type="Integer">12016</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:32:03 UTC Sat Jun 4 2016
+! Last configuration change at 22:38:46 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6854,6 +8763,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -6867,6 +8779,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -6884,14 +8797,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R17" type="SIMPLE" subtype="IOSv" location="151,530">
@@ -6899,7 +8806,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.217</entry>
             <entry key="static_serial_port_0" type="Integer">12017</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:32 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:33 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6992,6 +8899,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7005,6 +8915,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7022,14 +8933,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R18" type="SIMPLE" subtype="IOSv" location="162,596">
@@ -7037,7 +8942,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.218</entry>
             <entry key="static_serial_port_0" type="Integer">12018</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:58 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:00 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7130,6 +9035,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7143,6 +9051,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7160,14 +9069,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R19" type="SIMPLE" subtype="IOSv" location="160,660">
@@ -7175,7 +9078,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.219</entry>
             <entry key="static_serial_port_0" type="Integer">12019</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:37 UTC Sat Jun 4 2016
+! Last configuration change at 22:41:13 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7268,6 +9171,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7281,6 +9187,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7298,14 +9205,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R20" type="SIMPLE" subtype="IOSv" location="166,727">
@@ -7313,7 +9214,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.220</entry>
             <entry key="static_serial_port_0" type="Integer">12020</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:44 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:07 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7406,6 +9307,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7419,6 +9323,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7436,14 +9341,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R21" type="SIMPLE" subtype="IOSv" location="213,107">
@@ -7451,7 +9350,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.221</entry>
             <entry key="static_serial_port_0" type="Integer">12021</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:54 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:13 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7544,6 +9443,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7557,6 +9459,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7574,14 +9477,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R22" type="SIMPLE" subtype="IOSv" location="224,189">
@@ -7589,7 +9486,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.222</entry>
             <entry key="static_serial_port_0" type="Integer">12022</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:46 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:18 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7682,6 +9579,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7695,6 +9595,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7712,14 +9613,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R23" type="SIMPLE" subtype="IOSv" location="231,268">
@@ -7727,7 +9622,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.223</entry>
             <entry key="static_serial_port_0" type="Integer">12023</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:38 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:24 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7820,6 +9715,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7833,6 +9731,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7850,14 +9749,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R24" type="SIMPLE" subtype="IOSv" location="236,345">
@@ -7865,7 +9758,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.224</entry>
             <entry key="static_serial_port_0" type="Integer">12024</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:45 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:28 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7958,6 +9851,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -7971,6 +9867,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -7988,14 +9885,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-R25" type="SIMPLE" subtype="IOSv" location="238,417">
@@ -8003,7 +9894,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.225</entry>
             <entry key="static_serial_port_0" type="Integer">12025</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:55 UTC Sat Jun 4 2016
+! Last configuration change at 22:44:34 UTC Sat Jun 4 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8096,6 +9987,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8109,6 +10003,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login local
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8126,14 +10021,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-SW1" type="SIMPLE" subtype="IOSvL2" location="253,499">
@@ -8141,7 +10030,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.226</entry>
             <entry key="static_serial_port_0" type="Integer">12026</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:34:41 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:54 UTC Sat Jun 4 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -8220,6 +10109,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8233,6 +10125,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8249,14 +10142,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-SW2" type="SIMPLE" subtype="IOSvL2" location="257,564">
@@ -8264,7 +10151,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.227</entry>
             <entry key="static_serial_port_0" type="Integer">12027</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:47 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:43 UTC Sat Jun 4 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -8343,6 +10230,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8356,6 +10246,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8372,14 +10263,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-SW3" type="SIMPLE" subtype="IOSvL2" location="265,619">
@@ -8387,7 +10272,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.228</entry>
             <entry key="static_serial_port_0" type="Integer">12028</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:55 UTC Sat Jun 4 2016
+! Last configuration change at 22:39:48 UTC Sat Jun 4 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -8466,6 +10351,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8479,6 +10367,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8495,14 +10384,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-SW4" type="SIMPLE" subtype="IOSvL2" location="263,670">
@@ -8510,7 +10393,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.229</entry>
             <entry key="static_serial_port_0" type="Integer">12029</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:54 UTC Sat Jun 4 2016
+! Last configuration change at 22:40:12 UTC Sat Jun 4 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -8589,6 +10472,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8602,6 +10488,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8618,14 +10505,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <node name="CFG-SW5" type="SIMPLE" subtype="IOSvL2" location="263,731">
@@ -8633,7 +10514,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.230</entry>
             <entry key="static_serial_port_0" type="Integer">12030</entry>
             <entry key="config" type="string">!
-! Last configuration change at 14:31:50 UTC Sat Jun 4 2016
+! Last configuration change at 22:40:18 UTC Sat Jun 4 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -8712,6 +10593,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 !
 !
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+!
 !
 !
 !
@@ -8725,6 +10609,7 @@ line vty 0 4
  exec-timeout 720 0
  password cisco
  login
+ length 0
  transport input telnet ssh
 line vty 5 100
  privilege level 15
@@ -8741,14 +10626,8 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
-!
-kron occurrence KRONJOB in 1 oneshot 
- policy-list KRONPOLICY
-!
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
     </node>
     <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
