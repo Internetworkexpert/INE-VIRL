@@ -1,10 +1,9 @@
 #!/bin/bash
 sudo apt-get install -y expect
 
-COMMAND[0]="CFG R1 \"show run\""
-COMMAND[1]="CFG R2 \"show version\""
+commands=('CFG R1 "show run"' 'CFG R2 "show version"')
 
-for i in "${COMMAND[@]}"
+for ((i=0; i < ${#commands[@]}; i++))
 do
-  sh command.sh $i
+  sh command.sh ${commands[$i]}
 done
