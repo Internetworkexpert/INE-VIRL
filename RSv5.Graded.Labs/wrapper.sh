@@ -5,6 +5,6 @@ chmod a+x command.sh
 declare -a commands=('CFG R1 "show run"' 'CFG R2 "show version"')
 
 for i in "${commands[@]}"
-do
-  ./command.sh ${i}
+        do
+        eval "./command.sh $i"
 done
