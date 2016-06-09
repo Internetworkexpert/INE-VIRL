@@ -1,7 +1,7 @@
 #!/bin/bash
 sudo apt-get install -y expect
 
-commands=('CFG R1 "show run"' 'CFG R2 "show version"')
+declare -a commands=('CFG R1 "show run"' 'CFG R2 "show version"')
 
 for ((i=0; i < ${#commands[@]}; i++))
 do
