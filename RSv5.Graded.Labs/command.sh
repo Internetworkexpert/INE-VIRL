@@ -2,7 +2,7 @@
 PORT=7023
 SECTION=$1
 DEVICE=$2
-COMMAND=$3
+TORUN=$3
 
 TSR1="172.16.11.101"
 TSR2="172.16.11.102"
@@ -71,7 +71,7 @@ spawn telnet ${!rack} $PORT
 expect -re "$SECTION-$DEVICE#"
 send "terminal length 0\r"
 expect -re "$SECTION-$DEVICE#"
-send "$COMMAND\r"
+send "$TORUN\r"
 expect -re "$SECTION-$DEVICE#"
 send "exit\r"
 EOF
