@@ -74,5 +74,5 @@ expect -re "$SECTION-$DEVICE#"
 send "$TORUN\r"
 expect -re "$SECTION-$DEVICE#"
 send "exit\r"
-echo ""
 EOF
+echo ""
