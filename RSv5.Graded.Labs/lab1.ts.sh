@@ -22,9 +22,14 @@
 	./command.sh TS R12 "show ip bgp summary | in 12.18.255.9"
 	
 	echo '####'
-	echo 'Was ttl security removed?'
+	echo 'Was ttl security removed to 12.18.255.9?'
 	echo '####'
-	./command.sh TS R12 "show ip bgp neighbor 12.18.255.9 | in TTL"
+	./command.sh TS R12 "show run | include 12.18.255.9"
+
+	echo '####'
+	echo 'Was ttl security removed to 12.18.255.8?'
+	echo '####'
+	./command.sh TS R11 "show run | include 12.18.255.8"
 
 
 ##### Ticket 2: Wrong vlan encaps on R26, wrong allowed list on SW3
@@ -112,13 +117,13 @@
 	echo 'What is R4 importing and exporting'
 	echo '####'
 	
-	./command.sh TS R4 "sh vrf detail BRANCH-SITE-2 | section ipv6"
+	./command.sh TS R4 "sh vrf detail BRANCH-SITE-2 | include family|Import|Export|RT"
 	
 	echo '####'
 	echo 'What is R2 importing and exporting'
 	echo '####'
 	
-	./command.sh TS R2 "sh vrf detail BRANCH-SITE-1 | section ipv6"
+	./command.sh TS R2 "sh vrf detail BRANCH-SITE-1 | include family|Import|Export|RT"
 
 #### Ticket 6: duplicate IPv6 address on R8
 #### N/A Ticket Broken
@@ -140,7 +145,13 @@
 	echo 'Was Static RP removed?'
 	echo '####'
 
-	./command.sh TS R21 "sh run | in ip pim rp-address 10.1.255.255"
+	./command.sh TS R21 "sh run | in ip pim rp-address"
+
+	echo '####'
+	echo 'Who is the RP for 225.6.7.8'
+	echo '####'
+
+	./command.sh TS R21 "sh ip pim rp 225.6.7.8"
 
 	echo '####'
 	echo 'Is RP address correctly learned?'
