@@ -10,5 +10,4 @@ chmod a+x command.sh
 #         eval "./command.sh $i"
 # done
 
-PS1="# "
 echo Usage is './command.sh CFG R1 "show ip route"'
