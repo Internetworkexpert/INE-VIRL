@@ -6551,7 +6551,7 @@ no ipv6 cef
 !
 !
 !
-spanning-tree mode rapid-pvst
+spanning-tree mode pvst
 spanning-tree extend system-id
 !
 vlan internal allocation policy ascending
@@ -6964,6 +6964,7 @@ interface GigabitEthernet0/1.10
 !
 interface GigabitEthernet0/1.20
  encapsulation dot1Q 20
+ ip address 10.1.20.2 255.255.255.0
 !
 ip forward-protocol nd
 !
@@ -10509,6 +10510,7 @@ router bgp 2112
  neighbor 169.254.8.0 remote-as 31337
  neighbor 169.254.8.0 transport connection-mode passive
  neighbor 169.254.8.0 password 2112
+ neighbor 169.254.10.0 remote-as 1776
 !
 ip forward-protocol nd
 !
