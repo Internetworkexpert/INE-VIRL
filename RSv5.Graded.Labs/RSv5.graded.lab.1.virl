@@ -11613,6 +11613,18 @@ end</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
 !
+! For VIRL HOST
+!
+! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.11.10:23
+!
+! FILL IN THESE VARIABLES FOR THE USER
+!
+! username $username privilege 1 password 0 $password
+! username $username autocommand menu main_menu
+!
+username stevan privilege 1 password 0 ccie
+username stevan autocommand menu main_menu
+
 version 15.6
 service timestamps debug datetime msec
 service timestamps log datetime msec
@@ -11635,9 +11647,203 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
 no ip domain lookup
+ip domain name virl.info
 ip cef
-username cisco privilege 15 secret 5 $1$XHtl$P5i0JxmgmSVPUVrAB9Oxq.
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+privilege exec level 0 telnet
+privilege exec level 0 menu
+privilege exec level 0 exit
+!
+no menu main_menu
+menu main_menu title $
++--------------------------------------+
+|           RSv5 Graded Lab 1          |
+|              Main Menu               |
++--------------------------------------+
+$
+menu main_menu prompt $Enter The Topology You Are Working On: $
+menu main_menu text 1. Troubleshooting
+menu main_menu command 1. menu ts_menu
+menu main_menu text 2. Configuration
+menu main_menu command 2. menu cfg_menu
+menu main_menu text Q. Quit
+menu main_menu command Q. Exit
+menu main_menu clear-screen
+!
+!
+no menu ts_menu
+menu ts_menu title $
++------------------------------------------+
+|            RSv5 Graded Lab 1             |
+|     Troubleshooting Section Menu         |
++------------------------------------------+
+$
+menu ts_menu prompt $Enter Selection: $
+menu ts_menu text 1. Connect to TS-R1
+menu ts_menu command 1. telnet 172.16.11.101 7023 /vrf Mgmt-intf
+menu ts_menu text 2. Connect to TS-R2
+menu ts_menu command 2. telnet 172.16.11.102 7023 /vrf Mgmt-intf
+menu ts_menu text 3. Connect to TS-R3
+menu ts_menu command 3. telnet 172.16.11.103 7023 /vrf Mgmt-intf
+menu ts_menu text 4. Connect to TS-R4
+menu ts_menu command 4. telnet 172.16.11.104 7023 /vrf Mgmt-intf
+menu ts_menu text 5. Connect to TS-R5
+menu ts_menu command 5. telnet 172.16.11.105 7023 /vrf Mgmt-intf
+menu ts_menu text 6. Connect to TS-R6
+menu ts_menu command 6. telnet 172.16.11.106 7023 /vrf Mgmt-intf
+menu ts_menu text 7. Connect to TS-R7
+menu ts_menu command 7. telnet 172.16.11.107 7023 /vrf Mgmt-intf
+menu ts_menu text 8. Connect to TS-R8
+menu ts_menu command 8. telnet 172.16.11.108 7023 /vrf Mgmt-intf
+menu ts_menu text 9. Connect to TS-R9
+menu ts_menu command 9. telnet 172.16.11.109 7023 /vrf Mgmt-intf
+menu ts_menu text 10. Connect to TS-R10
+menu ts_menu command 10. telnet 172.16.11.110 7023 /vrf Mgmt-intf
+menu ts_menu text 11. Connect to TS-R11
+menu ts_menu command 11. telnet 172.16.11.111 7023 /vrf Mgmt-intf
+menu ts_menu text 12. Connect to TS-R12
+menu ts_menu command 12. telnet 172.16.11.112 7023 /vrf Mgmt-intf
+menu ts_menu text 13. Connect to TS-R13
+menu ts_menu command 13. telnet 172.16.11.113 7023 /vrf Mgmt-intf
+menu ts_menu text 14. Connect to TS-R14
+menu ts_menu command 14. telnet 172.16.11.114 7023 /vrf Mgmt-intf
+menu ts_menu text 15. Connect to TS-R15
+menu ts_menu command 15. telnet 172.16.11.115 7023 /vrf Mgmt-intf
+menu ts_menu text 16. Connect to TS-R16
+menu ts_menu command 16. telnet 172.16.11.116 7023 /vrf Mgmt-intf
+menu ts_menu text 17. Connect to TS-R17
+menu ts_menu command 17. telnet 172.16.11.117 7023 /vrf Mgmt-intf
+menu ts_menu text 18. Connect to TS-R18
+menu ts_menu command 18. telnet 172.16.11.118 7023 /vrf Mgmt-intf
+menu ts_menu text 19. Connect to TS-R19
+menu ts_menu command 19. telnet 172.16.11.119 7023 /vrf Mgmt-intf
+menu ts_menu text 20. Connect to TS-R20
+menu ts_menu command 20. telnet 172.16.11.120 7023 /vrf Mgmt-intf
+menu ts_menu text 21. Connect to TS-R21
+menu ts_menu command 21. telnet 172.16.11.121 7023 /vrf Mgmt-intf
+menu ts_menu text 22. Connect to TS-R22
+menu ts_menu command 22. telnet 172.16.11.122 7023 /vrf Mgmt-intf
+menu ts_menu text 23. Connect to TS-R23
+menu ts_menu command 23. telnet 172.16.11.123 7023 /vrf Mgmt-intf
+menu ts_menu text 24. Connect to TS-R24
+menu ts_menu command 24. telnet 172.16.11.124 7023 /vrf Mgmt-intf
+menu ts_menu text 25. Connect to TS-R25
+menu ts_menu command 25. telnet 172.16.11.125 7023 /vrf Mgmt-intf
+menu ts_menu text 26. Connect to TS-R26
+menu ts_menu command 26. telnet 172.16.11.126 7023 /vrf Mgmt-intf
+menu ts_menu text 27. Connect to TS-R27
+menu ts_menu command 27. telnet 172.16.11.127 7023 /vrf Mgmt-intf
+menu ts_menu text 28. Connect to TS-SW1
+menu ts_menu command 28. telnet 172.16.11.128 7023 /vrf Mgmt-intf
+menu ts_menu text 29. Connect to TS-SW2
+menu ts_menu command 29. telnet 172.16.11.129 7023 /vrf Mgmt-intf
+menu ts_menu text 30. Connect to TS-SW3
+menu ts_menu command 30. telnet 172.16.11.130 7023 /vrf Mgmt-intf
+menu ts_menu text Q. Quit
+menu ts_menu command Q. Exit
+menu ts_menu clear-screen
+!
+no menu cfg_menu
+menu cfg_menu title $
++--------------------------------------+
+|           RSv5 Graded Lab 1          |
+|      Configuration Section Menu      |
++--------------------------------------+
+$
+menu cfg_menu prompt $Enter Selection: $
+menu cfg_menu text 1. Connect to CFG-R1
+menu cfg_menu command 1. telnet 172.16.11.201 7023 /vrf Mgmt-intf
+menu cfg_menu text 2. Connect to CFG-R2
+menu cfg_menu command 2. telnet 172.16.11.202 7023 /vrf Mgmt-intf
+menu cfg_menu text 3. Connect to CFG-R3
+menu cfg_menu command 3. telnet 172.16.11.203 7023 /vrf Mgmt-intf
+menu cfg_menu text 4. Connect to CFG-R4
+menu cfg_menu command 4. telnet 172.16.11.204 7023 /vrf Mgmt-intf
+menu cfg_menu text 5. Connect to CFG-R5
+menu cfg_menu command 5. telnet 172.16.11.205 7023 /vrf Mgmt-intf
+menu cfg_menu text 6. Connect to CFG-R6
+menu cfg_menu command 6. telnet 172.16.11.206 7023 /vrf Mgmt-intf
+menu cfg_menu text 7. Connect to CFG-R7
+menu cfg_menu command 7. telnet 172.16.11.207 7023 /vrf Mgmt-intf
+menu cfg_menu text 8. Connect to CFG-R8
+menu cfg_menu command 8. telnet 172.16.11.208 7023 /vrf Mgmt-intf
+menu cfg_menu text 9. Connect to CFG-R9
+menu cfg_menu command 9. telnet 172.16.11.209 7023 /vrf Mgmt-intf
+menu cfg_menu text 10. Connect to CFG-R10
+menu cfg_menu command 10. telnet 172.16.11.210 7023 /vrf Mgmt-intf
+menu cfg_menu text 11. Connect to CFG-R11
+menu cfg_menu command 11. telnet 172.16.11.211 7023 /vrf Mgmt-intf
+menu cfg_menu text 12. Connect to CFG-R12
+menu cfg_menu command 12. telnet 172.16.11.212 7023 /vrf Mgmt-intf
+menu cfg_menu text 13. Connect to CFG-R13
+menu cfg_menu command 13. telnet 172.16.11.213 7023 /vrf Mgmt-intf
+menu cfg_menu text 14. Connect to CFG-R14
+menu cfg_menu command 14. telnet 172.16.11.214 7023 /vrf Mgmt-intf
+menu cfg_menu text 15. Connect to CFG-R15
+menu cfg_menu command 15. telnet 172.16.11.215 7023 /vrf Mgmt-intf
+menu cfg_menu text 16. Connect to CFG-R16
+menu cfg_menu command 16. telnet 172.16.11.216 7023 /vrf Mgmt-intf
+menu cfg_menu text 17. Connect to CFG-R17
+menu cfg_menu command 17. telnet 172.16.11.217 7023 /vrf Mgmt-intf
+menu cfg_menu text 18. Connect to CFG-R18
+menu cfg_menu command 18. telnet 172.16.11.218 7023 /vrf Mgmt-intf
+menu cfg_menu text 19. Connect to CFG-R19
+menu cfg_menu command 19. telnet 172.16.11.219 7023 /vrf Mgmt-intf
+menu cfg_menu text 20. Connect to CFG-R20
+menu cfg_menu command 20. telnet 172.16.11.220 7023 /vrf Mgmt-intf
+menu cfg_menu text 21. Connect to CFG-R21
+menu cfg_menu command 21. telnet 172.16.11.221 7023 /vrf Mgmt-intf
+menu cfg_menu text 22. Connect to CFG-R22
+menu cfg_menu command 22. telnet 172.16.11.222 7023 /vrf Mgmt-intf
+menu cfg_menu text 23. Connect to CFG-R23
+menu cfg_menu command 23. telnet 172.16.11.223 7023 /vrf Mgmt-intf
+menu cfg_menu text 24. Connect to CFG-R24
+menu cfg_menu command 24. telnet 172.16.11.224 7023 /vrf Mgmt-intf
+menu cfg_menu text 25. Connect to CFG-R25
+menu cfg_menu command 25. telnet 172.16.11.225 7023 /vrf Mgmt-intf
+menu cfg_menu text 26. Connect to CFG-SW1
+menu cfg_menu command 26. telnet 172.16.11.226 7023 /vrf Mgmt-intf
+menu cfg_menu text 27. Connect to CFG-SW2
+menu cfg_menu command 27. telnet 172.16.11.227 7023 /vrf Mgmt-intf
+menu cfg_menu text 28. Connect to CFG-SW3
+menu cfg_menu command 28. telnet 172.16.11.228 7023 /vrf Mgmt-intf
+menu cfg_menu text 29. Connect to CFG-SW4
+menu cfg_menu command 29. telnet 172.16.11.229 7023 /vrf Mgmt-intf
+menu cfg_menu text 30. Connect to CFG-SW5
+menu cfg_menu command 30. telnet 172.16.11.230 7023 /vrf Mgmt-intf
+menu cfg_menu text Q. Quit
+menu cfg_menu command Q. Exit
+menu cfg_menu clear-screen
+!
+redundancy
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -11655,6 +11861,12 @@ kron occurrence KRONJOB in 1 recurring system-startup
 !
 kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+!
+!
 control-plane
 !
 !
