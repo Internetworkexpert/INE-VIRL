@@ -19,6 +19,14 @@ interface Loopback0
  ip address 1.1.1.1 255.255.255.255
  ipv6 address 2001::1:1:1:1/128
 !
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
+!
 interface GigabitEthernet2
  no shutdown
 !
@@ -59,6 +67,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 2.2.2.2 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -119,6 +135,14 @@ ip cef distributed
 interface Loopback0
  ip address 3.3.3.3 255.255.255.255
 !
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
+!
 interface GigabitEthernet2
  no ip address
  no shutdown
@@ -177,6 +201,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 4.4.4.4 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -241,6 +273,14 @@ ip cef distributed
 interface Loopback0
  ip address 5.5.5.5 255.255.255.255
 !
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
+!
 interface GigabitEthernet2
  no ip address
  no shutdown
@@ -301,6 +341,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 6.6.6.6 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -419,6 +467,14 @@ line console
 interface Loopback0
  ipv4 address 19.19.19.19 255.255.255.255
 !
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  cdp
+  no shutdown
+!
 interface GigabitEthernet0/0/0/0
  cdp
 !
@@ -485,6 +541,14 @@ line console
 interface Loopback0
  ipv4 address 20.20.20.20 255.255.255.255
  ipv6 address 2001::20:20:20:20/128
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  cdp
+  no shutdown
 !
 interface GigabitEthernet0/0/0/0.1920
  dot1q vlan 1920
