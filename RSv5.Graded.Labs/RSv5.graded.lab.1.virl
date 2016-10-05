@@ -11236,13 +11236,12 @@ end</entry>
 !
 ! FILL IN THESE VARIABLES FOR THE USER
 !
-! username $username privilege 1 password 0 $password
-! username $username autocommand menu main_menu
 !
 enable secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
 username admin privilege 15 secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username user privilege 1 password password
-username user autocommand menu main_menu
+username {{username}} privilege 1 password 0 {{password}}
+username {{username}} autocommand menu main_menu
+
 !
 version 15.6
 service timestamps debug datetime msec
