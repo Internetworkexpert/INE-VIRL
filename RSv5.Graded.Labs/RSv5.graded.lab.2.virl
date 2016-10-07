@@ -10248,9 +10248,7 @@ privilege exec level 1 exit
 privilege exec level 1 clear
 privilege exec level 1 clear line
 privilege exec level 1 show users       
-privilege exec level 2 enable
-!
-no menu main_menu
+!no menu main_menu
 menu main_menu title $
 +--------------------------------------+
 |           RSv5 Graded Lab 1          |

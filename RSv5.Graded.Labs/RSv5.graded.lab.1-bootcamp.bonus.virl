@@ -12,7 +12,7 @@
             <entry key="static_serial_port_0" type="Integer">11001</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
+! Last configuration change at 16:10:20 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -171,14 +171,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 5 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -204,7 +214,7 @@ end</entry>
             <entry key="static_serial_port_0" type="Integer">11002</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:52 UTC Mon Jun 6 2016
+! Last configuration change at 16:08:33 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -303,7 +313,7 @@ redundancy
 !
 interface Loopback0
  description Loopback
- ip address 10.2.2.2 255.255.255.255
+ ip address 10.2.2.2 255.255.255.0
  ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
@@ -427,14 +437,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 5 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -458,7 +478,7 @@ end</entry>
             <entry key="static_serial_port_0" type="Integer">11003</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:47 UTC Mon Jun 6 2016
+! Last configuration change at 16:10:26 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -629,7 +649,7 @@ router ospfv3 3
  exit-address-family
 !
 router ospf 3 vrf HQ-SITE-1
- redistribute bgp 18417 subnets
+ redistribute bgp 18417 subnets route-map default
 !
 router ospf 1
 !
@@ -721,6 +741,11 @@ route-map V4-DEFAULT-ONLY permit 10
 route-map V6-DEFAULT-ONLY permit 20
  match ipv6 address prefix-list V6-DEFAULT
 !
+route-map default deny 10
+ match community no-export
+!
+route-map default permit 20
+!
 !
 !
 control-plane
@@ -729,14 +754,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 5 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -761,7 +791,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.104</entry>
             <entry key="static_serial_port_0" type="Integer">11004</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:19 UTC Mon Jun 6 2016
+! Last configuration change at 16:10:25 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -785,7 +815,7 @@ vrf definition BRANCH-SITE-2
  exit-address-family
  !
  address-family ipv6
-  route-target export 10.4.4.4:127
+  route-target export 10.4.4.4:172
   route-target import 10.2.2.2:172
   route-target import 10.3.3.3:172
   route-target import 10.5.5.5:172
@@ -809,6 +839,7 @@ vrf definition PRIMARY-DC
  exit-address-family
  !
  address-family ipv6
+  import map none
  exit-address-family
 !
 enable password cisco
@@ -934,16 +965,16 @@ router bgp 18417
  !
  address-family vpnv4
   neighbor 10.6.6.6 activate
-  neighbor 10.6.6.6 send-community extended
+  neighbor 10.6.6.6 send-community both
  exit-address-family
  !
  address-family vpnv6
   neighbor 10.6.6.6 activate
-  neighbor 10.6.6.6 send-community extended
+  neighbor 10.6.6.6 send-community both
  exit-address-family
  !
  address-family ipv4 vrf BRANCH-SITE-2
-  redistribute ospf 16
+  redistribute ospf 16 route-map default
  exit-address-family
  !
  address-family ipv6 vrf BRANCH-SITE-2
@@ -970,6 +1001,8 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list none seq 5 permit 10.16.16.16/32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -980,6 +1013,16 @@ kron policy-list KRONPOLICY
 !
 !
 !
+ipv6 prefix-list none seq 5 deny 2001:10:12:12:12::12/128
+ipv6 prefix-list none seq 10 permit ::/0 le 128
+route-map none permit 10
+ match ipv6 address prefix-list none
+!
+route-map default permit 10
+ match ip address prefix-list none
+ set community no-advertise
+!
+!
 !
 control-plane
 !
@@ -987,14 +1030,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 5 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -1018,7 +1066,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.105</entry>
             <entry key="static_serial_port_0" type="Integer">11005</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:15 UTC Mon Jun 6 2016
+! Last configuration change at 16:09:22 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1062,6 +1110,7 @@ vrf definition PRIMARY-DC
  exit-address-family
  !
  address-family ipv6
+  import map none
  exit-address-family
 !
 enable password cisco
@@ -1136,6 +1185,7 @@ interface GigabitEthernet0/1
  duplex full
  speed auto
  media-type rj45
+ mpls label protocol tdp
  mpls ip
 !
 interface GigabitEthernet0/2
@@ -1233,6 +1283,12 @@ kron policy-list KRONPOLICY
 !
 !
 !
+ipv6 prefix-list none seq 5 deny 2001:10:12:12:12::12/128
+ipv6 prefix-list none seq 10 permit ::/0 le 128
+route-map none permit 10
+ match ipv6 address prefix-list none
+!
+!
 !
 control-plane
 !
@@ -1240,14 +1296,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 5 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -1271,7 +1337,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.106</entry>
             <entry key="static_serial_port_0" type="Integer">11006</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:32 UTC Mon Jun 6 2016
+! Last configuration change at 14:16:46 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1375,6 +1441,10 @@ router bgp 18417
  !
  template peer-policy AS18417_VPNV4
   route-reflector-client
+  send-community both
+ exit-peer-policy
+ !
+ template peer-policy AS18417_VPNV
  exit-peer-policy
  !
  template peer-session AS18417
@@ -1422,6 +1492,9 @@ router bgp 18417
   neighbor 10.3.3.3 activate
   neighbor 10.3.3.3 send-community extended
   neighbor 10.3.3.3 inherit peer-policy AS18417_VPNV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_VPNV4
   neighbor 10.5.5.5 activate
   neighbor 10.5.5.5 send-community extended
   neighbor 10.5.5.5 inherit peer-policy AS18417_VPNV4
@@ -1452,14 +1525,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -1481,7 +1564,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.107</entry>
             <entry key="static_serial_port_0" type="Integer">11007</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:51:26 UTC Mon Jun 6 2016
+! Last configuration change at 14:15:47 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1557,8 +1640,8 @@ interface Loopback0
  description Loopback
  ip address 10.7.7.7 255.255.255.255
  ipv6 address 2001:10:7:7:7::7/128
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1576,8 +1659,8 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::1/127
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R12
@@ -1674,14 +1757,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -1704,7 +1797,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.108</entry>
             <entry key="static_serial_port_0" type="Integer">11008</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:50:57 UTC Mon Jun 6 2016
+! Last configuration change at 14:11:17 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1780,8 +1873,8 @@ interface Loopback0
  description Loopback
  ip address 10.8.8.8 255.255.255.255
  ipv6 address 2001:10:8:8:8::8/128
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1799,8 +1892,8 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::/127
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R9
@@ -1817,8 +1910,8 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::4/127
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 router ospfv3 1
  !
@@ -1899,14 +1992,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -1930,7 +2028,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.109</entry>
             <entry key="static_serial_port_0" type="Integer">11009</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:50:49 UTC Mon Jun 6 2016
+! Last configuration change at 15:54:05 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2006,8 +2104,8 @@ interface Loopback0
  description Loopback
  ip address 10.9.9.9 255.255.255.255
  ipv6 address 2001:10:9:9:9::9/128
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2025,8 +2123,8 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::3/127
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R24
@@ -2120,14 +2218,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -2150,7 +2253,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.110</entry>
             <entry key="static_serial_port_0" type="Integer">11010</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:47 UTC Mon Jun 6 2016
+! Last configuration change at 14:16:24 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2226,8 +2329,8 @@ interface Loopback0
  description Loopback
  ip address 10.10.10.10 255.255.255.255
  ipv6 address 2001:10:10:10:10::10/128
- ospfv3 1 ipv4 area 0
  ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2245,8 +2348,8 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::5/127
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/2
  description to TS-R11
@@ -2343,14 +2446,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -2373,7 +2486,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.111</entry>
             <entry key="static_serial_port_0" type="Integer">11011</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:45 UTC Mon Jun 6 2016
+! Last configuration change at 15:52:05 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2419,8 +2532,7 @@ mmi snmp-timeout 180
 no ip domain lookup
 ip domain name virl.info
 ip cef
-ipv6 unicast-routing
-ipv6 cef
+no ipv6 cef
 !
 multilink bundle-name authenticated
 !
@@ -2448,7 +2560,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 10.11.11.11 255.255.255.255
- ipv6 address 2001:10:11:11:11::11/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2465,7 +2576,6 @@ interface GigabitEthernet0/1
  duplex full
  speed auto
  media-type rj45
- ipv6 address 2001:167:22:2::2/127
 !
 interface GigabitEthernet0/2
  description to TS-R10
@@ -2473,7 +2583,6 @@ interface GigabitEthernet0/2
  duplex full
  speed auto
  media-type rj45
- ipv6 address 2001:167:22:2::/127
 !
 interface GigabitEthernet0/3
  description to TS-R25
@@ -2481,7 +2590,6 @@ interface GigabitEthernet0/3
  duplex full
  speed auto
  media-type rj45
- ipv6 address 2001:167:22:2::4/127
 !
 interface GigabitEthernet0/4
  description to TS-R12
@@ -2489,9 +2597,12 @@ interface GigabitEthernet0/4
  duplex full
  speed auto
  media-type rj45
- ipv6 address 2001:12:18:255::9/127
 !
 router bgp 2202
+ template peer-session default
+  transport connection-mode passive
+ exit-peer-session
+ !
  bgp asnotation dot
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
@@ -2503,6 +2614,7 @@ router bgp 2202
  neighbor 167.22.2.1 ttl-security hops 1
  neighbor 167.22.2.3 remote-as 8593.3
  neighbor 167.22.2.5 remote-as 8593.1
+ neighbor 167.22.2.5 inherit peer-session default
  !
  address-family ipv4
   redistribute connected
@@ -2512,18 +2624,6 @@ router bgp 2202
   neighbor 167.22.2.3 default-originate
   neighbor 167.22.2.3 route-map V4-DEFAULT-ONLY out
   neighbor 167.22.2.5 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 12.18.255.8 activate
-  neighbor 12.18.255.8 route-map TO-ISP-C out
-  neighbor 2001:167:22:2::3 activate
-  neighbor 2001:167:22:2::3 default-originate
-  neighbor 2001:167:22:2::3 route-map V6-DEFAULT-ONLY out
-  neighbor 2001:167:22:2::5 activate
-  neighbor 167.22.2.1 activate
-  neighbor 167.22.2.1 route-map TO-ISP-A out
  exit-address-family
 !
 ip forward-protocol nd
@@ -2566,14 +2666,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -2598,7 +2703,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.112</entry>
             <entry key="static_serial_port_0" type="Integer">11012</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:41 UTC Mon Jun 6 2016
+! Last configuration change at 15:25:06 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2715,6 +2820,7 @@ interface GigabitEthernet0/4
  speed auto
  media-type rj45
  ipv6 address 2001:12:18:255::6/127
+ arp authorized
 !
 interface GigabitEthernet0/5
  description to TS-R11
@@ -2736,6 +2842,7 @@ router bgp 12.82
  neighbor 12.18.255.5 ttl-security hops 1
  neighbor 12.18.255.7 remote-as 8593.1
  neighbor 12.18.255.9 remote-as 2202
+ neighbor 12.18.255.9 ttl-security hops 1
  neighbor 2001:12:18:255::1 remote-as 18417
  neighbor 2001:12:18:255::1 ttl-security hops 1
  neighbor 2001:12:18:255::3 remote-as 18417
@@ -2812,14 +2919,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -2845,7 +2962,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.113</entry>
             <entry key="static_serial_port_0" type="Integer">11013</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:30 UTC Mon Jun 6 2016
+! Last configuration change at 14:16:41 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3070,14 +3187,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -3099,7 +3226,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.114</entry>
             <entry key="static_serial_port_0" type="Integer">11014</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:26 UTC Mon Jun 6 2016
+! Last configuration change at 14:44:00 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3299,7 +3426,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route 10.0.0.0 255.224.0.0 10.1.102.25
+ip route 10.0.0.0 255.224.0.0 184.17.13.25
 ip route 10.24.24.24 255.255.255.255 184.17.13.25
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
@@ -3322,14 +3449,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -3352,7 +3489,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.115</entry>
             <entry key="static_serial_port_0" type="Integer">11015</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:16 UTC Mon Jun 6 2016
+! Last configuration change at 15:08:10 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3491,14 +3628,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -3520,7 +3662,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.116</entry>
             <entry key="static_serial_port_0" type="Integer">11016</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:10 UTC Mon Jun 6 2016
+! Last configuration change at 15:23:32 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3651,6 +3793,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
 !
 !
+ipv6 neighbor FE80::F816:3EFF:FE7C:5BE0 GigabitEthernet0/1 0000.dead.beef
 !
 !
 control-plane
@@ -3659,14 +3802,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -3688,7 +3841,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.117</entry>
             <entry key="static_serial_port_0" type="Integer">11017</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:05 UTC Mon Jun 6 2016
+! Last configuration change at 14:47:56 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3827,14 +3980,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -3856,7 +4019,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.118</entry>
             <entry key="static_serial_port_0" type="Integer">11018</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:00 UTC Mon Jun 6 2016
+! Last configuration change at 14:15:17 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3977,6 +4140,7 @@ router ospfv3 1
  exit-address-family
 !
 router ospf 18
+ area 18 virtual-link 10.28.28.28
 !
 ip forward-protocol nd
 !
@@ -4004,14 +4168,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4034,7 +4208,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.119</entry>
             <entry key="static_serial_port_0" type="Integer">11019</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:52:56 UTC Mon Jun 6 2016
+! Last configuration change at 14:17:06 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4155,6 +4329,7 @@ router ospfv3 1
  exit-address-family
 !
 router ospf 19
+ area 19 virtual-link 10.28.28.28
 !
 ip forward-protocol nd
 !
@@ -4182,14 +4357,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4212,7 +4397,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.120</entry>
             <entry key="static_serial_port_0" type="Integer">11020</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:29 UTC Mon Jun 6 2016
+! Last configuration change at 14:16:28 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4357,14 +4542,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4386,7 +4576,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.121</entry>
             <entry key="static_serial_port_0" type="Integer">11021</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:40 UTC Mon Jun 6 2016
+! Last configuration change at 15:01:51 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4407,6 +4597,10 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
+logging discriminator default msg-body drops K-value
+logging buffered discriminator default
+logging console discriminator default
+logging monitor discriminator default
 enable password cisco
 !
 no aaa new-model
@@ -4583,7 +4777,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip pim rp-address 10.1.1.255 override
+ip pim rp-address 10.1.1.255
 ip route 10.24.24.24 255.255.255.255 167.22.2.2
 ip route 10.25.25.25 255.255.255.255 167.22.2.2
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
@@ -4611,14 +4805,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4641,7 +4845,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.122</entry>
             <entry key="static_serial_port_0" type="Integer">11022</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:17 UTC Mon Jun 6 2016
+! Last configuration change at 15:09:26 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4662,6 +4866,10 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
+logging discriminator default msg-body drops K-value
+logging buffered discriminator default
+logging console discriminator default
+logging monitor discriminator default
 enable password cisco
 !
 no aaa new-model
@@ -4746,6 +4954,7 @@ router eigrp REMOTE-SITE-3
   topology base
   exit-af-topology
   network 10.0.0.0
+  metric weights 0 1 1 1 0 0 0
  exit-address-family
  !
  address-family ipv6 unicast autonomous-system 8593
@@ -4780,14 +4989,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4809,7 +5023,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.123</entry>
             <entry key="static_serial_port_0" type="Integer">11023</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:24 UTC Mon Jun 6 2016
+! Last configuration change at 14:13:41 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4948,14 +5162,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -4977,7 +5196,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.124</entry>
             <entry key="static_serial_port_0" type="Integer">11024</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:09 UTC Mon Jun 6 2016
+! Last configuration change at 14:43:02 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5076,6 +5295,7 @@ interface Tunnel101
  ip address 10.1.101.24 255.255.255.0
  no ip redirects
  ip mtu 1400
+ ip pim bsr-border
  ip pim sparse-mode
  ip nhrp authentication NHRPAUTH
  ip nhrp map multicast dynamic
@@ -5098,6 +5318,7 @@ interface Tunnel101
 !
 interface Tunnel102
  no ip address
+ ip pim bsr-border
  ip pim sparse-mode
 !
 interface GigabitEthernet0/0
@@ -5158,7 +5379,7 @@ router eigrp PRIMARY-DC
  address-family ipv4 unicast autonomous-system 8593
   !
   af-interface Tunnel101
-   summary-address 10.0.0.0 255.0.0.0
+   summary-address 10.0.0.0 255.0.0.0 leak-map RM_LEAK
   exit-af-interface
   !
   topology base
@@ -5217,6 +5438,13 @@ ip msdp default-peer 10.25.25.25
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+ip access-list standard PL_LEAK
+ deny   any
+!
+!
+ip prefix-list PL_LEAK seq 5 permit 10.1.0.0/16 ge 24
+ip prefix-list PL_LEAK seq 10 permit 10.26.26.26/32
+ip prefix-list PL_LEAK seq 15 permit 10.27.27.27/32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -5227,6 +5455,9 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
 !
 !
+route-map RM_LEAK permit 10
+ match ip address PL_LEAK
+!
 !
 !
 control-plane
@@ -5235,14 +5466,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -5266,7 +5507,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.125</entry>
             <entry key="static_serial_port_0" type="Integer">11025</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:13 UTC Mon Jun 6 2016
+! Last configuration change at 14:32:51 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5363,12 +5604,14 @@ interface Loopback1
 !
 interface Tunnel101
  no ip address
+ ip pim bsr-border
  ip pim sparse-mode
 !
 interface Tunnel102
  ip address 10.1.102.25 255.255.255.0
  no ip redirects
  ip mtu 1400
+ ip pim bsr-border
  ip pim sparse-mode
  ip nhrp authentication NHRPAUTH
  ip nhrp map multicast dynamic
@@ -5447,7 +5690,7 @@ router eigrp PRIMARY-DC
  address-family ipv4 unicast autonomous-system 8593
   !
   af-interface Tunnel102
-   summary-address 10.0.0.0 255.0.0.0
+   summary-address 10.0.0.0 255.0.0.0 leak-map RM_LEAK
   exit-af-interface
   !
   topology base
@@ -5466,6 +5709,10 @@ router eigrp PRIMARY-DC
  exit-address-family
 !
 router bgp 8593.1
+ template peer-session default
+  transport connection-mode passive
+ exit-peer-session
+ !
  bgp asnotation dot
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
@@ -5476,6 +5723,7 @@ router bgp 8593.1
  neighbor 2001:167:22:2::4 remote-as 2202
  neighbor 2001:184:17:113::21 remote-as 18417
  neighbor 167.22.2.4 remote-as 2202
+ neighbor 167.22.2.4 inherit peer-session default
  neighbor 184.17.13.21 remote-as 18417
  !
  address-family ipv4
@@ -5507,6 +5755,10 @@ ip msdp default-peer 10.24.24.24
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list PL_LEAK seq 5 permit 10.1.0.0/16 ge 24
+ip prefix-list PL_LEAK seq 10 permit 10.26.26.26/32
+ip prefix-list PL_LEAK seq 15 permit 10.27.27.27/32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -5516,6 +5768,9 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_LEAK permit 10
+ match ip address PL_LEAK
 !
 route-map PRIMARY_ISP permit 10
  set local-preference 200
@@ -5528,14 +5783,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -5559,7 +5824,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.126</entry>
             <entry key="static_serial_port_0" type="Integer">11026</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:53:55 UTC Mon Jun 6 2016
+! Last configuration change at 15:10:55 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5655,14 +5920,14 @@ interface GigabitEthernet0/1
  media-type rj45
 !
 interface GigabitEthernet0/1.100
- encapsulation dot1Q 101
+ encapsulation dot1Q 100
  ip address 10.1.100.26 255.255.255.0
  ip pim sparse-mode
  ipv6 address 2001:10:1:100::26/64
  no cdp enable
 !
 interface GigabitEthernet0/1.200
- encapsulation dot1Q 202
+ encapsulation dot1Q 200
  ip address 10.1.200.26 255.255.255.0
  ip pim sparse-mode
  ipv6 address 2001:10:1:200::26/64
@@ -5710,14 +5975,24 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -5739,7 +6014,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.127</entry>
             <entry key="static_serial_port_0" type="Integer">11027</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:54:00 UTC Mon Jun 6 2016
+! Last configuration change at 14:12:33 UTC Wed Oct 5 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5860,6 +6135,7 @@ router eigrp PRIMARY-DC
   topology base
   exit-af-topology
   network 10.0.0.0
+  eigrp router-id 27.27.27.27
  exit-address-family
  !
  address-family ipv6 unicast autonomous-system 8593
@@ -5894,14 +6170,19 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
-
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
@@ -5924,7 +6205,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.128</entry>
             <entry key="static_serial_port_0" type="Integer">11028</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:49:29 UTC Mon Jun 6 2016
+! Last configuration change at 14:15:39 UTC Wed Oct 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -6038,6 +6319,8 @@ interface Vlan20
  ip ospf 28 area 0
 !
 router ospf 28
+ area 18 virtual-link 10.18.18.18
+ area 19 virtual-link 10.19.19.19
 !
 ip forward-protocol nd
 !
@@ -6064,12 +6347,23 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -6093,7 +6387,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.129</entry>
             <entry key="static_serial_port_0" type="Integer">11029</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:49:34 UTC Mon Jun 6 2016
+! Last configuration change at 14:16:17 UTC Wed Oct 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -6219,12 +6513,23 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -6248,7 +6553,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.130</entry>
             <entry key="static_serial_port_0" type="Integer">11030</entry>
             <entry key="config" type="String">!
-! Last configuration change at 22:49:41 UTC Mon Jun 6 2016
+! Last configuration change at 14:14:42 UTC Wed Oct 5 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -6341,7 +6646,7 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  description to TS-R26
  switchport access vlan 2
- switchport trunk allowed vlan 101,202
+ switchport trunk allowed vlan 100,101,200,202
  switchport trunk encapsulation dot1q
  switchport mode trunk
  media-type rj45
@@ -6407,12 +6712,23 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 1 4
+ exec-timeout 720 0
+ password cisco
+ login
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 60 0
  privilege level 15
  logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -6437,7 +6753,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.201</entry>
             <entry key="static_serial_port_0" type="Integer">12001</entry>
             <entry key="config" type="string">!
-! Last configuration change at 01:42:54 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:45 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6561,12 +6877,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -6589,7 +6909,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.202</entry>
             <entry key="static_serial_port_0" type="Integer">12002</entry>
             <entry key="config" type="string">!
-! Last configuration change at 01:42:39 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:46 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6713,12 +7033,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -6741,7 +7065,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.203</entry>
             <entry key="static_serial_port_0" type="Integer">12003</entry>
             <entry key="config" type="string">!
-! Last configuration change at 02:51:10 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:44 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -6881,12 +7205,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -6912,7 +7240,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.204</entry>
             <entry key="static_serial_port_0" type="Integer">12004</entry>
             <entry key="config" type="string">!
-! Last configuration change at 02:52:34 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:50 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7052,12 +7380,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7083,7 +7415,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.205</entry>
             <entry key="static_serial_port_0" type="Integer">12005</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:34:50 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:44 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7206,12 +7538,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7235,7 +7571,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.206</entry>
             <entry key="static_serial_port_0" type="Integer">12006</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:36:10 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:41 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7358,12 +7694,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7387,7 +7727,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.207</entry>
             <entry key="static_serial_port_0" type="Integer">12007</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:37:38 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:39 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7503,12 +7843,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7531,7 +7875,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.208</entry>
             <entry key="static_serial_port_0" type="Integer">12008</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:24:26 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:46 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7654,12 +7998,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7683,7 +8031,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.209</entry>
             <entry key="static_serial_port_0" type="Integer">12009</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:25:19 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:50 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7806,12 +8154,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7835,7 +8187,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.210</entry>
             <entry key="static_serial_port_0" type="Integer">12010</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:38:44 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:34 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -7958,12 +8310,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -7987,7 +8343,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.211</entry>
             <entry key="static_serial_port_0" type="Integer">12011</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:39:07 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:38 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8110,12 +8466,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8139,7 +8499,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.212</entry>
             <entry key="static_serial_port_0" type="Integer">12012</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:30:23 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:46 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8262,12 +8622,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8291,7 +8655,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.213</entry>
             <entry key="static_serial_port_0" type="Integer">12013</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:29:13 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:38 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8414,12 +8778,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8443,7 +8811,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.214</entry>
             <entry key="static_serial_port_0" type="Integer">12014</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:29:58 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:25 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8559,12 +8927,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8587,7 +8959,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.215</entry>
             <entry key="static_serial_port_0" type="Integer">12015</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:13:46 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:32 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8710,12 +9082,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8739,7 +9115,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.216</entry>
             <entry key="static_serial_port_0" type="Integer">12016</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:13:34 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:41 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8869,12 +9245,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -8899,7 +9279,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.217</entry>
             <entry key="static_serial_port_0" type="Integer">12017</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:13:03 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:45 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9029,12 +9409,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9059,7 +9443,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.218</entry>
             <entry key="static_serial_port_0" type="Integer">12018</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:18:36 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:46 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9212,12 +9596,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9244,7 +9632,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.219</entry>
             <entry key="static_serial_port_0" type="Integer">12019</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:45:03 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:37 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9367,12 +9755,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9396,7 +9788,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.220</entry>
             <entry key="static_serial_port_0" type="Integer">12020</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:41:13 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:47 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9526,12 +9918,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9556,7 +9952,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.221</entry>
             <entry key="static_serial_port_0" type="Integer">12021</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:46:08 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:42 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9693,12 +10089,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9724,7 +10124,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.222</entry>
             <entry key="static_serial_port_0" type="Integer">12022</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:44:20 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:33 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9847,12 +10247,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -9876,7 +10280,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.223</entry>
             <entry key="static_serial_port_0" type="Integer">12023</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:42:33 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:41 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -9992,12 +10396,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -10020,7 +10428,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.224</entry>
             <entry key="static_serial_port_0" type="Integer">12024</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:34:54 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:26 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -10171,12 +10579,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -10202,7 +10614,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.225</entry>
             <entry key="static_serial_port_0" type="Integer">12025</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:02:06 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:45 UTC Mon Oct 3 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -10357,12 +10769,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 no scheduler allocate
@@ -10389,7 +10805,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.226</entry>
             <entry key="static_serial_port_0" type="Integer">12026</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:46:10 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:51 UTC Mon Oct 3 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -10543,12 +10959,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -10574,7 +10994,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.227</entry>
             <entry key="static_serial_port_0" type="Integer">12027</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:26:32 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:52 UTC Mon Oct 3 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -10712,12 +11132,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -10743,7 +11167,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.228</entry>
             <entry key="static_serial_port_0" type="Integer">12028</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:27:14 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:38 UTC Mon Oct 3 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -10873,12 +11297,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -10903,7 +11331,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.229</entry>
             <entry key="static_serial_port_0" type="Integer">12029</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:27:17 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:50 UTC Mon Oct 3 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -11025,12 +11453,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -11054,7 +11486,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.11.230</entry>
             <entry key="static_serial_port_0" type="Integer">12030</entry>
             <entry key="config" type="string">!
-! Last configuration change at 03:34:46 UTC Tue Jun 7 2016
+! Last configuration change at 20:04:53 UTC Mon Oct 3 2016
 !
 version 15.2
 service timestamps debug datetime msec
@@ -11188,12 +11620,16 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login
+ length 0
+ transport input telnet ssh
+line vty 5 100
  privilege level 15
- logging synchronous
  no login
- no rotary
+ rotary 23
  transport input telnet
 !
 event manager applet CLI_AFTER_BOOT
@@ -11212,7 +11648,7 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
     </node>
-    <node name="Access-Server" type="SIMPLE" subtype="IOSv" location="163,160">
+    <node name="iosv-1" type="SIMPLE" subtype="IOSv" location="173,170">
         <extensions>
             <entry key="static_ip" type="String">172.16.11.10</entry>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
@@ -11283,10 +11719,11 @@ privilege exec level 1 exit
 privilege exec level 1 clear
 privilege exec level 1 clear line
 privilege exec level 1 show users       
-!no menu main_menu
+!
+no menu main_menu
 menu main_menu title $
 +--------------------------------------+
-|           RSv5 Graded Lab 1          |
+|   RSv5 Mock Lab Bootcamp Bonus Lab   |
 |              Main Menu               |
 +--------------------------------------+
 $
@@ -11305,7 +11742,7 @@ menu main_menu clear-screen
 no menu ts_menu
 menu ts_menu title $
 +------------------------------------------+
-|            RSv5 Graded Lab 1             |
+|     RSv5 Mock Lab Bootcamp Bonus Lab     |
 |     Troubleshooting Section Menu         |
 +------------------------------------------+
 $
@@ -11377,7 +11814,7 @@ menu ts_menu clear-screen
 no menu cfg_menu
 menu cfg_menu title $
 +--------------------------------------+
-|           RSv5 Graded Lab 1          |
+|   RSv5 Mock Lab Bootcamp Bonus Lab   |
 |      Configuration Section Menu      |
 +--------------------------------------+
 $
