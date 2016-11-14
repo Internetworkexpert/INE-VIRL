@@ -11491,8 +11491,8 @@ end</entry>
 !
 enable secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
 username admin privilege 15 secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username {{username}} privilege 1 password 0 {{password}}
-username {{username}} autocommand menu main_menu
+username ccie privilege 1 password 0 mocklab
+username ccie autocommand menu main_menu
 
 !
 version 15.6
@@ -11538,7 +11538,7 @@ privilege exec level 1 show users
 !no menu main_menu
 menu main_menu title $
 +--------------------------------------+
-|           RSv5 Graded Lab 1          |
+|           RSv5 Graded Lab 3          |
 |              Main Menu               |
 +--------------------------------------+
 $
@@ -11557,7 +11557,7 @@ menu main_menu clear-screen
 no menu ts_menu
 menu ts_menu title $
 +------------------------------------------+
-|            RSv5 Graded Lab 1             |
+|            RSv5 Graded Lab 3             |
 |     Troubleshooting Section Menu         |
 +------------------------------------------+
 $
@@ -11629,7 +11629,7 @@ menu ts_menu clear-screen
 no menu cfg_menu
 menu cfg_menu title $
 +--------------------------------------+
-|           RSv5 Graded Lab 1          |
+|           RSv5 Graded Lab 3          |
 |      Configuration Section Menu      |
 +--------------------------------------+
 $
