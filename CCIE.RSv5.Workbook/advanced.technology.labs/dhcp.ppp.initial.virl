@@ -93,31 +93,31 @@ end
 </entry></extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R2" type="SIMPLE" subtype="IOSv" location="58,197"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R2" type="SIMPLE" subtype="IOSv" location="58,197">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R3" type="SIMPLE" subtype="IOSv" location="59,270"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R3" type="SIMPLE" subtype="IOSv" location="59,270">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R4" type="SIMPLE" subtype="IOSv" location="58,345"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R4" type="SIMPLE" subtype="IOSv" location="58,345">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R5" type="SIMPLE" subtype="IOSv" location="47,417"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R5" type="SIMPLE" subtype="IOSv" location="47,417">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R6" type="SIMPLE" subtype="IOSv" location="49,474"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R6" type="SIMPLE" subtype="IOSv" location="49,474">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R7" type="SIMPLE" subtype="IOSv" location="43,552"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R7" type="SIMPLE" subtype="IOSv" location="43,552">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R8" type="SIMPLE" subtype="IOSv" location="43,618"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R8" type="SIMPLE" subtype="IOSv" location="43,618">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R9" type="SIMPLE" subtype="IOSv" location="37,675"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R9" type="SIMPLE" subtype="IOSv" location="37,675">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
-    <node name="R10" type="SIMPLE" subtype="IOSv" location="32,741"><extensions><entry key="config" type="String">ÿþe</entry></extensions>
+    <node name="R10" type="SIMPLE" subtype="IOSv" location="32,741">
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="346,347">
