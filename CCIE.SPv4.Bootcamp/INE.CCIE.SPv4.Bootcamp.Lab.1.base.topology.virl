@@ -79,6 +79,52 @@ interface GigabitEthernet3
   no ip address
   no shutdown
 !
+hostname R1
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ipv6 address 2001::1/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.12
+interface Gig2.12
+ encapsulation dot1q 12
+ ip address 10.1.2.1 255.255.255.0
+ ipv6 address 2001:10:1:2::1/64
+!
+no int gig1.15
+interface Gig2.15
+ encapsulation dot1q 15
+ ip address 10.1.5.1 255.255.255.0
+ ipv6 address 2001:10:1:5::1/64
+!
+no int gig1.111
+interface Gig2.111
+ encapsulation dot1q 111
+ ip address 10.1.11.1 255.255.255.0
+ ipv6 address 2001:10:1:11::1/64
+!
+no int gig1.112
+interface Gig2.112
+ encapsulation dot1q 112
+ ip address 10.1.12.1 255.255.255.0
+ ipv6 address 2001:10:1:12::1/64
 !
 !
 !
@@ -171,6 +217,67 @@ interface GigabitEthernet4
   no ip address
   no shutdown
 !
+enable
+config t
+!
+hostname R2
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ ipv6 address 2001::2/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.12
+interface Gig2.12
+ encapsulation dot1q 12
+ ip address 10.1.2.2 255.255.255.0
+ ipv6 address 2001:10:1:2::2/64
+!
+no int gig1.23
+interface Gig2.23
+ encapsulation dot1q 23
+ ip address 10.2.3.2 255.255.255.0
+ ipv6 address 2001:10:2:3::2/64
+!
+no int gig1.210
+interface Gig2.210
+ encapsulation dot1q 210
+ ip address 10.2.10.2 255.255.255.0
+ ipv6 address 2001:10:2:10::2/64
+!
+no int gig1.211
+interface Gig2.211
+ encapsulation dot1q 211
+ ip address 10.2.11.2 255.255.255.0
+ ipv6 address 2001:10:2:11::2/64
+!
+no int gig1.212
+interface Gig2.212
+ encapsulation dot1q 212
+ ip address 10.2.12.2 255.255.255.0
+ ipv6 address 2001:10:2:12::2/64
+!
+no int gig1.213
+interface Gig2.213
+ encapsulation dot1q 213
+ ip address 10.2.13.2 255.255.255.0
+ ipv6 address 2001:10:2:13::2/64
 !
 !
 !
@@ -258,6 +365,56 @@ interface GigabitEthernet2
 !
 !
 !
+!
+hostname R3
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+ ipv6 address 2001::3/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.23
+interface Gig2.23
+ encapsulation dot1q 23
+ ip address 10.2.3.3 255.255.255.0
+ ipv6 address 2001:10:2:3::3/64
+!
+no int gig1.37
+interface Gig2.37
+ encapsulation dot1q 37
+ ip address 10.3.7.3 255.255.255.0
+ ipv6 address 2001:10:3:7::3/64
+!
+no int gig1.312
+interface Gig2.312
+ encapsulation dot1q 312
+ ip address 10.3.12.3 255.255.255.0
+ ipv6 address 2001:10:3:12::3/64
+!
+no int gig1.313
+interface Gig2.313
+ encapsulation dot1q 313
+ ip address 10.3.13.3 255.255.255.0
+ ipv6 address 2001:10:3:13::3/64
+!
 end
 </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -343,6 +500,50 @@ interface GigabitEthernet3
 !
 !
 !
+!
+!
+hostname R4
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 4.4.4.4 255.255.255.255
+ ipv6 address 2001::4/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.45
+interface Gig2.45
+ encapsulation dot1q 45
+ ip address 10.4.5.4 255.255.255.0
+ ipv6 address 2001:10:4:5::4/64
+!
+no int gig1.46
+interface Gig2.46
+ encapsulation dot1q 46
+ ip address 10.4.6.4 255.255.255.0
+ ipv6 address 2001:10:4:6::4/64
+!
+no int gig1.411
+interface Gig2.411
+ encapsulation dot1q 411
+ ip address 10.4.11.4 255.255.255.0
+ ipv6 address 2001:10:4:11::1/64
 !
 end
 </entry>
@@ -431,6 +632,50 @@ interface GigabitEthernet3
 !
 !
 !
+!
+hostname R5
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+ ipv6 address 2001::5/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.15
+interface Gig2.15
+ encapsulation dot1q 15
+ ip address 10.1.5.5 255.255.255.0
+ ipv6 address 2001:10:1:5::5/64
+!
+no int gig1.45
+interface Gig2.45
+ encapsulation dot1q 45
+ ip address 10.4.5.5 255.255.255.0
+ ipv6 address 2001:10:4:5::5/64
+!
+no int gig1.56
+interface Gig2.56
+ encapsulation dot1q 56
+ ip address 10.5.6.5 255.255.255.0
+ ipv6 address 2001:10:5:6::5/64
+!
 end
 </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -512,6 +757,44 @@ interface GigabitEthernet2
 !
 !
 !
+!
+!
+hostname R6
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+ ipv6 address 2001::6/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.46
+interface Gig2.46
+ encapsulation dot1q 46
+ ip address 10.4.6.6 255.255.255.0
+ ipv6 address 2001:10:4:6::6/64
+!
+no int gig1.56
+interface Gig2.56
+ encapsulation dot1q 56
+ ip address 10.5.6.6 255.255.255.0
+ ipv6 address 2001:10:5:6::6/64
 !
 end
 </entry>
@@ -598,6 +881,44 @@ interface GigabitEthernet3
 !
 !
 !
+!
+!
+hostname R7
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 7.7.7.7 255.255.255.255
+ ipv6 address 2001::7/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.37
+interface Gig2.37
+ encapsulation dot1q 37
+ ip address 10.3.7.7 255.255.255.0
+ ipv6 address 2001:10:3:7::7/64
+!
+no int gig1.713
+interface Gig2.713
+ encapsulation dot1q 713
+ ip address 10.7.13.7 255.255.255.0
+ ipv6 address 2001:10:7:13::7/64
 !
 end
 </entry>
@@ -686,6 +1007,44 @@ interface GigabitEthernet3
 !
 !
 !
+!
+hostname R8
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 8.8.8.8 255.255.255.255
+ ipv6 address 2001::8/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.89
+interface Gig2.89
+ encapsulation dot1q 89
+ ip address 10.8.9.8 255.255.255.0
+ ipv6 address 2001:10:8:9::8/64
+!
+no int gig1.811
+interface Gig2.811
+ encapsulation dot1q 811
+ ip address 10.8.11.8 255.255.255.0
+ ipv6 address 2001:10:8:11::8/64
+!
 end
 </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -773,6 +1132,44 @@ interface GigabitEthernet3
 !
 !
 !
+!
+hostname R9
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 9.9.9.9 255.255.255.255
+ ipv6 address 2001::9/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.89
+interface Gig2.89
+ encapsulation dot1q 89
+ ip address 10.8.9.9 255.255.255.0
+ ipv6 address 2001:10:8:9::9/64
+!
+no int gig1.914
+interface Gig2.914
+ encapsulation dot1q 914
+ ip address 10.9.14.9 255.255.255.0
+ ipv6 address 2001:10:9:14::9/64
+!
 end
 </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -855,6 +1252,38 @@ interface GigabitEthernet2
 !
 !
 !
+!
+hostname R10
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ipv6 address 2001::10/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.210
+interface Gig2.210
+ encapsulation dot1q 210
+ ip address 10.2.10.10 255.255.255.0
+ ipv6 address 2001:10:2:10::10/64
+!
 end
 </entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
@@ -863,7 +1292,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240">
+    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -944,7 +1373,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240">
+    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1025,7 +1454,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240">
+    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1106,7 +1535,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240">
+    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1187,7 +1616,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240">
+    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1268,7 +1697,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400">
+    <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1349,7 +1778,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400">
+    <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1430,7 +1859,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400">
+    <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1511,7 +1940,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400">
+    <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1592,7 +2021,7 @@ end
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400">
+    <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400" excludeFromLaunch="true">
         <extensions>
             <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -1737,6 +2166,41 @@ interface mgmteth0/0/CPU0/0
   no shutdown
 !
 !
+hostname XR1
+!
+interface Loopback0
+ ipv4 address 11.11.11.11/32
+ ipv6 address 2001::11/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.111
+ dot1q vlan 111
+ ipv4 address 10.1.11.11/24
+ ipv6 address 2001:10:1:11::11/64
+!
+interface Gig0/0/0/0.211
+ dot1q vlan 211
+ ipv4 address 10.2.11.11/24
+ ipv6 address 2001:10:2:11::11/64
+!
+interface Gig0/0/0/0.411
+ dot1q vlan 411
+ ipv4 address 10.4.11.11/24
+ ipv6 address 2001:10:4:11::11/64
+!
+interface Gig0/0/0/0.811
+ dot1q vlan 811
+ ipv4 address 10.8.11.11/24
+ ipv6 address 2001:10:8:11::11/64
+!
+interface Gig0/0/0/0.1112
+ dot1q vlan 1112
+ ipv4 address 10.11.12.11/24
+ ipv6 address 2001:10:11:12::11/64
+!
+!
 !
 !
         </entry>
@@ -1811,6 +2275,40 @@ interface mgmteth0/0/CPU0/0
   no shutdown
 !
 !
+hostname XR2
+!
+interface Loopback0
+ ipv4 address 12.12.12.12/32
+ ipv6 address 2001::12/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.112
+ dot1q vlan 112
+ ipv4 address 10.1.12.12/24
+ ipv6 address 2001:10:1:12::12/64
+!
+interface Gig0/0/0/0.212
+ dot1q vlan 212
+ ipv4 address 10.2.12.12/24
+ ipv6 address 2001:10:2:12::12/64
+!
+interface Gig0/0/0/0.312
+ dot1q vlan 312
+ ipv4 address 10.3.12.12/24
+ ipv6 address 2001:10:3:12::12/64
+!
+interface Gig0/0/0/0.1112
+ dot1q vlan 1112
+ ipv4 address 10.11.12.12/24
+ ipv6 address 2001:10:11:12::12/64
+!
+interface Gig0/0/0/0.1213
+ dot1q vlan 1213
+ ipv4 address 10.12.13.12/24
+ ipv6 address 2001:10:12:13::12/64
+!
 !
 !
         </entry>
@@ -1880,6 +2378,40 @@ interface mgmteth0/0/CPU0/0
   no shutdown
 !
 !
+hostname XR3
+!
+interface Loopback0
+ ipv4 address 13.13.13.13/32
+ ipv6 address 2001::13/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.213
+ dot1q vlan 213
+ ipv4 address 10.2.13.13/24
+ ipv6 address 2001:10:2:13::13/64
+!
+interface Gig0/0/0/0.313
+ dot1q vlan 313
+ ipv4 address 10.3.13.13/24
+ ipv6 address 2001:10:3:13::13/64
+!
+interface Gig0/0/0/0.713
+ dot1q vlan 713
+ ipv4 address 10.7.13.13/24
+ ipv6 address 2001:10:7:13::13/64
+!
+interface Gig0/0/0/0.1213
+ dot1q vlan 1213
+ ipv4 address 10.12.13.13/24
+ ipv6 address 2001:10:12:13::13/64
+!
+interface Gig0/0/0/0.1314
+ dot1q vlan 1314
+ ipv4 address 10.13.14.13/24
+ ipv6 address 2001:10:13:14::13/64
+!
 !
 !
         </entry>
@@ -1947,6 +2479,25 @@ interface mgmteth0/0/CPU0/0
   no ipv4 address
   no shutdown
 !
+!
+hostname XR4
+!
+interface Loopback0
+ ipv4 address 14.14.14.14/32
+ ipv6 address 2001::14/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.914
+ dot1q vlan 914
+ ipv4 address 10.9.14.14/24
+ ipv6 address 2001:10:9:14::14/64
+!
+interface Gig0/0/0/0.1314
+ dot1q vlan 1314
+ ipv4 address 10.13.14.14/24
+ ipv6 address 2001:10:13:14::14/64
 !
 !
 !
@@ -2066,69 +2617,137 @@ privilege exec level 0 exit
 !
 no menu main_menu
 menu main_menu title $
-!
-no menu main_menu
-menu main_menu title $
 +------------------------------------------+
 |            SPv4 Bootcamp Menu            |
 +------------------------------------------+
 $
 menu main_menu prompt $Enter Selection: $
 menu main_menu text 1. Connect to R1
-menu main_menu command 1. telnet 172.16.11.101 7023 /vrf Mgmt-intf
+menu main_menu command 1. telnet 172.16.11.101 /vrf Mgmt-intf
 menu main_menu text 2. Connect to R2
-menu main_menu command 2. telnet 172.16.11.102 7023 /vrf Mgmt-intf
+menu main_menu command 2. telnet 172.16.11.102 /vrf Mgmt-intf
 menu main_menu text 3. Connect to R3
-menu main_menu command 3. telnet 172.16.11.103 7023 /vrf Mgmt-intf
+menu main_menu command 3. telnet 172.16.11.103 /vrf Mgmt-intf
 menu main_menu text 4. Connect to R4
-menu main_menu command 4. telnet 172.16.11.104 7023 /vrf Mgmt-intf
+menu main_menu command 4. telnet 172.16.11.104 /vrf Mgmt-intf
 menu main_menu text 5. Connect to R5
-menu main_menu command 5. telnet 172.16.11.105 7023 /vrf Mgmt-intf
+menu main_menu command 5. telnet 172.16.11.105 /vrf Mgmt-intf
 menu main_menu text 6. Connect to R6
-menu main_menu command 6. telnet 172.16.11.106 7023 /vrf Mgmt-intf
+menu main_menu command 6. telnet 172.16.11.106 /vrf Mgmt-intf
 menu main_menu text 7. Connect to R7
-menu main_menu command 7. telnet 172.16.11.107 7023 /vrf Mgmt-intf
+menu main_menu command 7. telnet 172.16.11.107 /vrf Mgmt-intf
 menu main_menu text 8. Connect to R8
-menu main_menu command 8. telnet 172.16.11.108 7023 /vrf Mgmt-intf
+menu main_menu command 8. telnet 172.16.11.108 /vrf Mgmt-intf
 menu main_menu text 9. Connect to R9
-menu main_menu command 9. telnet 172.16.11.109 7023 /vrf Mgmt-intf
+menu main_menu command 9. telnet 172.16.11.109 /vrf Mgmt-intf
 menu main_menu text 10. Connect to R10
-menu main_menu command 10. telnet 172.16.11.110 7023 /vrf Mgmt-intf
+menu main_menu command 10. telnet 172.16.11.110 /vrf Mgmt-intf
 menu main_menu text 11. Connect to R11
-menu main_menu command 11. telnet 172.16.11.111 7023 /vrf Mgmt-intf
+menu main_menu command 11. telnet 172.16.11.111 /vrf Mgmt-intf
 menu main_menu text 12. Connect to R12
-menu main_menu command 12. telnet 172.16.11.112 7023 /vrf Mgmt-intf
+menu main_menu command 12. telnet 172.16.11.112 /vrf Mgmt-intf
 menu main_menu text 13. Connect to R13
-menu main_menu command 13. telnet 172.16.11.113 7023 /vrf Mgmt-intf
+menu main_menu command 13. telnet 172.16.11.113 /vrf Mgmt-intf
 menu main_menu text 14. Connect to R14
-menu main_menu command 14. telnet 172.16.11.114 7023 /vrf Mgmt-intf
+menu main_menu command 14. telnet 172.16.11.114 /vrf Mgmt-intf
 menu main_menu text 15. Connect to R15
-menu main_menu command 15. telnet 172.16.11.115 7023 /vrf Mgmt-intf
+menu main_menu command 15. telnet 172.16.11.115 /vrf Mgmt-intf
 menu main_menu text 16. Connect to R16
-menu main_menu command 16. telnet 172.16.11.116 7023 /vrf Mgmt-intf
+menu main_menu command 16. telnet 172.16.11.116 /vrf Mgmt-intf
 menu main_menu text 17. Connect to R17
-menu main_menu command 17. telnet 172.16.11.117 7023 /vrf Mgmt-intf
+menu main_menu command 17. telnet 172.16.11.117 /vrf Mgmt-intf
 menu main_menu text 18. Connect to R18
-menu main_menu command 18. telnet 172.16.11.118 7023 /vrf Mgmt-intf
+menu main_menu command 18. telnet 172.16.11.118 /vrf Mgmt-intf
 menu main_menu text 19. Connect to R19
-menu main_menu command 19. telnet 172.16.11.119 7023 /vrf Mgmt-intf
+menu main_menu command 19. telnet 172.16.11.119 /vrf Mgmt-intf
 menu main_menu text 20. Connect to R20
-menu main_menu command 20. telnet 172.16.11.120 7023 /vrf Mgmt-intf
+menu main_menu command 20. telnet 172.16.11.120 /vrf Mgmt-intf
 menu main_menu text 21. Connect to XR1
-menu main_menu command 21. telnet 172.16.11.121 7023 /vrf Mgmt-intf
+menu main_menu command 21. telnet 172.16.11.121 /vrf Mgmt-intf
 menu main_menu text 22. Connect to XR2
-menu main_menu command 22. telnet 172.16.11.122 7023 /vrf Mgmt-intf
+menu main_menu command 22. telnet 172.16.11.122 /vrf Mgmt-intf
 menu main_menu text 23. Connect to XR3
-menu main_menu command 23. telnet 172.16.11.123 7023 /vrf Mgmt-intf
+menu main_menu command 23. telnet 172.16.11.123 /vrf Mgmt-intf
 menu main_menu text 24. Connect to XR4
-menu main_menu command 24. telnet 172.16.11.124 7023 /vrf Mgmt-intf
+menu main_menu command 24. telnet 172.16.11.124 /vrf Mgmt-intf
+menu main_menu text 25. Connect to XR1 Console
+menu main_menu command 25. telnet 172.16.11.100 10021 /vrf Mgmt-intf
+menu main_menu text 26. Connect to XR2 Console
+menu main_menu command 26. telnet 172.16.11.100 10022 /vrf Mgmt-intf
+menu main_menu text 27. Connect to XR3 Console
+menu main_menu command 27. telnet 172.16.11.100 10023 /vrf Mgmt-intf
+menu main_menu text 28. Connect to XR4 Console
+menu main_menu command 28. telnet 172.16.11.100 10024 /vrf Mgmt-intf
+menu main_menu text C. Console Menu
+menu main_menu command C. menu console_menu 
 menu main_menu text Q. Quit
 menu main_menu command Q. Exit
 menu main_menu clear-screen
+
+
+
+no menu console_menu
+menu console_menu title $
++------------------------------------------+
+|      SPv4 Bootcamp Console Menu          |
++------------------------------------------+
+$
+menu console_menu prompt $Enter Selection: $
+menu console_menu text 1. Connect to R1
+menu console_menu command 1. telnet 172.16.11.100 10001 /vrf Mgmt-intf
+menu console_menu text 2. Connect to R2
+menu console_menu command 2. telnet 172.16.11.100 10002 /vrf Mgmt-intf
+menu console_menu text 3. Connect to R3
+menu console_menu command 3. telnet 172.16.11.100 10003 /vrf Mgmt-intf
+menu console_menu text 4. Connect to R4
+menu console_menu command 4. telnet 172.16.11.100 10004 /vrf Mgmt-intf
+menu console_menu text 5. Connect to R5
+menu console_menu command 5. telnet 172.16.11.100 10005 /vrf Mgmt-intf
+menu console_menu text 6. Connect to R6
+menu console_menu command 6. telnet 172.16.11.100 10006 /vrf Mgmt-intf
+menu console_menu text 7. Connect to R7
+menu console_menu command 7. telnet 172.16.11.100 10007 /vrf Mgmt-intf
+menu console_menu text 8. Connect to R8
+menu console_menu command 8. telnet 172.16.11.100 10008 /vrf Mgmt-intf
+menu console_menu text 9. Connect to R9
+menu console_menu command 9. telnet 172.16.11.100 10009 /vrf Mgmt-intf
+menu console_menu text 10. Connect to R10
+menu console_menu command 10. telnet 172.16.11.100 10010 /vrf Mgmt-intf
+menu console_menu text 11. Connect to R11
+menu console_menu command 11. telnet 172.16.11.100 10011 /vrf Mgmt-intf
+menu console_menu text 12. Connect to R12
+menu console_menu command 12. telnet 172.16.11.100 10012 /vrf Mgmt-intf
+menu console_menu text 13. Connect to R13
+menu console_menu command 13. telnet 172.16.11.100 10013 /vrf Mgmt-intf
+menu console_menu text 14. Connect to R14
+menu console_menu command 14. telnet 172.16.11.100 10014 /vrf Mgmt-intf
+menu console_menu text 15. Connect to R15
+menu console_menu command 15. telnet 172.16.11.100 10015 /vrf Mgmt-intf
+menu console_menu text 16. Connect to R16
+menu console_menu command 16. telnet 172.16.11.100 10016 /vrf Mgmt-intf
+menu console_menu text 17. Connect to R17
+menu console_menu command 17. telnet 172.16.11.100 10017 /vrf Mgmt-intf
+menu console_menu text 18. Connect to R18
+menu console_menu command 18. telnet 172.16.11.100 10018 /vrf Mgmt-intf
+menu console_menu text 19. Connect to R19
+menu console_menu command 19. telnet 172.16.11.100 10019 /vrf Mgmt-intf
+menu console_menu text 20. Connect to R20
+menu console_menu command 20. telnet 172.16.11.100 10020 /vrf Mgmt-intf
+menu console_menu text 21. Connect to XR1
+menu console_menu command 21. telnet 172.16.11.100 10021 /vrf Mgmt-intf
+menu console_menu text 22. Connect to XR2
+menu console_menu command 22. telnet 172.16.11.100 10022 /vrf Mgmt-intf
+menu console_menu text 23. Connect to XR3
+menu console_menu command 23. telnet 172.16.11.100 10023 /vrf Mgmt-intf
+menu console_menu text 24. Connect to XR4
+menu console_menu command 24. telnet 172.16.11.100 10024 /vrf Mgmt-intf
+menu console_menu text Q. Quit
+menu console_menu command Q. Exit
+menu console_menu clear-screen
 !
 redundancy
 !
-interface GigabitEthernet0/1
+interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
  ip address 172.16.11.10 255.255.255.0
@@ -2162,18 +2781,11 @@ line vty 0
  login local
  length 0
  transport input telnet ssh
-line vty 1 4
+line vty 1 100
  exec-timeout 720 0
  password cisco
  login local
  transport input telnet ssh
-line vty 5 100
- exec-timeout 5 0
- privilege level 15
- logging synchronous
- no login
- rotary 23
- transport input telnet
 !
 no scheduler allocate
 event manager applet CLI_AFTER_BOOT
