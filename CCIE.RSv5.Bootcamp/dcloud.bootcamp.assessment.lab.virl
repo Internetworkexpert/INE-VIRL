@@ -883,10 +883,11 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R16
- no ip address
+ ip address 184.17.13.5 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::5/64
 !
 interface GigabitEthernet0/3
  description to R24
