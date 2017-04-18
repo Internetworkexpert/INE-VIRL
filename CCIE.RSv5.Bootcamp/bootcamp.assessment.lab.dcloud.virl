@@ -1,16 +1,16 @@
-<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
     <extensions>
-        <entry key="lxc.node.static_ip" type="String">198.18.0.99</entry>
+        <entry key="lxc.node.static_ip" type="String">198.18.1.99</entry>
         <entry key="AutoNetkit.infrastructure_only" type="Boolean">true</entry>
-        <entry key="lxc.host.static_ip" type="String">198.18.0.100</entry>
+        <entry key="lxc.host.static_ip" type="String">198.18.1.100</entry>
         <entry key="management_network" type="String">flat</entry>
     </extensions>
     <node name="R1" type="SIMPLE" subtype="IOSv" location="1001,321">
         <extensions>
-            <entry key="static_ip" type="String">198.18.0.101</entry>
+            <entry key="static_ip" type="String">198.18.1.101</entry>
             <entry key="static_serial_port_0" type="Integer">11001</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="String"/>
+            <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
             <entry key="config" type="String">!
 ! Last configuration change at 13:14:28 UTC Mon Nov 14 2016
 !
@@ -92,7 +92,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.101 255.255.255.0
+ ip address 198.18.1.101 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -150,7 +150,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -203,9 +203,9 @@ end</entry>
     </node>
     <node name="R2" type="SIMPLE" subtype="IOSv" location="908,220">
         <extensions>
-            <entry key="static_ip" type="String">198.18.0.102</entry>
+            <entry key="static_ip" type="String">198.18.1.102</entry>
             <entry key="static_serial_port_0" type="Integer">11002</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:14:43 UTC Mon Nov 14 2016
 !
@@ -312,7 +312,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.102 255.255.255.0
+ ip address 198.18.1.102 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -412,7 +412,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -463,9 +463,9 @@ end</entry>
     </node>
     <node name="R3" type="SIMPLE" subtype="IOSv" location="909,391">
         <extensions>
-            <entry key="static_ip" type="String">198.18.0.103</entry>
+            <entry key="static_ip" type="String">198.18.1.103</entry>
             <entry key="static_serial_port_0" type="Integer">11003</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:58:52 UTC Mon Nov 14 2016
 !
@@ -584,7 +584,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.103 255.255.255.0
+ ip address 198.18.1.103 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -708,7 +708,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 !
@@ -770,8 +770,8 @@ end</entry>
     </node>
     <node name="R4" type="SIMPLE" subtype="IOSv" location="1090,221">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.104</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.104</entry>
             <entry key="static_serial_port_0" type="Integer">11004</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:36:36 UTC Mon Nov 14 2016
@@ -866,7 +866,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.104 255.255.255.0
+ ip address 198.18.1.104 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -944,7 +944,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -995,8 +995,8 @@ end</entry>
     </node>
     <node name="R5" type="SIMPLE" subtype="IOSv" location="1096,385">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.105</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.105</entry>
             <entry key="static_serial_port_0" type="Integer">11005</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:59:02 UTC Mon Nov 14 2016
@@ -1104,7 +1104,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.105 255.255.255.0
+ ip address 198.18.1.105 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1201,7 +1201,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1252,8 +1252,8 @@ end</entry>
     </node>
     <node name="R6" type="SIMPLE" subtype="IOSv" location="1003,220">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.106</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.106</entry>
             <entry key="static_serial_port_0" type="Integer">11006</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 13:10:55 UTC Mon Nov 14 2016
@@ -1336,7 +1336,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.106 255.255.255.0
+ ip address 198.18.1.106 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1421,7 +1421,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1470,8 +1470,8 @@ end</entry>
     </node>
     <node name="R7" type="SIMPLE" subtype="IOSv" location="1254,33">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.107</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.107</entry>
             <entry key="static_serial_port_0" type="Integer">11007</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:59:16 UTC Mon Nov 14 2016
@@ -1556,7 +1556,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.107 255.255.255.0
+ ip address 198.18.1.107 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1642,7 +1642,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1697,8 +1697,8 @@ end</entry>
     </node>
     <node name="R8" type="SIMPLE" subtype="IOSv" location="1365,30">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.108</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.108</entry>
             <entry key="static_serial_port_0" type="Integer">11008</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 17:59:02 UTC Mon Nov 14 2016
@@ -1783,7 +1783,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.108 255.255.255.0
+ ip address 198.18.1.108 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1876,7 +1876,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1929,8 +1929,8 @@ end</entry>
     </node>
     <node name="R9" type="SIMPLE" subtype="IOSv" location="1481,28">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.109</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.109</entry>
             <entry key="static_serial_port_0" type="Integer">11009</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:16:13 UTC Mon Nov 14 2016
@@ -2015,7 +2015,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.109 255.255.255.0
+ ip address 198.18.1.109 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2103,7 +2103,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2158,8 +2158,8 @@ end</entry>
     </node>
     <node name="R10" type="SIMPLE" subtype="IOSv" location="1363,131">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.110</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.110</entry>
             <entry key="static_serial_port_0" type="Integer">11010</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:56:56 UTC Mon Nov 14 2016
@@ -2244,7 +2244,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.110 255.255.255.0
+ ip address 198.18.1.110 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2330,7 +2330,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2385,8 +2385,8 @@ end</entry>
     </node>
     <node name="R11" type="SIMPLE" subtype="IOSv" location="1315,322">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.111</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.111</entry>
             <entry key="static_serial_port_0" type="Integer">11011</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:57:05 UTC Mon Nov 14 2016
@@ -2469,7 +2469,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.111 255.255.255.0
+ ip address 198.18.1.111 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2547,7 +2547,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 !
@@ -2614,8 +2614,8 @@ end</entry>
     </node>
     <node name="R12" type="SIMPLE" subtype="IOSv" location="704,211">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.112</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.112</entry>
             <entry key="static_serial_port_0" type="Integer">11012</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:42:15 UTC Mon Nov 14 2016
@@ -2698,7 +2698,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.112 255.255.255.0
+ ip address 198.18.1.112 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2793,7 +2793,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 !
@@ -2865,8 +2865,8 @@ end</entry>
     </node>
     <node name="R13" type="SIMPLE" subtype="IOSv" location="705,42">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.113</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.113</entry>
             <entry key="static_serial_port_0" type="Integer">11013</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 13:15:08 UTC Mon Nov 14 2016
@@ -3008,7 +3008,7 @@ interface Tunnel102
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.113 255.255.255.0
+ ip address 198.18.1.113 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3070,7 +3070,7 @@ no ip http server
 no ip http secure-server
 ip route 10.24.24.24 255.255.255.255 12.18.255.6
 ip route 10.25.25.25 255.255.255.255 12.18.255.6
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3123,8 +3123,8 @@ end</entry>
     </node>
     <node name="R14" type="SIMPLE" subtype="IOSv" location="709,389">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.114</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.114</entry>
             <entry key="static_serial_port_0" type="Integer">11014</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:39:41 UTC Mon Nov 14 2016
@@ -3220,7 +3220,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.114 255.255.255.0
+ ip address 198.18.1.114 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3248,7 +3248,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3299,8 +3299,8 @@ end</entry>
     </node>
     <node name="R15" type="SIMPLE" subtype="IOSv" location="905,44">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.115</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.115</entry>
             <entry key="static_serial_port_0" type="Integer">11015</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:57:25 UTC Mon Nov 14 2016
@@ -3385,7 +3385,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.115 255.255.255.0
+ ip address 198.18.1.115 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3421,7 +3421,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3471,8 +3471,8 @@ end</entry>
     </node>
     <node name="R16" type="SIMPLE" subtype="IOSv" location="1087,31">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.116</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.116</entry>
             <entry key="static_serial_port_0" type="Integer">11016</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:57:32 UTC Mon Nov 14 2016
@@ -3557,7 +3557,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.116 255.255.255.0
+ ip address 198.18.1.116 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3593,7 +3593,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3643,8 +3643,8 @@ end</entry>
     </node>
     <node name="R17" type="SIMPLE" subtype="IOSv" location="548,386">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.117</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.117</entry>
             <entry key="static_serial_port_0" type="Integer">11017</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:57:39 UTC Mon Nov 14 2016
@@ -3728,7 +3728,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.117 255.255.255.0
+ ip address 198.18.1.117 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3765,7 +3765,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3815,8 +3815,8 @@ end</entry>
     </node>
     <node name="R18" type="SIMPLE" subtype="IOSv" location="915,535">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.118</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.118</entry>
             <entry key="static_serial_port_0" type="Integer">11018</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:35:58 UTC Mon Nov 14 2016
@@ -3908,7 +3908,7 @@ interface Tunnel1820
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.118 255.255.255.0
+ ip address 198.18.1.118 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3945,7 +3945,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3996,8 +3996,8 @@ end</entry>
     </node>
     <node name="R19" type="SIMPLE" subtype="IOSv" location="1108,534">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.119</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.119</entry>
             <entry key="static_serial_port_0" type="Integer">11019</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:38:13 UTC Mon Nov 14 2016
@@ -4089,7 +4089,7 @@ interface Tunnel1920
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.119 255.255.255.0
+ ip address 198.18.1.119 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4126,7 +4126,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4177,8 +4177,8 @@ end</entry>
     </node>
     <node name="R20" type="SIMPLE" subtype="IOSv" location="1016,722">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.120</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.120</entry>
             <entry key="static_serial_port_0" type="Integer">11020</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:42:11 UTC Mon Nov 14 2016
@@ -4276,7 +4276,7 @@ interface Tunnel1920
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.120 255.255.255.0
+ ip address 198.18.1.120 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4301,7 +4301,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4351,8 +4351,8 @@ end</entry>
     </node>
     <node name="R21" type="SIMPLE" subtype="IOSv" location="1372,523">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.121</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.121</entry>
             <entry key="static_serial_port_0" type="Integer">11021</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 13:13:59 UTC Mon Nov 14 2016
@@ -4493,7 +4493,7 @@ interface Tunnel102
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.121 255.255.255.0
+ ip address 198.18.1.121 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4554,7 +4554,7 @@ no ip http server
 no ip http secure-server
 ip route 10.24.24.24 255.255.255.255 167.22.2.2
 ip route 10.25.25.25 255.255.255.255 167.22.2.2
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 ip access-list extended NULL
@@ -4609,8 +4609,8 @@ end</entry>
     </node>
     <node name="R22" type="SIMPLE" subtype="IOSv" location="1280,714">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.122</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.122</entry>
             <entry key="static_serial_port_0" type="Integer">11022</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:58:14 UTC Mon Nov 14 2016
@@ -4694,7 +4694,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.122 255.255.255.0
+ ip address 198.18.1.122 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4731,7 +4731,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4781,8 +4781,8 @@ end</entry>
     </node>
     <node name="R23" type="SIMPLE" subtype="IOSv" location="1478,710">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.123</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.123</entry>
             <entry key="static_serial_port_0" type="Integer">11023</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:58:19 UTC Mon Nov 14 2016
@@ -4866,7 +4866,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.123 255.255.255.0
+ ip address 198.18.1.123 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4903,7 +4903,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4953,8 +4953,8 @@ end</entry>
     </node>
     <node name="R24" type="SIMPLE" subtype="IOSv" location="1516,227">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.124</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.124</entry>
             <entry key="static_serial_port_0" type="Integer">11024</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:02:30 UTC Mon Nov 14 2016
@@ -5083,7 +5083,7 @@ interface Tunnel102
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.124 255.255.255.0
+ ip address 198.18.1.124 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -5195,7 +5195,7 @@ ip pim rp-candidate Loopback1
 ip msdp peer 10.25.25.25 connect-source Loopback0
 ip msdp cache-sa-state
 ip msdp default-peer 10.25.25.25
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -5250,8 +5250,8 @@ end</entry>
     </node>
     <node name="R25" type="SIMPLE" subtype="IOSv" location="1507,399">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.125</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.125</entry>
             <entry key="static_serial_port_0" type="Integer">11025</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:26:40 UTC Mon Nov 14 2016
@@ -5380,7 +5380,7 @@ interface Tunnel102
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.125 255.255.255.0
+ ip address 198.18.1.125 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -5482,7 +5482,7 @@ ip pim rp-candidate Loopback1
 ip msdp peer 10.24.24.24 connect-source Loopback0
 ip msdp cache-sa-state
 ip msdp default-peer 10.24.24.24
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -5537,8 +5537,8 @@ end</entry>
     </node>
     <node name="R26" type="SIMPLE" subtype="IOSv" location="1691,239">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.126</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.126</entry>
             <entry key="static_serial_port_0" type="Integer">11026</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 13:01:54 UTC Mon Nov 14 2016
@@ -5623,7 +5623,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.126 255.255.255.0
+ ip address 198.18.1.126 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -5671,7 +5671,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -5721,8 +5721,8 @@ end</entry>
     </node>
     <node name="R27" type="SIMPLE" subtype="IOSv" location="1701,403">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.127</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.127</entry>
             <entry key="static_serial_port_0" type="Integer">11027</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:21:32 UTC Mon Nov 14 2016
@@ -5805,7 +5805,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 198.18.0.127 255.255.255.0
+ ip address 198.18.1.127 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -5860,7 +5860,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -5911,8 +5911,8 @@ end</entry>
     </node>
     <node name="SW1" type="SIMPLE" subtype="IOSvL2" location="1018,620">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.128</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.128</entry>
             <entry key="static_serial_port_0" type="Integer">11028</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:42:00 UTC Mon Nov 14 2016
@@ -6011,7 +6011,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 198.18.0.128 255.255.255.0
+ ip address 198.18.1.128 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -6029,7 +6029,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -6079,8 +6079,8 @@ end</entry>
     </node>
     <node name="SW2" type="SIMPLE" subtype="IOSvL2" location="1369,631">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.129</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.129</entry>
             <entry key="static_serial_port_0" type="Integer">11029</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 12:59:32 UTC Mon Nov 14 2016
@@ -6179,7 +6179,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 198.18.0.129 255.255.255.0
+ ip address 198.18.1.129 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -6188,7 +6188,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -6239,8 +6239,8 @@ end</entry>
     </node>
     <node name="SW3" type="SIMPLE" subtype="IOSvL2" location="1610,313">
         <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_ip" type="String">198.18.0.130</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_ip" type="String">198.18.1.130</entry>
             <entry key="static_serial_port_0" type="Integer">11030</entry>
             <entry key="config" type="String">!
 ! Last configuration change at 18:30:29 UTC Mon Nov 14 2016
@@ -6349,7 +6349,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 198.18.0.130 255.255.255.0
+ ip address 198.18.1.130 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -6382,7 +6382,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.1.1
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -6432,291 +6432,6 @@ end</entry>
         <interface id="2" name="GigabitEthernet0/3"/>
         <interface id="3" name="GigabitEthernet1/0"/>
         <interface id="4" name="GigabitEthernet1/1"/>
-    </node>
-    <node name="Access-Server" type="SIMPLE" subtype="IOSv" location="163,160">
-        <extensions>
-            <entry key="static_ip" type="String">198.18.0.10</entry>
-            <entry key="static_serial_port_0" type="Integer">10000</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="String"/>
-            <entry key="config" type="String">!
-! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
-!
-! For VIRL HOST
-!
-! !
-! ! Whitelist $IP
-! !
-! sudo ufw insert 1 allow from $IP
-!
-! !
-! ! Listen for Telnet on public IP
-! !
-! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 198.18.0.10:23
-!
-! For Access Server
-!
-! FILL IN THESE VARIABLES FOR THE USER
-!
-!
-enable secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username admin privilege 15 secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username ccie privilege 1 password 0 bootcamp
-username ccie autocommand menu ts_menu
-
-!
-version 15.6
-service timestamps debug datetime msec
-service timestamps log datetime msec
-service tcp-keepalives-in 
-service tcp-keepalives-out
-no service password-encryption
-!
-hostname Access-Server
-!
-boot-start-marker
-boot-end-marker
-!
-!
-vrf definition Mgmt-intf
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-!
-no ip domain lookup
-ip domain name virl.info
-ip cef
-ipv6 unicast-routing
-ipv6 cef
-!
-multilink bundle-name authenticated
-!
-!
-!
-!
-!
-privilege exec level 1 telnet
-privilege exec level 1 menu
-privilege exec level 1 exit
-privilege exec level 1 clear
-privilege exec level 1 clear line
-privilege exec level 1 show users       
-!no menu main_menu
-menu main_menu title $
-+--------------------------------------+
-|           RSv5 Graded Lab 1          |
-|              Main Menu               |
-+--------------------------------------+
-$
-menu main_menu prompt $Enter The Topology You Are Working On: $
-menu main_menu text 1. Troubleshooting
-menu main_menu command 1. menu ts_menu
-menu main_menu text 2. Configuration
-menu main_menu command 2. menu cfg_menu
-menu main_menu text Q. Quit to Access Server
-menu main_menu command Q. menu-exit
-menu main_menu text X. Exit
-menu main_menu command X. Exit
-menu main_menu clear-screen
-!
-!
-no menu ts_menu
-menu ts_menu title $
-+------------------------------------------+
-|     RSv5 Bootcamp Assessment Lab         |
-+------------------------------------------+
-$
-menu ts_menu prompt $Enter Selection: $
-menu ts_menu text 1. Connect to R1
-menu ts_menu command 1. telnet 198.18.0.101 /vrf Mgmt-intf
-menu ts_menu text 2. Connect to R2
-menu ts_menu command 2. telnet 198.18.0.102 /vrf Mgmt-intf
-menu ts_menu text 3. Connect to R3
-menu ts_menu command 3. telnet 198.18.0.103 /vrf Mgmt-intf
-menu ts_menu text 4. Connect to R4
-menu ts_menu command 4. telnet 198.18.0.104 /vrf Mgmt-intf
-menu ts_menu text 5. Connect to R5
-menu ts_menu command 5. telnet 198.18.0.105 /vrf Mgmt-intf
-menu ts_menu text 6. Connect to R6
-menu ts_menu command 6. telnet 198.18.0.106 /vrf Mgmt-intf
-menu ts_menu text 7. Connect to R7
-menu ts_menu command 7. telnet 198.18.0.107 /vrf Mgmt-intf
-menu ts_menu text 8. Connect to R8
-menu ts_menu command 8. telnet 198.18.0.108 /vrf Mgmt-intf
-menu ts_menu text 9. Connect to R9
-menu ts_menu command 9. telnet 198.18.0.109 /vrf Mgmt-intf
-menu ts_menu text 10. Connect to R10
-menu ts_menu command 10. telnet 198.18.0.110 /vrf Mgmt-intf
-menu ts_menu text 11. Connect to R11
-menu ts_menu command 11. telnet 198.18.0.111 /vrf Mgmt-intf
-menu ts_menu text 12. Connect to R12
-menu ts_menu command 12. telnet 198.18.0.112 /vrf Mgmt-intf
-menu ts_menu text 13. Connect to R13
-menu ts_menu command 13. telnet 198.18.0.113 /vrf Mgmt-intf
-menu ts_menu text 14. Connect to R14
-menu ts_menu command 14. telnet 198.18.0.114 /vrf Mgmt-intf
-menu ts_menu text 15. Connect to R15
-menu ts_menu command 15. telnet 198.18.0.115 /vrf Mgmt-intf
-menu ts_menu text 16. Connect to R16
-menu ts_menu command 16. telnet 198.18.0.116 /vrf Mgmt-intf
-menu ts_menu text 17. Connect to R17
-menu ts_menu command 17. telnet 198.18.0.117 /vrf Mgmt-intf
-menu ts_menu text 18. Connect to R18
-menu ts_menu command 18. telnet 198.18.0.118 /vrf Mgmt-intf
-menu ts_menu text 19. Connect to R19
-menu ts_menu command 19. telnet 198.18.0.119 /vrf Mgmt-intf
-menu ts_menu text 20. Connect to R20
-menu ts_menu command 20. telnet 198.18.0.120 /vrf Mgmt-intf
-menu ts_menu text 21. Connect to R21
-menu ts_menu command 21. telnet 198.18.0.121 /vrf Mgmt-intf
-menu ts_menu text 22. Connect to R22
-menu ts_menu command 22. telnet 198.18.0.122 /vrf Mgmt-intf
-menu ts_menu text 23. Connect to R23
-menu ts_menu command 23. telnet 198.18.0.123 /vrf Mgmt-intf
-menu ts_menu text 24. Connect to R24
-menu ts_menu command 24. telnet 198.18.0.124 /vrf Mgmt-intf
-menu ts_menu text 25. Connect to R25
-menu ts_menu command 25. telnet 198.18.0.125 /vrf Mgmt-intf
-menu ts_menu text 26. Connect to R26
-menu ts_menu command 26. telnet 198.18.0.126 /vrf Mgmt-intf
-menu ts_menu text 27. Connect to R27
-menu ts_menu command 27. telnet 198.18.0.127 /vrf Mgmt-intf
-menu ts_menu text 28. Connect to SW1
-menu ts_menu command 28. telnet 198.18.0.128 /vrf Mgmt-intf
-menu ts_menu text 29. Connect to SW2
-menu ts_menu command 29. telnet 198.18.0.129 /vrf Mgmt-intf
-menu ts_menu text 30. Connect to SW3
-menu ts_menu command 30. telnet 198.18.0.130 /vrf Mgmt-intf
-menu ts_menu text Q. Quit
-menu ts_menu command Q. Exit
-menu ts_menu clear-screen
-!
-no menu cfg_menu
-menu cfg_menu title $
-+--------------------------------------+
-|           RSv5 Graded Lab 1          |
-|      Configuration Section Menu      |
-+--------------------------------------+
-$
-menu cfg_menu prompt $Enter Selection: $
-menu cfg_menu text 1. Connect to CFG-R1
-menu cfg_menu command 1. telnet 198.18.0.201 /vrf Mgmt-intf
-menu cfg_menu text 2. Connect to CFG-R2
-menu cfg_menu command 2. telnet 198.18.0.202 /vrf Mgmt-intf
-menu cfg_menu text 3. Connect to CFG-R3
-menu cfg_menu command 3. telnet 198.18.0.203 /vrf Mgmt-intf
-menu cfg_menu text 4. Connect to CFG-R4
-menu cfg_menu command 4. telnet 198.18.0.204 /vrf Mgmt-intf
-menu cfg_menu text 5. Connect to CFG-R5
-menu cfg_menu command 5. telnet 198.18.0.205 /vrf Mgmt-intf
-menu cfg_menu text 6. Connect to CFG-R6
-menu cfg_menu command 6. telnet 198.18.0.206 /vrf Mgmt-intf
-menu cfg_menu text 7. Connect to CFG-R7
-menu cfg_menu command 7. telnet 198.18.0.207 /vrf Mgmt-intf
-menu cfg_menu text 8. Connect to CFG-R8
-menu cfg_menu command 8. telnet 198.18.0.208 /vrf Mgmt-intf
-menu cfg_menu text 9. Connect to CFG-R9
-menu cfg_menu command 9. telnet 198.18.0.209 /vrf Mgmt-intf
-menu cfg_menu text 10. Connect to CFG-R10
-menu cfg_menu command 10. telnet 198.18.0.210 /vrf Mgmt-intf
-menu cfg_menu text 11. Connect to CFG-R11
-menu cfg_menu command 11. telnet 198.18.0.211 /vrf Mgmt-intf
-menu cfg_menu text 12. Connect to CFG-R12
-menu cfg_menu command 12. telnet 198.18.0.212 /vrf Mgmt-intf
-menu cfg_menu text 13. Connect to CFG-R13
-menu cfg_menu command 13. telnet 198.18.0.213 /vrf Mgmt-intf
-menu cfg_menu text 14. Connect to CFG-R14
-menu cfg_menu command 14. telnet 198.18.0.214 /vrf Mgmt-intf
-menu cfg_menu text 15. Connect to CFG-R15
-menu cfg_menu command 15. telnet 198.18.0.215 /vrf Mgmt-intf
-menu cfg_menu text 16. Connect to CFG-R16
-menu cfg_menu command 16. telnet 198.18.0.216 /vrf Mgmt-intf
-menu cfg_menu text 17. Connect to CFG-R17
-menu cfg_menu command 17. telnet 198.18.0.217 /vrf Mgmt-intf
-menu cfg_menu text 18. Connect to CFG-R18
-menu cfg_menu command 18. telnet 198.18.0.218 /vrf Mgmt-intf
-menu cfg_menu text 19. Connect to CFG-R19
-menu cfg_menu command 19. telnet 198.18.0.219 /vrf Mgmt-intf
-menu cfg_menu text 20. Connect to CFG-R20
-menu cfg_menu command 20. telnet 198.18.0.220 /vrf Mgmt-intf
-menu cfg_menu text 21. Connect to CFG-R21
-menu cfg_menu command 21. telnet 198.18.0.221 /vrf Mgmt-intf
-menu cfg_menu text 22. Connect to CFG-R22
-menu cfg_menu command 22. telnet 198.18.0.222 /vrf Mgmt-intf
-menu cfg_menu text 23. Connect to CFG-R23
-menu cfg_menu command 23. telnet 198.18.0.223 /vrf Mgmt-intf
-menu cfg_menu text 24. Connect to CFG-R24
-menu cfg_menu command 24. telnet 198.18.0.224 /vrf Mgmt-intf
-menu cfg_menu text 25. Connect to CFG-R25
-menu cfg_menu command 25. telnet 198.18.0.225 /vrf Mgmt-intf
-menu cfg_menu text 26. Connect to CFG-SW1
-menu cfg_menu command 26. telnet 198.18.0.226 /vrf Mgmt-intf
-menu cfg_menu text 27. Connect to CFG-SW2
-menu cfg_menu command 27. telnet 198.18.0.227 /vrf Mgmt-intf
-menu cfg_menu text 28. Connect to CFG-SW3
-menu cfg_menu command 28. telnet 198.18.0.228 /vrf Mgmt-intf
-menu cfg_menu text 29. Connect to CFG-SW4
-menu cfg_menu command 29. telnet 198.18.0.229 /vrf Mgmt-intf
-menu cfg_menu text 30. Connect to CFG-SW5
-menu cfg_menu command 30. telnet 198.18.0.230 /vrf Mgmt-intf
-menu cfg_menu text Q. Quit
-menu cfg_menu command Q. Exit
-menu cfg_menu clear-screen
-!
-redundancy
-!
-interface GigabitEthernet0/0
- description OOB Management
- vrf forwarding Mgmt-intf
- ip address 198.18.0.10 255.255.255.0
- duplex full
- speed auto
- media-type rj45
- no cdp enable
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 198.18.0.1
-ip ssh server algorithm authentication password
-!
-kron occurrence KRONJOB in 1 recurring system-startup
- policy-list KRONPOLICY
-!
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
- cli event manager run CLI_AFTER_BOOT
- cli event manager run CLI_AFTER_BOOT
-!
-!
-!
-!
-control-plane
-!
-!
-line con 0
- password cisco
-line aux 0
-line vty 0 100
- exec-timeout 10 0
- privilege level 0
- logging synchronous
- login local
- no rotary
- transport input telnet
-
-!
-no scheduler allocate
-event manager applet CLI_AFTER_BOOT
- event none
- action 1.0 cli command "enable"
- action 2.0 cli command "configure terminal"
- action 3.0 cli command "no banner motd"
- action 4.0 cli command "no banner login"
- action 5.0 cli command "no banner incoming"
- action 6.0 cli command "no banner exec"
-!
-end</entry>
-        </extensions>
     </node>
     <annotations/>
     <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
