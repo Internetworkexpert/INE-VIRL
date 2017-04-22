@@ -4786,7 +4786,6 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/2"/>
         <interface id="2" name="GigabitEthernet0/3"/>
     </node>
-    <node name="asav-1" type="SIMPLE" subtype="ASAv" location="2316,65"/>
     <annotations/>
     <connection dst="/virl:topology/virl:node[19]/virl:interface[1]" src="/virl:topology/virl:node[21]/virl:interface[1]"/>
     <connection dst="/virl:topology/virl:node[20]/virl:interface[1]" src="/virl:topology/virl:node[21]/virl:interface[2]"/>
