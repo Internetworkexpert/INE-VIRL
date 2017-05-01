@@ -1,0 +1,2838 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
+    <extensions>
+        <entry key="lxc.node.static_ip" type="String">172.16.1.99</entry>
+        <entry key="AutoNetkit.infrastructure_only" type="Boolean">true</entry>
+        <entry key="lxc.host.static_ip" type="String">172.16.1.100</entry>
+        <entry key="management_network" type="String">flat</entry>
+    </extensions>
+    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R1
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ip address 172.16.1.101 255.255.255.0
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R2
+  no ip address
+  no shutdown
+!
+hostname R1
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 1.1.1.1 255.255.255.255
+ ipv6 address 2001::1/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.12
+interface Gig2.12
+ encapsulation dot1q 12
+ ip address 10.1.2.1 255.255.255.0
+ ipv6 address 2001:10:1:2::1/64
+!
+no int gig1.15
+interface Gig2.15
+ encapsulation dot1q 15
+ ip address 10.1.5.1 255.255.255.0
+ ipv6 address 2001:10:1:5::1/64
+!
+no int gig1.111
+interface Gig2.111
+ encapsulation dot1q 111
+ ip address 10.1.11.1 255.255.255.0
+ ipv6 address 2001:10:1:11::1/64
+!
+no int gig1.112
+interface Gig2.112
+ encapsulation dot1q 112
+ ip address 10.1.12.1 255.255.255.0
+ ipv6 address 2001:10:1:12::1/64
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10001</entry>
+            <entry key="static_ip" type="String">172.16.1.101</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R2
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet4
+  description to R9
+  no ip address
+  no shutdown
+!
+enable
+config t
+!
+hostname R2
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ ipv6 address 2001::2/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.12
+interface Gig2.12
+ encapsulation dot1q 12
+ ip address 10.1.2.2 255.255.255.0
+ ipv6 address 2001:10:1:2::2/64
+!
+no int gig1.23
+interface Gig2.23
+ encapsulation dot1q 23
+ ip address 10.2.3.2 255.255.255.0
+ ipv6 address 2001:10:2:3::2/64
+!
+no int gig1.210
+interface Gig2.210
+ encapsulation dot1q 210
+ ip address 10.2.10.2 255.255.255.0
+ ipv6 address 2001:10:2:10::2/64
+!
+no int gig1.211
+interface Gig2.211
+ encapsulation dot1q 211
+ ip address 10.2.11.2 255.255.255.0
+ ipv6 address 2001:10:2:11::2/64
+!
+no int gig1.212
+interface Gig2.212
+ encapsulation dot1q 212
+ ip address 10.2.12.2 255.255.255.0
+ ipv6 address 2001:10:2:12::2/64
+!
+no int gig1.213
+interface Gig2.213
+ encapsulation dot1q 213
+ ip address 10.2.13.2 255.255.255.0
+ ipv6 address 2001:10:2:13::2/64
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10002</entry>
+            <entry key="static_ip" type="String">172.16.1.102</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+        <interface id="2" name="GigabitEthernet4"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R3
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R3
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+ ipv6 address 2001::3/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.23
+interface Gig2.23
+ encapsulation dot1q 23
+ ip address 10.2.3.3 255.255.255.0
+ ipv6 address 2001:10:2:3::3/64
+!
+no int gig1.37
+interface Gig2.37
+ encapsulation dot1q 37
+ ip address 10.3.7.3 255.255.255.0
+ ipv6 address 2001:10:3:7::3/64
+!
+no int gig1.312
+interface Gig2.312
+ encapsulation dot1q 312
+ ip address 10.3.12.3 255.255.255.0
+ ipv6 address 2001:10:3:12::3/64
+!
+no int gig1.313
+interface Gig2.313
+ encapsulation dot1q 313
+ ip address 10.3.13.3 255.255.255.0
+ ipv6 address 2001:10:3:13::3/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10003</entry>
+            <entry key="static_ip" type="String">172.16.1.103</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R4
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R7
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R4
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 4.4.4.4 255.255.255.255
+ ipv6 address 2001::4/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.45
+interface Gig2.45
+ encapsulation dot1q 45
+ ip address 10.4.5.4 255.255.255.0
+ ipv6 address 2001:10:4:5::4/64
+!
+no int gig1.46
+interface Gig2.46
+ encapsulation dot1q 46
+ ip address 10.4.6.4 255.255.255.0
+ ipv6 address 2001:10:4:6::4/64
+!
+no int gig1.411
+interface Gig2.411
+ encapsulation dot1q 411
+ ip address 10.4.11.4 255.255.255.0
+ ipv6 address 2001:10:4:11::1/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10004</entry>
+            <entry key="static_ip" type="String">172.16.1.104</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R5
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R8
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R5
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 5.5.5.5 255.255.255.255
+ ipv6 address 2001::5/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.15
+interface Gig2.15
+ encapsulation dot1q 15
+ ip address 10.1.5.5 255.255.255.0
+ ipv6 address 2001:10:1:5::5/64
+!
+no int gig1.45
+interface Gig2.45
+ encapsulation dot1q 45
+ ip address 10.4.5.5 255.255.255.0
+ ipv6 address 2001:10:4:5::5/64
+!
+no int gig1.56
+interface Gig2.56
+ encapsulation dot1q 56
+ ip address 10.5.6.5 255.255.255.0
+ ipv6 address 2001:10:5:6::5/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10005</entry>
+            <entry key="static_ip" type="String">172.16.1.105</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R6
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R6
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 6.6.6.6 255.255.255.255
+ ipv6 address 2001::6/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.46
+interface Gig2.46
+ encapsulation dot1q 46
+ ip address 10.4.6.6 255.255.255.0
+ ipv6 address 2001:10:4:6::6/64
+!
+no int gig1.56
+interface Gig2.56
+ encapsulation dot1q 56
+ ip address 10.5.6.6 255.255.255.0
+ ipv6 address 2001:10:5:6::6/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10006</entry>
+            <entry key="static_ip" type="String">172.16.1.106</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R7
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R4
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R7
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 7.7.7.7 255.255.255.255
+ ipv6 address 2001::7/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.37
+interface Gig2.37
+ encapsulation dot1q 37
+ ip address 10.3.7.7 255.255.255.0
+ ipv6 address 2001:10:3:7::7/64
+!
+no int gig1.713
+interface Gig2.713
+ encapsulation dot1q 713
+ ip address 10.7.13.7 255.255.255.0
+ ipv6 address 2001:10:7:13::7/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10007</entry>
+            <entry key="static_ip" type="String">172.16.1.107</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R8
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R5
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R8
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 8.8.8.8 255.255.255.255
+ ipv6 address 2001::8/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.89
+interface Gig2.89
+ encapsulation dot1q 89
+ ip address 10.8.9.8 255.255.255.0
+ ipv6 address 2001:10:8:9::8/64
+!
+no int gig1.811
+interface Gig2.811
+ encapsulation dot1q 811
+ ip address 10.8.11.8 255.255.255.0
+ ipv6 address 2001:10:8:11::8/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10008</entry>
+            <entry key="static_ip" type="String">172.16.1.108</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R9
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet3
+  description to R2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R9
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 9.9.9.9 255.255.255.255
+ ipv6 address 2001::9/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.89
+interface Gig2.89
+ encapsulation dot1q 89
+ ip address 10.8.9.9 255.255.255.0
+ ipv6 address 2001:10:8:9::9/64
+!
+no int gig1.914
+interface Gig2.914
+ encapsulation dot1q 914
+ ip address 10.9.14.9 255.255.255.0
+ ipv6 address 2001:10:9:14::9/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10009</entry>
+            <entry key="static_ip" type="String">172.16.1.109</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R10
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_1
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+!
+hostname R10
+!
+ip routing
+ipv6 unicast-routing
+!
+interface Loopback0
+ ip address 10.10.10.10 255.255.255.255
+ ipv6 address 2001::10/128
+!
+no ip domain-lookup
+!
+enable password cisco
+!
+line vty 0 4
+ no login
+ privilege level 15
+!
+line con 0
+ logging synchronous
+!
+config t
+!
+interface Gig2
+ no shutdown
+!
+no int gig1.210
+interface Gig2.210
+ encapsulation dot1q 210
+ ip address 10.2.10.10 255.255.255.0
+ ipv6 address 2001:10:2:10::10/64
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10010</entry>
+            <entry key="static_ip" type="String">172.16.1.110</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R11
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10011</entry>
+            <entry key="static_ip" type="String">172.16.1.111</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R12
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10012</entry>
+            <entry key="static_ip" type="String">172.16.1.112</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R13
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10013</entry>
+            <entry key="static_ip" type="String">172.16.1.113</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R14
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10014</entry>
+            <entry key="static_ip" type="String">172.16.1.114</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R15
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10015</entry>
+            <entry key="static_ip" type="String">172.16.1.115</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R16
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10016</entry>
+            <entry key="static_ip" type="String">172.16.1.116</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R17
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10017</entry>
+            <entry key="static_ip" type="String">172.16.1.117</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R18
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10018</entry>
+            <entry key="static_ip" type="String">172.16.1.118</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R19
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10019</entry>
+            <entry key="static_ip" type="String">172.16.1.119</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400" excludeFromLaunch="true">
+        <extensions>
+            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname R20
+boot-start-marker
+boot-end-marker
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+!
+!
+license accept end user agreement
+license boot level premium
+!
+!
+no aaa new-model
+!
+!
+ipv6 unicast-routing
+!
+!
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+no service config
+enable password cisco
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+ip classless
+ip subnet-zero
+no ip domain lookup
+ip domain name virl.info
+crypto key generate rsa modulus 768
+ip ssh server algorithm authentication password
+username cisco privilege 15 secret cisco
+line vty 0 4
+ transport input ssh telnet
+ exec-timeout 720 0
+ password cisco
+ login local
+line con 0
+ password cisco
+!
+no cdp run
+!
+!
+interface Loopback0
+  description Loopback
+  no ip address
+!
+interface GigabitEthernet1
+  description OOB Management
+  vrf forwarding Mgmt-intf
+  ! Configured on launch
+  no ip address
+  no shutdown
+!
+interface GigabitEthernet2
+  description to Unmanaged_Switch_2
+  no ip address
+  no shutdown
+!
+!
+!
+!
+!
+end
+</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10020</entry>
+            <entry key="static_ip" type="String">172.16.1.120</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+    </node>
+    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname XR1
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+interface Loopback0
+  description Loopback
+  no ipv4 address
+!
+interface GigabitEthernet0/0/0/0
+  description to Unmanaged_Switch_1
+  no ipv4 address
+  no shutdown
+!
+interface GigabitEthernet0/0/0/1
+  description to XR2
+  no ipv4 address
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  no shutdown
+!
+!
+hostname XR1
+!
+interface Loopback0
+ ipv4 address 11.11.11.11/32
+ ipv6 address 2001::11/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.111
+ dot1q vlan 111
+ ipv4 address 10.1.11.11/24
+ ipv6 address 2001:10:1:11::11/64
+!
+interface Gig0/0/0/0.211
+ dot1q vlan 211
+ ipv4 address 10.2.11.11/24
+ ipv6 address 2001:10:2:11::11/64
+!
+interface Gig0/0/0/0.411
+ dot1q vlan 411
+ ipv4 address 10.4.11.11/24
+ ipv6 address 2001:10:4:11::11/64
+!
+interface Gig0/0/0/0.811
+ dot1q vlan 811
+ ipv4 address 10.8.11.11/24
+ ipv6 address 2001:10:8:11::11/64
+!
+interface Gig0/0/0/0.1112
+ dot1q vlan 1112
+ ipv4 address 10.11.12.11/24
+ ipv6 address 2001:10:11:12::11/64
+!
+!
+!
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10021</entry>
+            <entry key="static_ip" type="String">172.16.1.121</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1"/>
+    </node>
+    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname XR2
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+interface Loopback0
+  description Loopback
+  no ipv4 address
+!
+interface GigabitEthernet0/0/0/0
+  description to Unmanaged_Switch_1
+  no ipv4 address
+  no shutdown
+!
+interface GigabitEthernet0/0/0/1
+  description to XR1
+  no ipv4 address
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  no shutdown
+!
+!
+hostname XR2
+!
+interface Loopback0
+ ipv4 address 12.12.12.12/32
+ ipv6 address 2001::12/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.112
+ dot1q vlan 112
+ ipv4 address 10.1.12.12/24
+ ipv6 address 2001:10:1:12::12/64
+!
+interface Gig0/0/0/0.212
+ dot1q vlan 212
+ ipv4 address 10.2.12.12/24
+ ipv6 address 2001:10:2:12::12/64
+!
+interface Gig0/0/0/0.312
+ dot1q vlan 312
+ ipv4 address 10.3.12.12/24
+ ipv6 address 2001:10:3:12::12/64
+!
+interface Gig0/0/0/0.1112
+ dot1q vlan 1112
+ ipv4 address 10.11.12.12/24
+ ipv6 address 2001:10:11:12::12/64
+!
+interface Gig0/0/0/0.1213
+ dot1q vlan 1213
+ ipv4 address 10.12.13.12/24
+ ipv6 address 2001:10:12:13::12/64
+!
+!
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10022</entry>
+            <entry key="static_ip" type="String">172.16.1.122</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1"/>
+    </node>
+    <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname XR3
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+interface Loopback0
+  description Loopback
+  no ipv4 address
+!
+interface GigabitEthernet0/0/0/0
+  description to Unmanaged_Switch_1
+  no ipv4 address
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  no shutdown
+!
+!
+hostname XR3
+!
+interface Loopback0
+ ipv4 address 13.13.13.13/32
+ ipv6 address 2001::13/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.213
+ dot1q vlan 213
+ ipv4 address 10.2.13.13/24
+ ipv6 address 2001:10:2:13::13/64
+!
+interface Gig0/0/0/0.313
+ dot1q vlan 313
+ ipv4 address 10.3.13.13/24
+ ipv6 address 2001:10:3:13::13/64
+!
+interface Gig0/0/0/0.713
+ dot1q vlan 713
+ ipv4 address 10.7.13.13/24
+ ipv6 address 2001:10:7:13::13/64
+!
+interface Gig0/0/0/0.1213
+ dot1q vlan 1213
+ ipv4 address 10.12.13.13/24
+ ipv6 address 2001:10:12:13::13/64
+!
+interface Gig0/0/0/0.1314
+ dot1q vlan 1314
+ ipv4 address 10.13.14.13/24
+ ipv6 address 2001:10:13:14::13/64
+!
+!
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10023</entry>
+            <entry key="static_ip" type="String">172.16.1.123</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+    </node>
+    <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
+        <extensions>
+            <entry key="config" type="string">!  IOS-XR Config generated on 2016-04-21 17:05
+! by autonetkit_0.21.4
+!
+hostname XR4
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+domain name virl.info
+ssh server v2
+ssh server vrf Mgmt-intf
+!
+line template vty
+timestamp
+exec-timeout 720 0
+!
+line console
+exec-timeout 0 0
+!
+line default
+exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
+interface Loopback0
+  description Loopback
+  no ipv4 address
+!
+interface GigabitEthernet0/0/0/0
+  description to Unmanaged_Switch_1
+  no ipv4 address
+  no shutdown
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  no shutdown
+!
+!
+hostname XR4
+!
+interface Loopback0
+ ipv4 address 14.14.14.14/32
+ ipv6 address 2001::14/128
+!
+interface Gig0/0/0/0
+ no shutdown
+!
+interface Gig0/0/0/0.914
+ dot1q vlan 914
+ ipv4 address 10.9.14.14/24
+ ipv6 address 2001:10:9:14::14/64
+!
+interface Gig0/0/0/0.1314
+ dot1q vlan 1314
+ ipv4 address 10.13.14.14/24
+ ipv6 address 2001:10:13:14::14/64
+!
+!
+!
+        </entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10024</entry>
+            <entry key="static_ip" type="String">172.16.1.124</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0"/>
+    </node>
+    <node name="Unmanaged_Switch_2" type="SIMPLE" subtype="Unmanaged Switch" location="509,336">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+    </node>
+    <node name="Unmanaged_Switch_1" type="SIMPLE" subtype="Unmanaged Switch" location="372,262">
+        <interface id="0" name="link1"/>
+        <interface id="1" name="link2"/>
+        <interface id="2" name="link3"/>
+        <interface id="3" name="link4"/>
+        <interface id="4" name="link5"/>
+        <interface id="5" name="link6"/>
+        <interface id="6" name="link7"/>
+        <interface id="7" name="link8"/>
+        <interface id="8" name="link9"/>
+        <interface id="9" name="link10"/>
+        <interface id="10" name="link11"/>
+        <interface id="11" name="link12"/>
+        <interface id="12" name="link13"/>
+        <interface id="13" name="link14"/>
+        <interface id="14" name="link15"/>
+    </node>
+    <node name="Access-Server" type="SIMPLE" subtype="IOSv" location="173,170">
+        <extensions>
+            <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
+            <entry key="static_serial_port_0" type="Integer">10000</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
+!
+! For VIRL HOST
+!
+! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.1.10:23
+!
+! FILL IN THESE VARIABLES FOR THE USER
+!
+! username $username privilege 1 password 0 $password
+! username $username autocommand menu main_menu
+!
+username ccie privilege 1 password 0 spv4
+username ccie autocommand menu main_menu
+username admin privilege 1 password 0 spv4
+
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Access-Server
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable password cisco
+!
+no aaa new-model
+ethernet lmi ce
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+ip cef
+ipv6 unicast-routing
+ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+privilege exec level 0 telnet
+privilege exec level 0 menu
+privilege exec level 0 exit
+privilege exec level 0 clear
+privilege exec level 0 clear line
+!
+no menu main_menu
+menu main_menu title $
++------------------------------------------+
+|            SPv4 Bootcamp Menu            |
++------------------------------------------+
+$
+menu main_menu prompt $Enter Selection: $
+menu main_menu text 1. Connect to R1
+menu main_menu command 1. telnet 172.16.1.101 /vrf Mgmt-intf
+menu main_menu text 2. Connect to R2
+menu main_menu command 2. telnet 172.16.1.102 /vrf Mgmt-intf
+menu main_menu text 3. Connect to R3
+menu main_menu command 3. telnet 172.16.1.103 /vrf Mgmt-intf
+menu main_menu text 4. Connect to R4
+menu main_menu command 4. telnet 172.16.1.104 /vrf Mgmt-intf
+menu main_menu text 5. Connect to R5
+menu main_menu command 5. telnet 172.16.1.105 /vrf Mgmt-intf
+menu main_menu text 6. Connect to R6
+menu main_menu command 6. telnet 172.16.1.106 /vrf Mgmt-intf
+menu main_menu text 7. Connect to R7
+menu main_menu command 7. telnet 172.16.1.107 /vrf Mgmt-intf
+menu main_menu text 8. Connect to R8
+menu main_menu command 8. telnet 172.16.1.108 /vrf Mgmt-intf
+menu main_menu text 9. Connect to R9
+menu main_menu command 9. telnet 172.16.1.109 /vrf Mgmt-intf
+menu main_menu text 10. Connect to R10
+menu main_menu command 10. telnet 172.16.1.110 /vrf Mgmt-intf
+menu main_menu text 11. Connect to R11
+menu main_menu command 11. telnet 172.16.1.111 /vrf Mgmt-intf
+menu main_menu text 12. Connect to R12
+menu main_menu command 12. telnet 172.16.1.112 /vrf Mgmt-intf
+menu main_menu text 13. Connect to R13
+menu main_menu command 13. telnet 172.16.1.113 /vrf Mgmt-intf
+menu main_menu text 14. Connect to R14
+menu main_menu command 14. telnet 172.16.1.114 /vrf Mgmt-intf
+menu main_menu text 15. Connect to R15
+menu main_menu command 15. telnet 172.16.1.115 /vrf Mgmt-intf
+menu main_menu text 16. Connect to R16
+menu main_menu command 16. telnet 172.16.1.116 /vrf Mgmt-intf
+menu main_menu text 17. Connect to R17
+menu main_menu command 17. telnet 172.16.1.117 /vrf Mgmt-intf
+menu main_menu text 18. Connect to R18
+menu main_menu command 18. telnet 172.16.1.118 /vrf Mgmt-intf
+menu main_menu text 19. Connect to R19
+menu main_menu command 19. telnet 172.16.1.119 /vrf Mgmt-intf
+menu main_menu text 20. Connect to R20
+menu main_menu command 20. telnet 172.16.1.120 /vrf Mgmt-intf
+menu main_menu text 21. Connect to XR1
+menu main_menu command 21. telnet 172.16.1.121 /vrf Mgmt-intf
+menu main_menu text 22. Connect to XR2
+menu main_menu command 22. telnet 172.16.1.122 /vrf Mgmt-intf
+menu main_menu text 23. Connect to XR3
+menu main_menu command 23. telnet 172.16.1.123 /vrf Mgmt-intf
+menu main_menu text 24. Connect to XR4
+menu main_menu command 24. telnet 172.16.1.124 /vrf Mgmt-intf
+menu main_menu text 25. Connect to XR1 Console
+menu main_menu command 25. telnet 172.16.1.100 10021 /vrf Mgmt-intf
+menu main_menu text 26. Connect to XR2 Console
+menu main_menu command 26. telnet 172.16.1.100 10022 /vrf Mgmt-intf
+menu main_menu text 27. Connect to XR3 Console
+menu main_menu command 27. telnet 172.16.1.100 10023 /vrf Mgmt-intf
+menu main_menu text 28. Connect to XR4 Console
+menu main_menu command 28. telnet 172.16.1.100 10024 /vrf Mgmt-intf
+menu main_menu text C. Console Menu
+menu main_menu command C. menu console_menu 
+menu main_menu text Q. Quit
+menu main_menu command Q. Exit
+menu main_menu clear-screen
+
+
+
+no menu console_menu
+menu console_menu title $
++------------------------------------------+
+|      SPv4 Bootcamp Console Menu          |
++------------------------------------------+
+$
+menu console_menu prompt $Enter Selection: $
+menu console_menu text 1. Connect to R1
+menu console_menu command 1. telnet 172.16.1.100 10001 /vrf Mgmt-intf
+menu console_menu text 2. Connect to R2
+menu console_menu command 2. telnet 172.16.1.100 10002 /vrf Mgmt-intf
+menu console_menu text 3. Connect to R3
+menu console_menu command 3. telnet 172.16.1.100 10003 /vrf Mgmt-intf
+menu console_menu text 4. Connect to R4
+menu console_menu command 4. telnet 172.16.1.100 10004 /vrf Mgmt-intf
+menu console_menu text 5. Connect to R5
+menu console_menu command 5. telnet 172.16.1.100 10005 /vrf Mgmt-intf
+menu console_menu text 6. Connect to R6
+menu console_menu command 6. telnet 172.16.1.100 10006 /vrf Mgmt-intf
+menu console_menu text 7. Connect to R7
+menu console_menu command 7. telnet 172.16.1.100 10007 /vrf Mgmt-intf
+menu console_menu text 8. Connect to R8
+menu console_menu command 8. telnet 172.16.1.100 10008 /vrf Mgmt-intf
+menu console_menu text 9. Connect to R9
+menu console_menu command 9. telnet 172.16.1.100 10009 /vrf Mgmt-intf
+menu console_menu text 10. Connect to R10
+menu console_menu command 10. telnet 172.16.1.100 10010 /vrf Mgmt-intf
+menu console_menu text 11. Connect to R11
+menu console_menu command 11. telnet 172.16.1.100 10011 /vrf Mgmt-intf
+menu console_menu text 12. Connect to R12
+menu console_menu command 12. telnet 172.16.1.100 10012 /vrf Mgmt-intf
+menu console_menu text 13. Connect to R13
+menu console_menu command 13. telnet 172.16.1.100 10013 /vrf Mgmt-intf
+menu console_menu text 14. Connect to R14
+menu console_menu command 14. telnet 172.16.1.100 10014 /vrf Mgmt-intf
+menu console_menu text 15. Connect to R15
+menu console_menu command 15. telnet 172.16.1.100 10015 /vrf Mgmt-intf
+menu console_menu text 16. Connect to R16
+menu console_menu command 16. telnet 172.16.1.100 10016 /vrf Mgmt-intf
+menu console_menu text 17. Connect to R17
+menu console_menu command 17. telnet 172.16.1.100 10017 /vrf Mgmt-intf
+menu console_menu text 18. Connect to R18
+menu console_menu command 18. telnet 172.16.1.100 10018 /vrf Mgmt-intf
+menu console_menu text 19. Connect to R19
+menu console_menu command 19. telnet 172.16.1.100 10019 /vrf Mgmt-intf
+menu console_menu text 20. Connect to R20
+menu console_menu command 20. telnet 172.16.1.100 10020 /vrf Mgmt-intf
+menu console_menu text 21. Connect to XR1
+menu console_menu command 21. telnet 172.16.1.100 10021 /vrf Mgmt-intf
+menu console_menu text 22. Connect to XR2
+menu console_menu command 22. telnet 172.16.1.100 10022 /vrf Mgmt-intf
+menu console_menu text 23. Connect to XR3
+menu console_menu command 23. telnet 172.16.1.100 10023 /vrf Mgmt-intf
+menu console_menu text 24. Connect to XR4
+menu console_menu command 24. telnet 172.16.1.100 10024 /vrf Mgmt-intf
+menu console_menu text Q. Quit
+menu console_menu command Q. Exit
+menu console_menu clear-screen
+!
+redundancy
+!
+interface GigabitEthernet0/0
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.10 255.255.255.0
+ duplex full
+ speed auto
+ media-type rj45
+ no cdp enable
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm authentication password
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ password cisco
+line aux 0
+line vty 0
+ exec-timeout 720 0
+ password cisco
+ login local
+ length 0
+ transport input telnet ssh
+line vty 1 100
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+no scheduler allocate
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "no banner exec"
+!
+end</entry>
+            <entry key="static_ip" type="String">172.16.1.10</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <annotations/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[26]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[26]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[4]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[5]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[6]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[7]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[8]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[9]" src="/virl:topology/virl:node[9]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[10]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[11]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[25]/virl:interface[6]" src="/virl:topology/virl:node[16]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[25]/virl:interface[7]" src="/virl:topology/virl:node[17]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[8]"/>
+    <connection dst="/virl:topology/virl:node[25]/virl:interface[9]" src="/virl:topology/virl:node[19]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[20]/virl:interface[1]" src="/virl:topology/virl:node[25]/virl:interface[10]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[11]" src="/virl:topology/virl:node[21]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[12]" src="/virl:topology/virl:node[22]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[13]" src="/virl:topology/virl:node[23]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[14]" src="/virl:topology/virl:node[24]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[9]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[2]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[22]/virl:interface[2]" src="/virl:topology/virl:node[21]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[26]/virl:interface[15]" src="/virl:topology/virl:node[25]/virl:interface[11]"/>
+</topology>
