@@ -63,18 +63,18 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ip address 198.18.1.101 255.255.255.0
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R2
   no ip address
   no shutdown
@@ -195,24 +195,24 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R1
   no ip address
   no shutdown
 !
-interface GigabitEthernet4
+interface GigabitEthernet0/3
   description to R9
   no ip address
   no shutdown
@@ -349,14 +349,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
@@ -480,19 +480,19 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R7
   no ip address
   no shutdown
@@ -611,19 +611,19 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R8
   no ip address
   no shutdown
@@ -742,14 +742,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
@@ -861,19 +861,19 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R4
   no ip address
   no shutdown
@@ -986,19 +986,19 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R5
   no ip address
   no shutdown
@@ -1111,19 +1111,19 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
 !
-interface GigabitEthernet3
+interface GigabitEthernet0/2
   description to R2
   no ip address
   no shutdown
@@ -1236,14 +1236,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_1
   no ip address
   no shutdown
@@ -1349,14 +1349,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1430,14 +1430,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1511,14 +1511,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1592,14 +1592,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1673,14 +1673,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1754,14 +1754,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1835,14 +1835,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1916,14 +1916,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -1997,14 +1997,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
@@ -2078,14 +2078,14 @@ interface Loopback0
   description Loopback
   no ip address
 !
-interface GigabitEthernet1
+interface GigabitEthernet0/0
   description OOB Management
   vrf forwarding Mgmt-intf
   ! Configured on launch
   no ip address
   no shutdown
 !
-interface GigabitEthernet2
+interface GigabitEthernet0/1
   description to Unmanaged_Switch_2
   no ip address
   no shutdown
