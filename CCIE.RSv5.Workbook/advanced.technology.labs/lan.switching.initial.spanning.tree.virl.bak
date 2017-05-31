@@ -42,16 +42,25 @@ no service password-encryption
 hostname SW1
 !
 vtp domain CCIE
-vtp mode client
+vtp mode server
+vlan 2,5,7,8,9,10,22,43,58,67,79,146
 !
 no ip domain-lookup
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 4096
 !
 !
-interface range FastEthernet0/19 - 24
- switchport mode dynamic desirable
+interface range FastEthernet0/19 - 20
  switchport trunk encapsulation dot1q
+ switchport mode trunk
+!
+interface range FastEthernet0/21 - 22
+ shutdown
+!
+interface range FastEthernet0/23 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
 !
 !
 line con 0
@@ -84,17 +93,24 @@ no service password-encryption
 hostname SW2
 !
 vtp domain CCIE
-vtp mode server
-vlan 5,7,8,9,10,22,43,58,67,79,146
+vtp mode client
 !
 no ip domain-lookup
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 16384
 !
 !
-interface range FastEthernet0/19 - 24
+interface range FastEthernet0/19 - 20
  switchport trunk encapsulation dot1q
- switchport mode dynamic auto
+ switchport mode trunk
+!
+interface range FastEthernet0/21 - 22
+ shutdown
+!
+interface range FastEthernet0/23 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
 !
 !
 line con 0
@@ -105,39 +121,7 @@ line vty 0 4
 line vty 5 15
  no login
 !
-event manager applet ADD_VLANS
- event none
- action 1.0 cli command "enable"
- action 2.0 cli command "configure terminal"
- action 3.0 cli command "vlan 5,7,8,9,10,22,43,58,67,79,146"
-!
-kron policy-list KRONPOLICY
- cli event manager run ADD_VLANS
-!
-kron occurrence KRONJOB in 1 recurring system-startup
- policy-list KRONPOLICY
-!
-!
-!
-control-plane
-!
-!
-line con 0
- password cisco
-line aux 0
-line vty 0 100
- exec-timeout 10 0
- privilege level 15
- logging synchronous
- no login
- no rotary
- transport input telnet
-
-!
-no scheduler allocate
-
 end
-
 </entry></extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -165,9 +149,16 @@ spanning-tree mode pvst
 spanning-tree extend system-id
 !
 !
-interface range FastEthernet0/19 - 24
+interface range FastEthernet0/19 - 20
  switchport trunk encapsulation dot1q
- switchport mode dynamic auto
+ switchport mode trunk
+!
+interface range FastEthernet0/21 - 22
+ shutdown
+!
+interface range FastEthernet0/23 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
 !
 !
 line con 0
@@ -179,7 +170,6 @@ line vty 5 15
  no login
 !
 end
-
 </entry></extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -205,11 +195,19 @@ vtp mode client
 no ip domain-lookup
 spanning-tree mode pvst
 spanning-tree extend system-id
+spanning-tree vlan 1-4094 priority 8192
 !
 !
-interface range FastEthernet0/19 - 24
+interface range FastEthernet0/19 - 20
  switchport trunk encapsulation dot1q
- switchport mode dynamic auto
+ switchport mode trunk
+!
+interface range FastEthernet0/21 - 22
+ shutdown
+!
+interface range FastEthernet0/23 - 24
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
 !
 !
 line con 0
@@ -221,7 +219,6 @@ line vty 5 15
  no login
 !
 end
-
 </entry></extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>

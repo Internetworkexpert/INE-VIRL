@@ -43,8 +43,22 @@ hostname SW1
 !
 vtp domain CCIE
 vtp mode server
-vlan 2,5,7,8,9,10,22,43,58,67,79,146
+!!!
+!!! add vlans after 1 minute delay
+!!!
+event manager applet ADD_VLANS
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "vlan 2,5,7,8,9,10,22,43,58,67,79,146"
 !
+kron policy-list KRONPOLICY
+ cli event manager run ADD_VLANS
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+
 no ip domain-lookup
 spanning-tree mode pvst
 spanning-tree extend system-id

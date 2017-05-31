@@ -105,37 +105,6 @@ line vty 0 4
 line vty 5 15
  no login
 !
-event manager applet ADD_VLANS
- event none
- action 1.0 cli command "enable"
- action 2.0 cli command "configure terminal"
- action 3.0 cli command "vlan 5,7,8,9,10,22,43,58,67,79,146"
-!
-kron policy-list KRONPOLICY
- cli event manager run ADD_VLANS
-!
-kron occurrence KRONJOB in 1 recurring system-startup
- policy-list KRONPOLICY
-!
-!
-!
-control-plane
-!
-!
-line con 0
- password cisco
-line aux 0
-line vty 0 100
- exec-timeout 10 0
- privilege level 15
- logging synchronous
- no login
- no rotary
- transport input telnet
-
-!
-no scheduler allocate
-
 end
 
 </entry></extensions>
