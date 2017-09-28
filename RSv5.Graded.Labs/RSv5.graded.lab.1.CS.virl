@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
     <extensions>
-        <entry key="lxc.node.static_ip" type="String">172.16.11.99</entry>
         <entry key="AutoNetkit.infrastructure_only" type="Boolean">true</entry>
-        <entry key="lxc.host.static_ip" type="String">172.16.11.100</entry>
         <entry key="management_network" type="String">flat</entry>
     </extensions>
     <node name="CFG-R1" type="SIMPLE" subtype="IOSv" location="2558,756">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.201</entry>
+            <entry key="static_ip" type="String">172.16.1.201</entry>
             <entry key="static_serial_port_0" type="Integer">12001</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 01:42:54 UTC Tue Jun 7 2016
@@ -90,7 +88,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.201 255.255.255.0
+ ip address 172.16.1.201 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -116,7 +114,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -160,7 +158,7 @@ end</entry>
     </node>
     <node name="CFG-R2" type="SIMPLE" subtype="IOSv" location="2724,764">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.202</entry>
+            <entry key="static_ip" type="String">172.16.1.202</entry>
             <entry key="static_serial_port_0" type="Integer">12002</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 01:42:39 UTC Tue Jun 7 2016
@@ -242,7 +240,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.202 255.255.255.0
+ ip address 172.16.1.202 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -268,7 +266,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -312,7 +310,7 @@ end</entry>
     </node>
     <node name="CFG-R3" type="SIMPLE" subtype="IOSv" location="2579,459">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.203</entry>
+            <entry key="static_ip" type="String">172.16.1.203</entry>
             <entry key="static_serial_port_0" type="Integer">12003</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 02:51:10 UTC Tue Jun 7 2016
@@ -397,7 +395,7 @@ interface Loopback1
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.203 255.255.255.0
+ ip address 172.16.1.203 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -436,7 +434,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -483,7 +481,7 @@ end</entry>
     </node>
     <node name="CFG-R4" type="SIMPLE" subtype="IOSv" location="2726,466">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.204</entry>
+            <entry key="static_ip" type="String">172.16.1.204</entry>
             <entry key="static_serial_port_0" type="Integer">12004</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 02:52:34 UTC Tue Jun 7 2016
@@ -568,7 +566,7 @@ interface Loopback1
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.204 255.255.255.0
+ ip address 172.16.1.204 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -607,7 +605,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -654,7 +652,7 @@ end</entry>
     </node>
     <node name="CFG-R5" type="SIMPLE" subtype="IOSv" location="3348,265">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.205</entry>
+            <entry key="static_ip" type="String">172.16.1.205</entry>
             <entry key="static_serial_port_0" type="Integer">12005</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:34:50 UTC Tue Jun 7 2016
@@ -736,7 +734,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.205 255.255.255.0
+ ip address 172.16.1.205 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -761,7 +759,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -806,7 +804,7 @@ end</entry>
     </node>
     <node name="CFG-R6" type="SIMPLE" subtype="IOSv" location="3344,102">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.206</entry>
+            <entry key="static_ip" type="String">172.16.1.206</entry>
             <entry key="static_serial_port_0" type="Integer">12006</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:36:10 UTC Tue Jun 7 2016
@@ -888,7 +886,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.206 255.255.255.0
+ ip address 172.16.1.206 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -913,7 +911,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -958,7 +956,7 @@ end</entry>
     </node>
     <node name="CFG-R7" type="SIMPLE" subtype="IOSv" location="3565,184">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.207</entry>
+            <entry key="static_ip" type="String">172.16.1.207</entry>
             <entry key="static_serial_port_0" type="Integer">12007</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:37:38 UTC Tue Jun 7 2016
@@ -1040,7 +1038,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.207 255.255.255.0
+ ip address 172.16.1.207 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1058,7 +1056,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1102,7 +1100,7 @@ end</entry>
     </node>
     <node name="CFG-R8" type="SIMPLE" subtype="IOSv" location="2930,661">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.208</entry>
+            <entry key="static_ip" type="String">172.16.1.208</entry>
             <entry key="static_serial_port_0" type="Integer">12008</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:24:26 UTC Tue Jun 7 2016
@@ -1184,7 +1182,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.208 255.255.255.0
+ ip address 172.16.1.208 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1209,7 +1207,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1254,7 +1252,7 @@ end</entry>
     </node>
     <node name="CFG-R9" type="SIMPLE" subtype="IOSv" location="3106,668">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.209</entry>
+            <entry key="static_ip" type="String">172.16.1.209</entry>
             <entry key="static_serial_port_0" type="Integer">12009</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:25:19 UTC Tue Jun 7 2016
@@ -1336,7 +1334,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.209 255.255.255.0
+ ip address 172.16.1.209 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1361,7 +1359,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1406,7 +1404,7 @@ end</entry>
     </node>
     <node name="CFG-R10" type="SIMPLE" subtype="IOSv" location="2957,224">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.210</entry>
+            <entry key="static_ip" type="String">172.16.1.210</entry>
             <entry key="static_serial_port_0" type="Integer">12010</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:38:44 UTC Tue Jun 7 2016
@@ -1488,7 +1486,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.210 255.255.255.0
+ ip address 172.16.1.210 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1513,7 +1511,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1558,7 +1556,7 @@ end</entry>
     </node>
     <node name="CFG-R11" type="SIMPLE" subtype="IOSv" location="3110,224">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.211</entry>
+            <entry key="static_ip" type="String">172.16.1.211</entry>
             <entry key="static_serial_port_0" type="Integer">12011</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:39:07 UTC Tue Jun 7 2016
@@ -1640,7 +1638,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.211 255.255.255.0
+ ip address 172.16.1.211 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1665,7 +1663,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1710,7 +1708,7 @@ end</entry>
     </node>
     <node name="CFG-R12" type="SIMPLE" subtype="IOSv" location="3234,453">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.212</entry>
+            <entry key="static_ip" type="String">172.16.1.212</entry>
             <entry key="static_serial_port_0" type="Integer">12012</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:30:23 UTC Tue Jun 7 2016
@@ -1792,7 +1790,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.212 255.255.255.0
+ ip address 172.16.1.212 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1817,7 +1815,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -1862,7 +1860,7 @@ end</entry>
     </node>
     <node name="CFG-R13" type="SIMPLE" subtype="IOSv" location="3318,659">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.213</entry>
+            <entry key="static_ip" type="String">172.16.1.213</entry>
             <entry key="static_serial_port_0" type="Integer">12013</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:29:13 UTC Tue Jun 7 2016
@@ -1944,7 +1942,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.213 255.255.255.0
+ ip address 172.16.1.213 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1969,7 +1967,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2014,7 +2012,7 @@ end</entry>
     </node>
     <node name="CFG-R14" type="SIMPLE" subtype="IOSv" location="3414,455">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.214</entry>
+            <entry key="static_ip" type="String">172.16.1.214</entry>
             <entry key="static_serial_port_0" type="Integer">12014</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:29:58 UTC Tue Jun 7 2016
@@ -2096,7 +2094,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.214 255.255.255.0
+ ip address 172.16.1.214 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2114,7 +2112,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2158,7 +2156,7 @@ end</entry>
     </node>
     <node name="CFG-R15" type="SIMPLE" subtype="IOSv" location="2111,67">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.215</entry>
+            <entry key="static_ip" type="String">172.16.1.215</entry>
             <entry key="static_serial_port_0" type="Integer">12015</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:13:46 UTC Tue Jun 7 2016
@@ -2240,7 +2238,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.215 255.255.255.0
+ ip address 172.16.1.215 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2265,7 +2263,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2310,7 +2308,7 @@ end</entry>
     </node>
     <node name="CFG-R16" type="SIMPLE" subtype="IOSv" location="2113,212">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.216</entry>
+            <entry key="static_ip" type="String">172.16.1.216</entry>
             <entry key="static_serial_port_0" type="Integer">12016</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:13:34 UTC Tue Jun 7 2016
@@ -2392,7 +2390,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.216 255.255.255.0
+ ip address 172.16.1.216 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2424,7 +2422,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2470,7 +2468,7 @@ end</entry>
     </node>
     <node name="CFG-R17" type="SIMPLE" subtype="IOSv" location="2308,222">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.217</entry>
+            <entry key="static_ip" type="String">172.16.1.217</entry>
             <entry key="static_serial_port_0" type="Integer">12017</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:13:03 UTC Tue Jun 7 2016
@@ -2552,7 +2550,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.217 255.255.255.0
+ ip address 172.16.1.217 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2584,7 +2582,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2630,7 +2628,7 @@ end</entry>
     </node>
     <node name="CFG-R18" type="SIMPLE" subtype="IOSv" location="3057,425">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.218</entry>
+            <entry key="static_ip" type="String">172.16.1.218</entry>
             <entry key="static_serial_port_0" type="Integer">12018</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:18:36 UTC Tue Jun 7 2016
@@ -2712,7 +2710,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.218 255.255.255.0
+ ip address 172.16.1.218 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2767,7 +2765,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2815,7 +2813,7 @@ end</entry>
     </node>
     <node name="CFG-R19" type="SIMPLE" subtype="IOSv" location="2791,310">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.219</entry>
+            <entry key="static_ip" type="String">172.16.1.219</entry>
             <entry key="static_serial_port_0" type="Integer">12019</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:45:03 UTC Tue Jun 7 2016
@@ -2897,7 +2895,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.219 255.255.255.0
+ ip address 172.16.1.219 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2922,7 +2920,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -2967,7 +2965,7 @@ end</entry>
     </node>
     <node name="CFG-R20" type="SIMPLE" subtype="IOSv" location="2783,104">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.220</entry>
+            <entry key="static_ip" type="String">172.16.1.220</entry>
             <entry key="static_serial_port_0" type="Integer">12020</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:41:13 UTC Tue Jun 7 2016
@@ -3049,7 +3047,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.220 255.255.255.0
+ ip address 172.16.1.220 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3081,7 +3079,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3127,7 +3125,7 @@ end</entry>
     </node>
     <node name="CFG-R21" type="SIMPLE" subtype="IOSv" location="2679,226">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.221</entry>
+            <entry key="static_ip" type="String">172.16.1.221</entry>
             <entry key="static_serial_port_0" type="Integer">12021</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:46:08 UTC Tue Jun 7 2016
@@ -3209,7 +3207,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.221 255.255.255.0
+ ip address 172.16.1.221 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3248,7 +3246,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3295,7 +3293,7 @@ end</entry>
     </node>
     <node name="CFG-R22" type="SIMPLE" subtype="IOSv" location="2545,314">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.222</entry>
+            <entry key="static_ip" type="String">172.16.1.222</entry>
             <entry key="static_serial_port_0" type="Integer">12022</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:44:20 UTC Tue Jun 7 2016
@@ -3377,7 +3375,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.222 255.255.255.0
+ ip address 172.16.1.222 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3402,7 +3400,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3447,7 +3445,7 @@ end</entry>
     </node>
     <node name="CFG-R23" type="SIMPLE" subtype="IOSv" location="2555,93">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.223</entry>
+            <entry key="static_ip" type="String">172.16.1.223</entry>
             <entry key="static_serial_port_0" type="Integer">12023</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:42:33 UTC Tue Jun 7 2016
@@ -3529,7 +3527,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.223 255.255.255.0
+ ip address 172.16.1.223 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3547,7 +3545,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3591,7 +3589,7 @@ end</entry>
     </node>
     <node name="CFG-R24" type="SIMPLE" subtype="IOSv" location="2113,528">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.224</entry>
+            <entry key="static_ip" type="String">172.16.1.224</entry>
             <entry key="static_serial_port_0" type="Integer">12024</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:34:54 UTC Tue Jun 7 2016
@@ -3675,7 +3673,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.224 255.255.255.0
+ ip address 172.16.1.224 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3726,7 +3724,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3773,7 +3771,7 @@ end</entry>
     </node>
     <node name="CFG-R25" type="SIMPLE" subtype="IOSv" location="2105,363">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.225</entry>
+            <entry key="static_ip" type="String">172.16.1.225</entry>
             <entry key="static_serial_port_0" type="Integer">12025</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:02:06 UTC Tue Jun 7 2016
@@ -3855,7 +3853,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.225 255.255.255.0
+ ip address 172.16.1.225 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3912,7 +3910,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -3960,7 +3958,7 @@ end</entry>
     </node>
     <node name="CFG-SW1" type="SIMPLE" subtype="IOSvL2" location="2655,576">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.226</entry>
+            <entry key="static_ip" type="String">172.16.1.226</entry>
             <entry key="static_serial_port_0" type="Integer">12026</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:46:10 UTC Tue Jun 7 2016
@@ -4057,7 +4055,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 172.16.11.226 255.255.255.0
+ ip address 172.16.1.226 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -4098,7 +4096,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4145,7 +4143,7 @@ end</entry>
     </node>
     <node name="CFG-SW2" type="SIMPLE" subtype="IOSvL2" location="2551,658">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.227</entry>
+            <entry key="static_ip" type="String">172.16.1.227</entry>
             <entry key="static_serial_port_0" type="Integer">12027</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:26:32 UTC Tue Jun 7 2016
@@ -4242,7 +4240,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 172.16.11.227 255.255.255.0
+ ip address 172.16.1.227 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -4267,7 +4265,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4314,7 +4312,7 @@ end</entry>
     </node>
     <node name="CFG-SW3" type="SIMPLE" subtype="IOSvL2" location="2719,664">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.228</entry>
+            <entry key="static_ip" type="String">172.16.1.228</entry>
             <entry key="static_serial_port_0" type="Integer">12028</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:27:14 UTC Tue Jun 7 2016
@@ -4411,7 +4409,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 172.16.11.228 255.255.255.0
+ ip address 172.16.1.228 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -4428,7 +4426,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4474,7 +4472,7 @@ end</entry>
     </node>
     <node name="CFG-SW4" type="SIMPLE" subtype="IOSvL2" location="3450,191">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.229</entry>
+            <entry key="static_ip" type="String">172.16.1.229</entry>
             <entry key="static_serial_port_0" type="Integer">12029</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:27:17 UTC Tue Jun 7 2016
@@ -4571,7 +4569,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 172.16.11.229 255.255.255.0
+ ip address 172.16.1.229 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -4580,7 +4578,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4625,7 +4623,7 @@ end</entry>
     </node>
     <node name="CFG-SW5" type="SIMPLE" subtype="IOSvL2" location="3319,564">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.230</entry>
+            <entry key="static_ip" type="String">172.16.1.230</entry>
             <entry key="static_serial_port_0" type="Integer">12030</entry>
             <entry key="config" type="string">!
 ! Last configuration change at 03:34:46 UTC Tue Jun 7 2016
@@ -4722,7 +4720,7 @@ interface GigabitEthernet0/0
  description OOB management
  no switchport
  vrf forwarding Mgmt-intf
- ip address 172.16.11.230 255.255.255.0
+ ip address 172.16.1.230 255.255.255.0
  negotiation auto
  no cdp enable
 !
@@ -4743,7 +4741,7 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 !
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
 !
 kron occurrence KRONJOB in 1 recurring system-startup
@@ -4788,7 +4786,7 @@ end</entry>
     </node>
     <node name="Access-Server" type="SIMPLE" subtype="IOSv" location="163,160">
         <extensions>
-            <entry key="static_ip" type="String">172.16.11.10</entry>
+            <entry key="static_ip" type="String">172.16.1.10</entry>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
             <entry key="config" type="String">!
@@ -4804,7 +4802,7 @@ end</entry>
 ! !
 ! ! Listen for Telnet on public IP
 ! !
-! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.11.10:23
+! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.1.10:23
 !
 ! For Access Server
 !
@@ -4886,65 +4884,65 @@ menu ts_menu title $
 $
 menu ts_menu prompt $Enter Selection: $
 menu ts_menu text 1. Connect to TS-R1
-menu ts_menu command 1. telnet 172.16.11.101 /vrf Mgmt-intf
+menu ts_menu command 1. telnet 172.16.1.101 /vrf Mgmt-intf
 menu ts_menu text 2. Connect to TS-R2
-menu ts_menu command 2. telnet 172.16.11.102 /vrf Mgmt-intf
+menu ts_menu command 2. telnet 172.16.1.102 /vrf Mgmt-intf
 menu ts_menu text 3. Connect to TS-R3
-menu ts_menu command 3. telnet 172.16.11.103 /vrf Mgmt-intf
+menu ts_menu command 3. telnet 172.16.1.103 /vrf Mgmt-intf
 menu ts_menu text 4. Connect to TS-R4
-menu ts_menu command 4. telnet 172.16.11.104 /vrf Mgmt-intf
+menu ts_menu command 4. telnet 172.16.1.104 /vrf Mgmt-intf
 menu ts_menu text 5. Connect to TS-R5
-menu ts_menu command 5. telnet 172.16.11.105 /vrf Mgmt-intf
+menu ts_menu command 5. telnet 172.16.1.105 /vrf Mgmt-intf
 menu ts_menu text 6. Connect to TS-R6
-menu ts_menu command 6. telnet 172.16.11.106 /vrf Mgmt-intf
+menu ts_menu command 6. telnet 172.16.1.106 /vrf Mgmt-intf
 menu ts_menu text 7. Connect to TS-R7
-menu ts_menu command 7. telnet 172.16.11.107 /vrf Mgmt-intf
+menu ts_menu command 7. telnet 172.16.1.107 /vrf Mgmt-intf
 menu ts_menu text 8. Connect to TS-R8
-menu ts_menu command 8. telnet 172.16.11.108 /vrf Mgmt-intf
+menu ts_menu command 8. telnet 172.16.1.108 /vrf Mgmt-intf
 menu ts_menu text 9. Connect to TS-R9
-menu ts_menu command 9. telnet 172.16.11.109 /vrf Mgmt-intf
+menu ts_menu command 9. telnet 172.16.1.109 /vrf Mgmt-intf
 menu ts_menu text 10. Connect to TS-R10
-menu ts_menu command 10. telnet 172.16.11.110 /vrf Mgmt-intf
+menu ts_menu command 10. telnet 172.16.1.110 /vrf Mgmt-intf
 menu ts_menu text 11. Connect to TS-R11
-menu ts_menu command 11. telnet 172.16.11.111 /vrf Mgmt-intf
+menu ts_menu command 11. telnet 172.16.1.111 /vrf Mgmt-intf
 menu ts_menu text 12. Connect to TS-R12
-menu ts_menu command 12. telnet 172.16.11.112 /vrf Mgmt-intf
+menu ts_menu command 12. telnet 172.16.1.112 /vrf Mgmt-intf
 menu ts_menu text 13. Connect to TS-R13
-menu ts_menu command 13. telnet 172.16.11.113 /vrf Mgmt-intf
+menu ts_menu command 13. telnet 172.16.1.113 /vrf Mgmt-intf
 menu ts_menu text 14. Connect to TS-R14
-menu ts_menu command 14. telnet 172.16.11.114 /vrf Mgmt-intf
+menu ts_menu command 14. telnet 172.16.1.114 /vrf Mgmt-intf
 menu ts_menu text 15. Connect to TS-R15
-menu ts_menu command 15. telnet 172.16.11.115 /vrf Mgmt-intf
+menu ts_menu command 15. telnet 172.16.1.115 /vrf Mgmt-intf
 menu ts_menu text 16. Connect to TS-R16
-menu ts_menu command 16. telnet 172.16.11.116 /vrf Mgmt-intf
+menu ts_menu command 16. telnet 172.16.1.116 /vrf Mgmt-intf
 menu ts_menu text 17. Connect to TS-R17
-menu ts_menu command 17. telnet 172.16.11.117 /vrf Mgmt-intf
+menu ts_menu command 17. telnet 172.16.1.117 /vrf Mgmt-intf
 menu ts_menu text 18. Connect to TS-R18
-menu ts_menu command 18. telnet 172.16.11.118 /vrf Mgmt-intf
+menu ts_menu command 18. telnet 172.16.1.118 /vrf Mgmt-intf
 menu ts_menu text 19. Connect to TS-R19
-menu ts_menu command 19. telnet 172.16.11.119 /vrf Mgmt-intf
+menu ts_menu command 19. telnet 172.16.1.119 /vrf Mgmt-intf
 menu ts_menu text 20. Connect to TS-R20
-menu ts_menu command 20. telnet 172.16.11.120 /vrf Mgmt-intf
+menu ts_menu command 20. telnet 172.16.1.120 /vrf Mgmt-intf
 menu ts_menu text 21. Connect to TS-R21
-menu ts_menu command 21. telnet 172.16.11.121 /vrf Mgmt-intf
+menu ts_menu command 21. telnet 172.16.1.121 /vrf Mgmt-intf
 menu ts_menu text 22. Connect to TS-R22
-menu ts_menu command 22. telnet 172.16.11.122 /vrf Mgmt-intf
+menu ts_menu command 22. telnet 172.16.1.122 /vrf Mgmt-intf
 menu ts_menu text 23. Connect to TS-R23
-menu ts_menu command 23. telnet 172.16.11.123 /vrf Mgmt-intf
+menu ts_menu command 23. telnet 172.16.1.123 /vrf Mgmt-intf
 menu ts_menu text 24. Connect to TS-R24
-menu ts_menu command 24. telnet 172.16.11.124 /vrf Mgmt-intf
+menu ts_menu command 24. telnet 172.16.1.124 /vrf Mgmt-intf
 menu ts_menu text 25. Connect to TS-R25
-menu ts_menu command 25. telnet 172.16.11.125 /vrf Mgmt-intf
+menu ts_menu command 25. telnet 172.16.1.125 /vrf Mgmt-intf
 menu ts_menu text 26. Connect to TS-R26
-menu ts_menu command 26. telnet 172.16.11.126 /vrf Mgmt-intf
+menu ts_menu command 26. telnet 172.16.1.126 /vrf Mgmt-intf
 menu ts_menu text 27. Connect to TS-R27
-menu ts_menu command 27. telnet 172.16.11.127 /vrf Mgmt-intf
+menu ts_menu command 27. telnet 172.16.1.127 /vrf Mgmt-intf
 menu ts_menu text 28. Connect to TS-SW1
-menu ts_menu command 28. telnet 172.16.11.128 /vrf Mgmt-intf
+menu ts_menu command 28. telnet 172.16.1.128 /vrf Mgmt-intf
 menu ts_menu text 29. Connect to TS-SW2
-menu ts_menu command 29. telnet 172.16.11.129 /vrf Mgmt-intf
+menu ts_menu command 29. telnet 172.16.1.129 /vrf Mgmt-intf
 menu ts_menu text 30. Connect to TS-SW3
-menu ts_menu command 30. telnet 172.16.11.130 /vrf Mgmt-intf
+menu ts_menu command 30. telnet 172.16.1.130 /vrf Mgmt-intf
 menu ts_menu text Q. Quit
 menu ts_menu command Q. Exit
 menu ts_menu clear-screen
@@ -4958,65 +4956,65 @@ menu cfg_menu title $
 $
 menu cfg_menu prompt $Enter Selection: $
 menu cfg_menu text 1. Connect to CFG-R1
-menu cfg_menu command 1. telnet 172.16.11.201 /vrf Mgmt-intf
+menu cfg_menu command 1. telnet 172.16.1.201 /vrf Mgmt-intf
 menu cfg_menu text 2. Connect to CFG-R2
-menu cfg_menu command 2. telnet 172.16.11.202 /vrf Mgmt-intf
+menu cfg_menu command 2. telnet 172.16.1.202 /vrf Mgmt-intf
 menu cfg_menu text 3. Connect to CFG-R3
-menu cfg_menu command 3. telnet 172.16.11.203 /vrf Mgmt-intf
+menu cfg_menu command 3. telnet 172.16.1.203 /vrf Mgmt-intf
 menu cfg_menu text 4. Connect to CFG-R4
-menu cfg_menu command 4. telnet 172.16.11.204 /vrf Mgmt-intf
+menu cfg_menu command 4. telnet 172.16.1.204 /vrf Mgmt-intf
 menu cfg_menu text 5. Connect to CFG-R5
-menu cfg_menu command 5. telnet 172.16.11.205 /vrf Mgmt-intf
+menu cfg_menu command 5. telnet 172.16.1.205 /vrf Mgmt-intf
 menu cfg_menu text 6. Connect to CFG-R6
-menu cfg_menu command 6. telnet 172.16.11.206 /vrf Mgmt-intf
+menu cfg_menu command 6. telnet 172.16.1.206 /vrf Mgmt-intf
 menu cfg_menu text 7. Connect to CFG-R7
-menu cfg_menu command 7. telnet 172.16.11.207 /vrf Mgmt-intf
+menu cfg_menu command 7. telnet 172.16.1.207 /vrf Mgmt-intf
 menu cfg_menu text 8. Connect to CFG-R8
-menu cfg_menu command 8. telnet 172.16.11.208 /vrf Mgmt-intf
+menu cfg_menu command 8. telnet 172.16.1.208 /vrf Mgmt-intf
 menu cfg_menu text 9. Connect to CFG-R9
-menu cfg_menu command 9. telnet 172.16.11.209 /vrf Mgmt-intf
+menu cfg_menu command 9. telnet 172.16.1.209 /vrf Mgmt-intf
 menu cfg_menu text 10. Connect to CFG-R10
-menu cfg_menu command 10. telnet 172.16.11.210 /vrf Mgmt-intf
+menu cfg_menu command 10. telnet 172.16.1.210 /vrf Mgmt-intf
 menu cfg_menu text 11. Connect to CFG-R11
-menu cfg_menu command 11. telnet 172.16.11.211 /vrf Mgmt-intf
+menu cfg_menu command 11. telnet 172.16.1.211 /vrf Mgmt-intf
 menu cfg_menu text 12. Connect to CFG-R12
-menu cfg_menu command 12. telnet 172.16.11.212 /vrf Mgmt-intf
+menu cfg_menu command 12. telnet 172.16.1.212 /vrf Mgmt-intf
 menu cfg_menu text 13. Connect to CFG-R13
-menu cfg_menu command 13. telnet 172.16.11.213 /vrf Mgmt-intf
+menu cfg_menu command 13. telnet 172.16.1.213 /vrf Mgmt-intf
 menu cfg_menu text 14. Connect to CFG-R14
-menu cfg_menu command 14. telnet 172.16.11.214 /vrf Mgmt-intf
+menu cfg_menu command 14. telnet 172.16.1.214 /vrf Mgmt-intf
 menu cfg_menu text 15. Connect to CFG-R15
-menu cfg_menu command 15. telnet 172.16.11.215 /vrf Mgmt-intf
+menu cfg_menu command 15. telnet 172.16.1.215 /vrf Mgmt-intf
 menu cfg_menu text 16. Connect to CFG-R16
-menu cfg_menu command 16. telnet 172.16.11.216 /vrf Mgmt-intf
+menu cfg_menu command 16. telnet 172.16.1.216 /vrf Mgmt-intf
 menu cfg_menu text 17. Connect to CFG-R17
-menu cfg_menu command 17. telnet 172.16.11.217 /vrf Mgmt-intf
+menu cfg_menu command 17. telnet 172.16.1.217 /vrf Mgmt-intf
 menu cfg_menu text 18. Connect to CFG-R18
-menu cfg_menu command 18. telnet 172.16.11.218 /vrf Mgmt-intf
+menu cfg_menu command 18. telnet 172.16.1.218 /vrf Mgmt-intf
 menu cfg_menu text 19. Connect to CFG-R19
-menu cfg_menu command 19. telnet 172.16.11.219 /vrf Mgmt-intf
+menu cfg_menu command 19. telnet 172.16.1.219 /vrf Mgmt-intf
 menu cfg_menu text 20. Connect to CFG-R20
-menu cfg_menu command 20. telnet 172.16.11.220 /vrf Mgmt-intf
+menu cfg_menu command 20. telnet 172.16.1.220 /vrf Mgmt-intf
 menu cfg_menu text 21. Connect to CFG-R21
-menu cfg_menu command 21. telnet 172.16.11.221 /vrf Mgmt-intf
+menu cfg_menu command 21. telnet 172.16.1.221 /vrf Mgmt-intf
 menu cfg_menu text 22. Connect to CFG-R22
-menu cfg_menu command 22. telnet 172.16.11.222 /vrf Mgmt-intf
+menu cfg_menu command 22. telnet 172.16.1.222 /vrf Mgmt-intf
 menu cfg_menu text 23. Connect to CFG-R23
-menu cfg_menu command 23. telnet 172.16.11.223 /vrf Mgmt-intf
+menu cfg_menu command 23. telnet 172.16.1.223 /vrf Mgmt-intf
 menu cfg_menu text 24. Connect to CFG-R24
-menu cfg_menu command 24. telnet 172.16.11.224 /vrf Mgmt-intf
+menu cfg_menu command 24. telnet 172.16.1.224 /vrf Mgmt-intf
 menu cfg_menu text 25. Connect to CFG-R25
-menu cfg_menu command 25. telnet 172.16.11.225 /vrf Mgmt-intf
+menu cfg_menu command 25. telnet 172.16.1.225 /vrf Mgmt-intf
 menu cfg_menu text 26. Connect to CFG-SW1
-menu cfg_menu command 26. telnet 172.16.11.226 /vrf Mgmt-intf
+menu cfg_menu command 26. telnet 172.16.1.226 /vrf Mgmt-intf
 menu cfg_menu text 27. Connect to CFG-SW2
-menu cfg_menu command 27. telnet 172.16.11.227 /vrf Mgmt-intf
+menu cfg_menu command 27. telnet 172.16.1.227 /vrf Mgmt-intf
 menu cfg_menu text 28. Connect to CFG-SW3
-menu cfg_menu command 28. telnet 172.16.11.228 /vrf Mgmt-intf
+menu cfg_menu command 28. telnet 172.16.1.228 /vrf Mgmt-intf
 menu cfg_menu text 29. Connect to CFG-SW4
-menu cfg_menu command 29. telnet 172.16.11.229 /vrf Mgmt-intf
+menu cfg_menu command 29. telnet 172.16.1.229 /vrf Mgmt-intf
 menu cfg_menu text 30. Connect to CFG-SW5
-menu cfg_menu command 30. telnet 172.16.11.230 /vrf Mgmt-intf
+menu cfg_menu command 30. telnet 172.16.1.230 /vrf Mgmt-intf
 menu cfg_menu text Q. Quit
 menu cfg_menu command Q. Exit
 menu cfg_menu clear-screen
@@ -5026,12 +5024,12 @@ redundancy
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.10 255.255.255.0
+ ip address 172.16.1.10 255.255.255.0
  duplex full
  speed auto
  media-type rj45
  no cdp enable
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
