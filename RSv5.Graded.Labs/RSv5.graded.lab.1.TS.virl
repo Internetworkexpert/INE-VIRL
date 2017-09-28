@@ -6,7 +6,7 @@
     </extensions>
     <node location="163,160" type="SIMPLE" subtype="IOSv" name="Access-Server">
         <extensions>
-            do you know the root password on the l;inux<entry key="static_ip" type="String">172.16.1.10</entry>
+            <entry key="static_ip" type="String">172.16.1.10</entry>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
             <entry key="config" type="string">!
