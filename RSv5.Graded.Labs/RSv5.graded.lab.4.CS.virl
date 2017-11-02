@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
     <extensions>
         <entry key="lxc.node.static_ip" type="String">172.16.1.99</entry>
@@ -11,7 +11,7 @@
             <entry key="static_ip" type="String">172.16.1.202</entry>
             <entry key="static_serial_port_0" type="Integer">12002</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:19 UTC Thu May 26 2016
+! Last configuration change at 15:53:51 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -91,7 +91,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.245 255.255.0.0
+ ip address 172.16.1.202 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -122,13 +122,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -149,12 +142,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -168,7 +166,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -179,7 +177,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.223</entry>
             <entry key="static_serial_port_0" type="Integer">12023</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:25:48 UTC Thu May 26 2016
+! Last configuration change at 15:54:27 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -260,7 +258,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.240 255.255.0.0
+ ip address 172.16.1.223 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -321,13 +319,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -348,12 +339,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -367,7 +363,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -381,7 +377,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.207</entry>
             <entry key="static_serial_port_0" type="Integer">12007</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:31 UTC Thu May 26 2016
+! Last configuration change at 15:55:03 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -461,7 +457,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.250 255.255.0.0
+ ip address 172.16.1.207 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -485,13 +481,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -512,12 +501,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -531,7 +525,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -541,7 +535,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.210</entry>
             <entry key="static_serial_port_0" type="Integer">12010</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:07:10 UTC Thu May 26 2016
+! Last configuration change at 15:52:42 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -621,7 +615,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.228 255.255.0.0
+ ip address 172.16.1.210 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -645,13 +639,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -672,12 +659,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -691,7 +683,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -701,7 +693,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.211</entry>
             <entry key="static_serial_port_0" type="Integer">12011</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:08:03 UTC Thu May 26 2016
+! Last configuration change at 15:52:48 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -781,7 +773,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.229 255.255.0.0
+ ip address 172.16.1.211 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -805,13 +797,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -832,12 +817,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -851,7 +841,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -861,7 +851,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.222</entry>
             <entry key="static_serial_port_0" type="Integer">12022</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:21 UTC Thu May 26 2016
+! Last configuration change at 15:54:14 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -942,7 +932,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.241 255.255.0.0
+ ip address 172.16.1.222 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -977,13 +967,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1004,12 +987,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1023,7 +1011,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1034,7 +1022,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.224</entry>
             <entry key="static_serial_port_0" type="Integer">12024</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:28:12 UTC Thu May 26 2016
+! Last configuration change at 15:54:25 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1115,7 +1103,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.239 255.255.0.0
+ ip address 172.16.1.224 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1136,13 +1124,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1163,12 +1144,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1182,7 +1168,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -1191,7 +1177,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.206</entry>
             <entry key="static_serial_port_0" type="Integer">12006</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:13 UTC Thu May 26 2016
+! Last configuration change at 15:54:57 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1271,7 +1257,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.249 255.255.0.0
+ ip address 172.16.1.206 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1295,13 +1281,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1322,12 +1301,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1341,7 +1325,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1351,7 +1335,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.225</entry>
             <entry key="static_serial_port_0" type="Integer">12025</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:28:37 UTC Thu May 26 2016
+! Last configuration change at 15:54:29 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1432,7 +1416,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.238 255.255.0.0
+ ip address 172.16.1.225 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1453,13 +1437,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1480,12 +1457,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1499,7 +1481,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -1508,7 +1490,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.221</entry>
             <entry key="static_serial_port_0" type="Integer">12021</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:23 UTC Thu May 26 2016
+! Last configuration change at 15:54:04 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1589,7 +1571,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.242 255.255.0.0
+ ip address 172.16.1.221 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1631,13 +1613,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1658,12 +1633,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1677,7 +1657,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1689,7 +1669,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.218</entry>
             <entry key="static_serial_port_0" type="Integer">12018</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:06:27 UTC Thu May 26 2016
+! Last configuration change at 15:53:40 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1769,7 +1749,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.224 255.255.0.0
+ ip address 172.16.1.218 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1800,13 +1780,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1827,12 +1800,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -1846,7 +1824,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1857,7 +1835,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.212</entry>
             <entry key="static_serial_port_0" type="Integer">12012</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:06:58 UTC Thu May 26 2016
+! Last configuration change at 15:52:53 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1937,7 +1915,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.226 255.255.0.0
+ ip address 172.16.1.212 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -1961,13 +1939,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -1988,12 +1959,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2007,7 +1983,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2020,7 +1996,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.215</entry>
             <entry key="static_serial_port_0" type="Integer">12015</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:10:56 UTC Thu May 26 2016
+! Last configuration change at 15:53:13 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2100,7 +2076,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.233 255.255.0.0
+ ip address 172.16.1.215 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2117,13 +2093,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2144,12 +2113,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2163,7 +2137,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -2172,7 +2146,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.217</entry>
             <entry key="static_serial_port_0" type="Integer">12017</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:10:29 UTC Thu May 26 2016
+! Last configuration change at 15:53:27 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2252,7 +2226,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.231 255.255.0.0
+ ip address 172.16.1.217 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2283,13 +2257,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2310,12 +2277,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2329,7 +2301,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2348,7 +2320,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.219</entry>
             <entry key="static_serial_port_0" type="Integer">12019</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:24:27 UTC Thu May 26 2016
+! Last configuration change at 15:53:47 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2429,7 +2401,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.225 255.255.0.0
+ ip address 172.16.1.219 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2471,13 +2443,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2498,12 +2463,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2517,7 +2487,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2529,7 +2499,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.201</entry>
             <entry key="static_serial_port_0" type="Integer">12001</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:17 UTC Thu May 26 2016
+! Last configuration change at 15:52:39 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2609,7 +2579,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.244 255.255.0.0
+ ip address 172.16.1.201 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2640,13 +2610,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2667,12 +2630,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2686,7 +2654,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2697,7 +2665,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.213</entry>
             <entry key="static_serial_port_0" type="Integer">12013</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:07:01 UTC Thu May 26 2016
+! Last configuration change at 15:53:03 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2777,7 +2745,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.227 255.255.0.0
+ ip address 172.16.1.213 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2801,13 +2769,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2828,12 +2789,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -2847,7 +2813,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2857,7 +2823,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.220</entry>
             <entry key="static_serial_port_0" type="Integer">12020</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:27:00 UTC Thu May 26 2016
+! Last configuration change at 15:53:56 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2938,7 +2904,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.243 255.255.0.0
+ ip address 172.16.1.220 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -2973,13 +2939,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3000,12 +2959,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3019,7 +2983,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3037,7 +3001,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.228</entry>
             <entry key="static_serial_port_0" type="Integer">12028</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:29:11 UTC Thu May 26 2016 by cisco
+! Last configuration change at 14:24:22 UTC Thu Nov 2 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3111,9 +3075,6 @@ no cdp run
 !
 !
 !
-bba-group pppoe global
- virtual-template 1
-!
 !
 interface Loopback0
  description Loopback
@@ -3128,22 +3089,17 @@ interface Loopback201
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.234 255.255.0.0
+ ip address 172.16.1.228 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/1
  description to R6
- no ip address
+ ip address 204.186.6.30 255.255.255.0
  duplex full
  speed auto
  media-type rj45
- pppoe enable group global
-!
-interface Virtual-Template1
- ip address 204.186.6.30 255.255.255.0
- ppp authentication chap
 !
 router bgp 1791
  bgp router-id 10.0.0.30
@@ -3157,6 +3113,7 @@ ip forward-protocol nd
 !
 !
 no ip http server
+no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3177,12 +3134,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3204,7 +3166,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.203</entry>
             <entry key="static_serial_port_0" type="Integer">12003</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:29 UTC Thu May 26 2016
+! Last configuration change at 15:54:36 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3284,7 +3246,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.246 255.255.0.0
+ ip address 172.16.1.203 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3314,13 +3276,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3341,12 +3296,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3360,7 +3320,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3371,7 +3331,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.208</entry>
             <entry key="static_serial_port_0" type="Integer">12008</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:58 UTC Thu May 26 2016
+! Last configuration change at 15:55:08 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3451,7 +3411,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.251 255.255.0.0
+ ip address 172.16.1.208 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3475,13 +3435,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3502,12 +3455,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3521,7 +3479,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3531,7 +3489,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.209</entry>
             <entry key="static_serial_port_0" type="Integer">12009</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:23 UTC Thu May 26 2016
+! Last configuration change at 15:55:21 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3611,7 +3569,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.252 255.255.0.0
+ ip address 172.16.1.209 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3642,13 +3600,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3669,12 +3620,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3688,7 +3644,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3699,7 +3655,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.205</entry>
             <entry key="static_serial_port_0" type="Integer">12005</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:10 UTC Thu May 26 2016
+! Last configuration change at 15:54:52 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3779,7 +3735,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.248 255.255.0.0
+ ip address 172.16.1.205 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3803,13 +3759,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3830,12 +3779,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -3849,7 +3803,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3859,7 +3813,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.214</entry>
             <entry key="static_serial_port_0" type="Integer">12014</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:27:35 UTC Thu May 26 2016
+! Last configuration change at 15:53:07 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3939,7 +3893,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.232 255.255.0.0
+ ip address 172.16.1.214 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -3956,13 +3910,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3983,12 +3930,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -4002,7 +3954,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -4011,7 +3963,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.216</entry>
             <entry key="static_serial_port_0" type="Integer">12016</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:08:45 UTC Thu May 26 2016
+! Last configuration change at 15:53:18 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4091,7 +4043,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.230 255.255.0.0
+ ip address 172.16.1.216 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4108,13 +4060,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -4135,12 +4080,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -4154,7 +4104,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -4163,7 +4113,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.226</entry>
             <entry key="static_serial_port_0" type="Integer">12026</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:06 UTC Thu May 26 2016
+! Last configuration change at 15:55:26 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4243,7 +4193,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.237 255.255.0.0
+ ip address 172.16.1.226 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4274,13 +4224,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -4301,12 +4244,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -4320,7 +4268,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -4331,7 +4279,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.204</entry>
             <entry key="static_serial_port_0" type="Integer">12004</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:26:20 UTC Thu May 26 2016
+! Last configuration change at 15:54:48 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4411,7 +4359,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.247 255.255.0.0
+ ip address 172.16.1.204 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4441,13 +4389,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -4468,12 +4409,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -4487,7 +4433,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -4498,7 +4444,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.227</entry>
             <entry key="static_serial_port_0" type="Integer">12027</entry>
             <entry key="config" type="string">!
-! Last configuration change at 20:10:41 UTC Thu May 26 2016
+! Last configuration change at 15:55:31 UTC Mon Oct 30 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4578,7 +4524,7 @@ interface Loopback0
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 10.255.4.236 255.255.0.0
+ ip address 172.16.1.227 255.255.255.0
  duplex full
  speed auto
  media-type rj45
@@ -4602,13 +4548,6 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip ssh server algorithm authentication password
-!
-!
-!
-!
-control-plane
-!
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -4629,12 +4568,17 @@ control-plane
 line con 0
  password cisco
 line aux 0
-line vty 0 100
- exec-timeout 10 0
+line vty 0 4
  privilege level 15
  logging synchronous
  no login
- no rotary
+ length 0
+ transport input telnet
+line vty 5 100
+ privilege level 15
+ logging synchronous
+ no login
+ length 0
  transport input telnet
 !
 no scheduler allocate
@@ -4648,7 +4592,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -4657,7 +4601,7 @@ end</entry>
         <extensions>
             <entry key="static_ip" type="String">172.16.1.10</entry>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="String"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="config" type="String">!
 ! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
 !
