@@ -11,7 +11,7 @@
             <entry key="static_ip" type="String">172.16.1.202</entry>
             <entry key="static_serial_port_0" type="Integer">12002</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -23,6 +23,11 @@ hostname CFG-R2
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition DMVPN
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -56,6 +61,7 @@ mmi snmp-timeout 180
 !
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing 
 ip cef
 ipv6 unicast-routing
 ipv6 cef
@@ -72,11 +78,23 @@ redundancy
 no cdp run
 !
 ! 
+crypto keyring VRF_PSK vrf DMVPN 
+  pre-shared-key address 0.0.0.0 0.0.0.0 key cisco
 !
 !
 !
 !
+crypto isakmp policy 1
+ encr aes 256
+ authentication pre-share
+ group 14
 !
+!
+crypto ipsec transform-set TS_1 esp-aes 256 esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile IP_1
+ set transform-set TS_1 
 !
 !
 !
@@ -88,6 +106,26 @@ interface Loopback0
  description Loopback
  ip address 10.0.0.2 255.255.255.255
 !
+interface Loopback10
+ ip address 10.10.10.10 255.255.255.254
+!
+interface Loopback100
+ vrf forwarding DMVPN
+ ip address 10.100.100.2 255.255.255.255
+!
+interface Tunnel234
+ ip address 10.1.234.2 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 234
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 234
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1
+!
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
@@ -98,6 +136,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to SW1
+ vrf forwarding DMVPN
  ip address 10.1.23.2 255.255.255.0
  duplex full
  speed auto
@@ -105,6 +144,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to SW2
+ vrf forwarding DMVPN
  ip address 10.1.24.2 255.255.255.0
  duplex full
  speed auto
@@ -113,15 +153,40 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  description to USW4
  ip address 10.1.100.2 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp DMVPN
+ !
+ address-family ipv4 unicast vrf DMVPN autonomous-system 1000
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.2 0.0.0.0
+  network 10.1.100.2 0.0.0.0
+  network 10.1.234.2 0.0.0.0
+  network 10.10.10.10 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip pim rp-address 10.10.10.10
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -178,7 +243,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.223</entry>
             <entry key="static_serial_port_0" type="Integer">12023</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -228,6 +293,7 @@ ipv6 unicast-routing
 ipv6 cef
 !
 multilink bundle-name authenticated
+mpls label range 2300 2399
 !
 !
 !
@@ -313,7 +379,9 @@ interface GigabitEthernet0/6
  media-type rj45
 !
 router ospf 1
+ mpls ldp autoconfig
  router-id 10.0.0.23
+ prefix-suppression
 !
 ip forward-protocol nd
 !
@@ -379,7 +447,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.207</entry>
             <entry key="static_serial_port_0" type="Integer">12007</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:11 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -434,6 +502,7 @@ multilink bundle-name authenticated
 !
 !
 username cisco privilege 15 secret 5 $1$BaJP$6jIs8Q4pS7M.0lQhOLzPY/
+username CFG-R9 password 0 r7r9pass
 !
 redundancy
 !
@@ -451,6 +520,9 @@ no cdp run
 !
 !
 !
+bba-group pppoe PPPOE
+ virtual-template 79
+!
 !
 interface Loopback0
  description Loopback
@@ -467,16 +539,35 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to SW1
  ip address 10.1.47.7 255.255.255.0
+ ip igmp join-group 224.1.1.1
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/2
  description to SW2
- ip address 10.1.79.7 255.255.255.0
+ no ip address
  duplex full
  speed auto
  media-type rj45
+ pppoe enable group PPPOE
+!
+interface Virtual-Template79
+ ip address 10.1.79.7 255.255.255.0
+ no peer neighbor-route
+ ppp authentication chap
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.7 0.0.0.0
+  network 10.1.47.7 0.0.0.0
+  network 10.1.79.7 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -538,7 +629,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.210</entry>
             <entry key="static_serial_port_0" type="Integer">12010</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:11 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -614,6 +705,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.10 255.255.255.255
+ ip ospf 1 area 51
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -626,6 +718,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R21
  ip address 205.100.211.10 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
@@ -633,9 +726,13 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to R14
  ip address 10.2.114.10 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
+!
+router ospf 1
+ router-id 10.0.0.10
 !
 ip forward-protocol nd
 !
@@ -697,7 +794,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.211</entry>
             <entry key="static_serial_port_0" type="Integer">12011</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -773,6 +870,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.11 255.255.255.255
+ ip ospf 1 area 51
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -785,6 +883,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R22
  ip address 205.100.221.11 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
@@ -792,9 +891,13 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to R15
  ip address 10.3.115.11 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
+!
+router ospf 1
+ router-id 10.0.0.11
 !
 ip forward-protocol nd
 !
@@ -856,7 +959,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.222</entry>
             <entry key="static_serial_port_0" type="Integer">12022</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -868,6 +971,14 @@ hostname CFG-R22
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition CAMPUS
+ rd 100:100
+ route-target export 100:100
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -906,6 +1017,8 @@ ipv6 unicast-routing
 ipv6 cef
 !
 multilink bundle-name authenticated
+mpls label range 2200 2299
+no mpls ip propagate-ttl forwarded
 !
 !
 !
@@ -934,6 +1047,10 @@ interface Loopback0
  ip address 10.0.0.22 255.255.255.255
  ip ospf 1 area 0
 !
+interface Loopback100
+ vrf forwarding CAMPUS
+ ip address 100.100.100.22 255.255.255.255
+!
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
@@ -952,6 +1069,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R13
+ vrf forwarding CAMPUS
  ip address 205.100.223.22 255.255.255.0
  duplex full
  speed auto
@@ -959,13 +1077,46 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R11
+ vrf forwarding CAMPUS
  ip address 205.100.221.22 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
+router ospf 22 vrf CAMPUS
+ domain-id 0.0.0.100
+ area 51 sham-link 100.100.100.22 100.100.100.21
+ redistribute bgp 100 subnets route-map RM_BGP_OSPF
+ network 205.100.221.22 0.0.0.0 area 51
+ network 205.100.223.22 0.0.0.0 area 0
+!
 router ospf 1
+ mpls ldp autoconfig
  router-id 10.0.0.22
+ prefix-suppression
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.24 remote-as 100
+ neighbor 10.0.0.24 update-source Loopback0
+ neighbor 10.0.0.25 remote-as 100
+ neighbor 10.0.0.25 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.24 activate
+  neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.25 activate
+  neighbor 10.0.0.25 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CAMPUS
+  network 100.100.100.22 mask 255.255.255.255
+  redistribute ospf 22 match internal external 1 external 2
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -975,6 +1126,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list PL_BGP_OSPF seq 5 permit 100.100.100.21/32
+ip prefix-list PL_BGP_OSPF seq 10 permit 100.100.100.22/32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -983,6 +1137,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_BGP_OSPF deny 10
+ match ip address prefix-list PL_BGP_OSPF
+!
+route-map RM_BGP_OSPF permit 20
 !
 !
 !
@@ -1028,7 +1187,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.224</entry>
             <entry key="static_serial_port_0" type="Integer">12024</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:11 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1125,6 +1284,36 @@ interface GigabitEthernet0/1
 router ospf 1
  router-id 10.0.0.24
 !
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.19 remote-as 100
+ neighbor 10.0.0.19 update-source Loopback0
+ neighbor 10.0.0.20 remote-as 100
+ neighbor 10.0.0.20 update-source Loopback0
+ neighbor 10.0.0.21 remote-as 100
+ neighbor 10.0.0.21 update-source Loopback0
+ neighbor 10.0.0.22 remote-as 100
+ neighbor 10.0.0.22 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
+  neighbor 10.0.0.20 activate
+  neighbor 10.0.0.20 send-community extended
+  neighbor 10.0.0.20 route-reflector-client
+  neighbor 10.0.0.21 activate
+  neighbor 10.0.0.21 send-community extended
+  neighbor 10.0.0.21 route-reflector-client
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
+  neighbor 10.0.0.22 route-reflector-client
+ exit-address-family
+!
 ip forward-protocol nd
 !
 !
@@ -1184,7 +1373,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.206</entry>
             <entry key="static_serial_port_0" type="Integer">12006</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 17:09:29 UTC Mon Nov 6 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1244,6 +1433,53 @@ redundancy
 !
 no cdp run
 !
+!
+class-map match-all CM_PCA
+ match protocol pcanywhere
+class-map match-all CM_FTP
+ match protocol ftp
+class-map match-any CM_SQL
+ match protocol sqlnet
+ match protocol sqlserver
+class-map match-all CM_HTTP
+ match protocol http
+class-map match-all CM_VOIP
+ match protocol rtp audio 
+class-map match-any CM_MC
+ match class-map CM_PCA
+ match class-map CM_SQL
+!
+policy-map PM_MC
+ class CM_SQL
+  bandwidth percent 70 
+ class CM_PCA
+  bandwidth percent 29 
+policy-map PM_DEFAULT
+ class CM_HTTP
+  bandwidth percent 30 
+ class CM_FTP
+  bandwidth percent 20 
+ class class-default
+  fair-queue
+policy-map PM_MAIN
+ class CM_VOIP
+  priority percent 5
+  set dscp ef
+ class CM_MC
+  bandwidth percent 20 
+  set dscp af31
+   service-policy PM_MC
+ class class-default
+  bandwidth percent 40 
+  random-detect dscp-based
+  random-detect ecn
+  set dscp default
+   service-policy PM_DEFAULT
+policy-map PM_SHAPE_100M
+ class class-default
+  shape average 100000000 400000 0 
+   service-policy PM_MAIN
+!
 ! 
 !
 !
@@ -1272,9 +1508,11 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to BB
  ip address 204.186.6.6 255.255.255.0
+ ip access-group ACL_FROM_R6 in
  duplex full
  speed auto
  media-type rj45
+ service-policy output PM_SHAPE_100M
 !
 interface GigabitEthernet0/2
  description to R5
@@ -1283,13 +1521,32 @@ interface GigabitEthernet0/2
  speed auto
  media-type rj45
 !
+router bgp 11811
+ bgp log-neighbor-changes
+ network 10.0.0.6 mask 255.255.255.255
+ network 10.1.56.0 mask 255.255.255.0
+ network 204.186.6.0
+ neighbor 10.0.0.5 remote-as 11911
+ neighbor 10.0.0.5 disable-connected-check
+ neighbor 10.0.0.5 update-source Loopback0
+ neighbor 204.186.6.30 remote-as 1791
+!
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip route 10.0.0.5 255.255.255.255 10.1.56.5
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
+!
+ip access-list extended ACL_FROM_R6
+ permit tcp host 204.186.6.30 host 204.186.6.6 established
+ permit icmp host 200.1.1.1 any echo-reply
+ permit icmp host 201.1.1.1 any echo-reply
+ permit tcp any any eq www
+ permit tcp any any eq ftp
+ deny   ip any any
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1343,7 +1600,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.225</entry>
             <entry key="static_serial_port_0" type="Integer">12025</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1440,6 +1697,36 @@ interface GigabitEthernet0/1
 router ospf 1
  router-id 10.0.0.25
 !
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.19 remote-as 100
+ neighbor 10.0.0.19 update-source Loopback0
+ neighbor 10.0.0.20 remote-as 100
+ neighbor 10.0.0.20 update-source Loopback0
+ neighbor 10.0.0.21 remote-as 100
+ neighbor 10.0.0.21 update-source Loopback0
+ neighbor 10.0.0.22 remote-as 100
+ neighbor 10.0.0.22 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
+  neighbor 10.0.0.20 activate
+  neighbor 10.0.0.20 send-community extended
+  neighbor 10.0.0.20 route-reflector-client
+  neighbor 10.0.0.21 activate
+  neighbor 10.0.0.21 send-community extended
+  neighbor 10.0.0.21 route-reflector-client
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
+  neighbor 10.0.0.22 route-reflector-client
+ exit-address-family
+!
 ip forward-protocol nd
 !
 !
@@ -1499,7 +1786,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.221</entry>
             <entry key="static_serial_port_0" type="Integer">12021</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:14 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1512,12 +1799,28 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition CAMPUS
+ rd 100:100
+ route-target export 100:100
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
 vrf definition Mgmt-intf
  !
  address-family ipv4
  exit-address-family
  !
  address-family ipv6
+ exit-address-family
+!
+vrf definition REMOTE
+ rd 100:200
+ route-target export 100:200
+ route-target import 100:200
+ !
+ address-family ipv4
  exit-address-family
 !
 enable password cisco
@@ -1549,6 +1852,8 @@ ipv6 unicast-routing
 ipv6 cef
 !
 multilink bundle-name authenticated
+mpls label range 2100 2199
+no mpls ip propagate-ttl forwarded
 !
 !
 !
@@ -1577,6 +1882,10 @@ interface Loopback0
  ip address 10.0.0.21 255.255.255.255
  ip ospf 1 area 0
 !
+interface Loopback100
+ vrf forwarding CAMPUS
+ ip address 100.100.100.21 255.255.255.255
+!
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
@@ -1595,6 +1904,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R27
+ vrf forwarding REMOTE
  ip address 205.100.17.21 255.255.255.0
  duplex full
  speed auto
@@ -1602,6 +1912,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R12
+ vrf forwarding CAMPUS
  ip address 205.100.212.21 255.255.255.0
  duplex full
  speed auto
@@ -1609,13 +1920,61 @@ interface GigabitEthernet0/3
 !
 interface GigabitEthernet0/4
  description to R10
+ vrf forwarding CAMPUS
  ip address 205.100.211.21 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast vrf REMOTE autonomous-system 100
+  !
+  topology base
+   redistribute bgp 100 metric 1500 1 1 1 1
+  exit-af-topology
+  network 205.100.17.21 0.0.0.0
+ exit-address-family
+!
+router ospf 21 vrf CAMPUS
+ domain-id 0.0.0.100
+ area 51 sham-link 100.100.100.21 100.100.100.22
+ redistribute bgp 100 subnets route-map RM_BGP_OSPF
+ network 205.100.211.21 0.0.0.0 area 51
+ network 205.100.212.21 0.0.0.0 area 0
+!
 router ospf 1
+ mpls ldp autoconfig
  router-id 10.0.0.21
+ prefix-suppression
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.24 remote-as 100
+ neighbor 10.0.0.24 update-source Loopback0
+ neighbor 10.0.0.25 remote-as 100
+ neighbor 10.0.0.25 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.24 activate
+  neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.25 activate
+  neighbor 10.0.0.25 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CAMPUS
+  network 100.100.100.21 mask 255.255.255.255
+  redistribute ospf 21 match internal external 1 external 2
+ exit-address-family
+ !
+ address-family ipv4 vrf REMOTE
+  redistribute eigrp 100
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1625,6 +1984,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list PL_BGP_OSPF seq 5 permit 100.100.100.21/32
+ip prefix-list PL_BGP_OSPF seq 10 permit 100.100.100.22/32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -1633,6 +1995,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_BGP_OSPF deny 10
+ match ip address prefix-list PL_BGP_OSPF
+!
+route-map RM_BGP_OSPF permit 20
 !
 !
 !
@@ -1679,7 +2046,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.218</entry>
             <entry key="static_serial_port_0" type="Integer">12018</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:42 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:11 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1755,6 +2122,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.18 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1767,6 +2135,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R20
  ip address 205.100.80.18 255.255.255.0
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
@@ -1774,6 +2143,8 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to R19
  ip address 205.100.89.18 255.255.255.0
+ ip ospf 1 area 0
+ ip ospf cost 2
  duplex full
  speed auto
  media-type rj45
@@ -1781,9 +2152,26 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  description to USW4
  ip address 10.1.100.18 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+   redistribute ospf 1 metric 1500 1 1 1 1
+  exit-af-topology
+  network 10.1.100.18 0.0.0.0
+ exit-address-family
+!
+router ospf 1
+ router-id 10.0.0.18
+ redistribute eigrp 100 subnets tag 170
+ distribute-list route-map RM_ROUTE_FILTER in
 !
 ip forward-protocol nd
 !
@@ -1801,6 +2189,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_ROUTE_FILTER deny 10
+ match tag 170
+!
+route-map RM_ROUTE_FILTER permit 20
 !
 !
 !
@@ -1846,7 +2239,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.212</entry>
             <entry key="static_serial_port_0" type="Integer">12012</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:10 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1922,6 +2315,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.12 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1934,6 +2328,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R21
  ip address 205.100.212.12 255.255.255.0
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
@@ -1941,9 +2336,24 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to USW1
  ip address 10.4.236.12 255.255.255.0
+ ip ospf prefix-suppression
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ vrrp 1 ip 10.4.236.12
+!
+router ospf 1
+ router-id 10.0.0.12
+ redistribute rip subnets tag 120
+ distribute-list route-map RM_ROUTE_FILTER in
+!
+router rip
+ version 2
+ redistribute ospf 1 metric 5
+ network 10.0.0.0
+ default-information originate
+ no auto-summary
 !
 ip forward-protocol nd
 !
@@ -1961,6 +2371,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_ROUTE_FILTER deny 10
+ match tag 120
+!
+route-map RM_ROUTE_FILTER permit 20
 !
 !
 !
@@ -2008,7 +2423,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.215</entry>
             <entry key="static_serial_port_0" type="Integer">12015</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2084,6 +2499,14 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.15 255.255.255.255
+ ip ospf 1 area 51
+!
+interface Tunnel145
+ ip address 10.0.145.15 255.255.255.0
+ ip ospf 1 area 51
+ tunnel source Loopback0
+ tunnel mode ipip
+ tunnel destination 10.0.0.14
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2096,9 +2519,14 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R11
  ip address 10.3.115.15 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
+!
+router ospf 1
+ router-id 10.0.0.15
+ distribute-list prefix PL_OSPF_FILTER in Tunnel145
 !
 ip forward-protocol nd
 !
@@ -2108,6 +2536,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list PL_OSPF_FILTER seq 5 deny 10.0.0.14/32
+ip prefix-list PL_OSPF_FILTER seq 10 permit 0.0.0.0/0 le 32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -2159,7 +2590,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.217</entry>
             <entry key="static_serial_port_0" type="Integer">12017</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:42 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:15 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2235,6 +2666,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.17 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2247,6 +2679,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R19
  ip address 205.100.79.17 255.255.255.0
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
@@ -2254,6 +2687,8 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to R20
  ip address 205.100.70.17 255.255.255.0
+ ip ospf 1 area 0
+ ip ospf cost 2
  duplex full
  speed auto
  media-type rj45
@@ -2264,6 +2699,22 @@ interface GigabitEthernet0/3
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+   redistribute ospf 1 metric 1500 1 1 1 1
+  exit-af-topology
+  network 10.1.100.17 0.0.0.0
+ exit-address-family
+!
+router ospf 1
+ router-id 10.0.0.17
+ redistribute eigrp 100 subnets tag 170
+ distribute-list route-map RM_ROUTE_FILTER in
 !
 ip forward-protocol nd
 !
@@ -2281,6 +2732,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_ROUTE_FILTER deny 10
+ match tag 170
+!
+route-map RM_ROUTE_FILTER permit 20
 !
 !
 !
@@ -2334,7 +2790,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.219</entry>
             <entry key="static_serial_port_0" type="Integer">12019</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2347,12 +2803,28 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition CAMPUS
+ rd 100:100
+ route-target export 100:100
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
+!
 vrf definition Mgmt-intf
  !
  address-family ipv4
  exit-address-family
  !
  address-family ipv6
+ exit-address-family
+!
+vrf definition REMOTE
+ rd 100:200
+ route-target export 100:200
+ route-target import 100:200
+ !
+ address-family ipv4
  exit-address-family
 !
 enable password cisco
@@ -2384,6 +2856,8 @@ ipv6 unicast-routing
 ipv6 cef
 !
 multilink bundle-name authenticated
+mpls label range 1900 1999
+no mpls ip propagate-ttl forwarded
 !
 !
 !
@@ -2430,6 +2904,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R17
+ vrf forwarding CAMPUS
  ip address 205.100.79.19 255.255.255.0
  duplex full
  speed auto
@@ -2437,6 +2912,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R18
+ vrf forwarding CAMPUS
  ip address 205.100.89.19 255.255.255.0
  duplex full
  speed auto
@@ -2444,13 +2920,60 @@ interface GigabitEthernet0/3
 !
 interface GigabitEthernet0/4
  description to R26
+ vrf forwarding REMOTE
  ip address 205.100.69.19 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast vrf REMOTE autonomous-system 100
+  !
+  topology base
+   redistribute bgp 100 metric 1500 1 1 1 1
+  exit-af-topology
+  network 205.100.69.19 0.0.0.0
+ exit-address-family
+!
+router ospf 19 vrf CAMPUS
+ domain-id 0.0.0.100
+ redistribute bgp 100 subnets
+ network 205.100.79.19 0.0.0.0 area 0
+ network 205.100.89.19 0.0.0.0 area 0
+!
 router ospf 1
+ mpls ldp autoconfig
  router-id 10.0.0.19
+ prefix-suppression
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.24 remote-as 100
+ neighbor 10.0.0.24 update-source Loopback0
+ neighbor 10.0.0.25 remote-as 100
+ neighbor 10.0.0.25 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.24 activate
+  neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.25 activate
+  neighbor 10.0.0.25 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CAMPUS
+  redistribute ospf 19 match internal external 1 external 2
+ exit-address-family
+ !
+ address-family ipv4 vrf REMOTE
+  redistribute eigrp 100
+  default-information originate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -2514,7 +3037,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.201</entry>
             <entry key="static_serial_port_0" type="Integer">12001</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2526,6 +3049,11 @@ hostname CFG-R1
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition DMVPN
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -2559,6 +3087,7 @@ mmi snmp-timeout 180
 !
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing 
 ip cef
 ipv6 unicast-routing
 ipv6 cef
@@ -2575,11 +3104,23 @@ redundancy
 no cdp run
 !
 ! 
+crypto keyring VRF_PSK vrf DMVPN 
+  pre-shared-key address 0.0.0.0 0.0.0.0 key cisco
 !
 !
 !
 !
+crypto isakmp policy 1
+ encr aes 256
+ authentication pre-share
+ group 14
 !
+!
+crypto ipsec transform-set TS_1 esp-aes 256 esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile IP_1
+ set transform-set TS_1 
 !
 !
 !
@@ -2591,6 +3132,26 @@ interface Loopback0
  description Loopback
  ip address 10.0.0.1 255.255.255.255
 !
+interface Loopback10
+ ip address 10.10.10.10 255.255.255.255
+!
+interface Loopback100
+ vrf forwarding DMVPN
+ ip address 10.100.100.1 255.255.255.255
+!
+interface Tunnel134
+ ip address 10.1.134.1 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp map multicast dynamic
+ ip nhrp network-id 134
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 134
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1
+!
 interface GigabitEthernet0/0
  description OOB Management
  vrf forwarding Mgmt-intf
@@ -2601,6 +3162,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to SW1
+ vrf forwarding DMVPN
  ip address 10.1.13.1 255.255.255.0
  duplex full
  speed auto
@@ -2608,6 +3170,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to SW2
+ vrf forwarding DMVPN
  ip address 10.1.14.1 255.255.255.0
  duplex full
  speed auto
@@ -2616,15 +3179,40 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  description to USW4
  ip address 10.1.100.1 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.1 0.0.0.0
+  network 10.1.100.1 0.0.0.0
+  network 10.1.134.1 0.0.0.0
+  network 10.10.10.10 0.0.0.0
+ exit-address-family
+!
+!
+router eigrp DMVPN
+ !
+ address-family ipv4 unicast vrf DMVPN autonomous-system 1000
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip pim rp-address 10.10.10.10
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -2681,7 +3269,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.213</entry>
             <entry key="static_serial_port_0" type="Integer">12013</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2757,6 +3345,7 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.13 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2769,6 +3358,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R22
  ip address 205.100.223.13 255.255.255.0
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
@@ -2776,9 +3366,24 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to USW1
  ip address 10.4.236.13 255.255.255.0
+ ip ospf prefix-suppression
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ vrrp 1 ip 10.4.236.12
+ vrrp 1 priority 150
+!
+router ospf 1
+ router-id 10.0.0.13
+ redistribute rip subnets tag 120
+ distribute-list route-map RM_ROUTE_FILTER in
+!
+router rip
+ version 2
+ redistribute ospf 1 metric 5
+ network 10.0.0.0
+ default-information originate
 !
 ip forward-protocol nd
 !
@@ -2796,6 +3401,11 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+!
+route-map RM_ROUTE_FILTER deny 10
+ match tag 120
+!
+route-map RM_ROUTE_FILTER permit 20
 !
 !
 !
@@ -2840,7 +3450,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.220</entry>
             <entry key="static_serial_port_0" type="Integer">12020</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:42 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:15 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2852,6 +3462,14 @@ hostname CFG-R20
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition CAMPUS
+ rd 100:100
+ route-target export 100:100
+ route-target import 100:100
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -2890,6 +3508,8 @@ ipv6 unicast-routing
 ipv6 cef
 !
 multilink bundle-name authenticated
+mpls label range 2000 2099
+no mpls ip propagate-ttl forwarded
 !
 !
 !
@@ -2936,6 +3556,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R17
+ vrf forwarding CAMPUS
  ip address 205.100.70.20 255.255.255.0
  duplex full
  speed auto
@@ -2943,13 +3564,44 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R18
+ vrf forwarding CAMPUS
  ip address 205.100.80.20 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
+router ospf 20 vrf CAMPUS
+ domain-id 0.0.0.100
+ redistribute bgp 100 subnets
+ network 205.100.70.20 0.0.0.0 area 0
+ network 205.100.80.20 0.0.0.0 area 0
+!
 router ospf 1
+ mpls ldp autoconfig
  router-id 10.0.0.20
+ prefix-suppression
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.0.0.24 remote-as 100
+ neighbor 10.0.0.24 update-source Loopback0
+ neighbor 10.0.0.25 remote-as 100
+ neighbor 10.0.0.25 update-source Loopback0
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.0.0.24 activate
+  neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.25 activate
+  neighbor 10.0.0.25 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CAMPUS
+  redistribute ospf 20 match internal external 1 external 2
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3019,7 +3671,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.228</entry>
             <entry key="static_serial_port_0" type="Integer">12028</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:27:39 UTC Mon Nov 6 2017
+! Last configuration change at 16:19:25 UTC Mon Nov 6 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3184,7 +3836,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.203</entry>
             <entry key="static_serial_port_0" type="Integer">12003</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:42 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3196,6 +3848,11 @@ hostname CFG-R3
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition DMVPN
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -3229,6 +3886,7 @@ mmi snmp-timeout 180
 !
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing 
 ip cef
 ipv6 unicast-routing
 ipv6 cef
@@ -3245,11 +3903,23 @@ redundancy
 no cdp run
 !
 ! 
+crypto keyring VRF_PSK vrf DMVPN 
+  pre-shared-key address 0.0.0.0 0.0.0.0 key cisco
 !
 !
 !
 !
+crypto isakmp policy 1
+ encr aes 256
+ authentication pre-share
+ group 14
 !
+!
+crypto ipsec transform-set TS_1 esp-aes 256 esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile IP_1
+ set transform-set TS_1 
 !
 !
 !
@@ -3260,6 +3930,37 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.3 255.255.255.255
+!
+interface Loopback100
+ vrf forwarding DMVPN
+ ip address 10.100.100.3 255.255.255.255
+!
+interface Tunnel134
+ ip address 10.1.134.3 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp network-id 134
+ ip nhrp nhs 10.1.134.1 nbma 10.100.100.1 multicast
+ delay 100
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 134
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1 shared
+!
+interface Tunnel234
+ ip address 10.1.234.3 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp network-id 234
+ ip nhrp nhs 10.1.234.2 nbma 10.100.100.2 multicast
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 234
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1 shared
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3272,28 +3973,55 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to SW1
  ip address 10.1.38.3 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/2
  description to SW2
+ vrf forwarding DMVPN
  ip address 10.1.13.3 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/3
+ vrf forwarding DMVPN
  ip address 10.1.23.3 255.255.255.0
  duplex auto
  speed auto
  media-type rj45
+!
+!
+router eigrp DMVPN
+ !
+ address-family ipv4 unicast vrf DMVPN autonomous-system 1000
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.3 0.0.0.0
+  network 10.1.38.3 0.0.0.0
+  network 10.1.134.3 0.0.0.0
+  network 10.1.234.3 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip pim rp-address 10.10.10.10
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3350,7 +4078,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.208</entry>
             <entry key="static_serial_port_0" type="Integer">12008</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:09 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3405,6 +4133,7 @@ multilink bundle-name authenticated
 !
 !
 username cisco privilege 15 secret 5 $1$J3W3$sMj6r11Jh7VzJW2n0nfXX.
+username CFG-R9 password 0 r8r9pass
 !
 redundancy
 !
@@ -3422,6 +4151,9 @@ no cdp run
 !
 !
 !
+bba-group pppoe PPPOE
+ virtual-template 89
+!
 !
 interface Loopback0
  description Loopback
@@ -3438,16 +4170,34 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to SW1
  ip address 10.1.38.8 255.255.255.0
+ ip igmp join-group 224.1.1.1
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/2
  description to SW2
- ip address 10.1.89.8 255.255.255.0
+ no ip address
  duplex full
  speed auto
  media-type rj45
+ pppoe enable group PPPOE
+!
+interface Virtual-Template89
+ ip address 10.1.89.8 255.255.255.0
+ ppp authentication chap
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.8 0.0.0.0
+  network 10.1.38.8 0.0.0.0
+  network 10.1.89.8 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3509,7 +4259,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.209</entry>
             <entry key="static_serial_port_0" type="Integer">12009</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:42 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:11 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3564,6 +4314,8 @@ multilink bundle-name authenticated
 !
 !
 username cisco privilege 15 secret 5 $1$Wg4T$sFrfTYJkUYxbp5RLelKwM.
+username CFG-R7 password 0 r7r9pass
+username CFG-R8 password 0 r8r9pass
 !
 redundancy
 !
@@ -3596,17 +4348,21 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  description to SW1
- ip address 10.1.79.9 255.255.255.0
+ no ip address
  duplex full
  speed auto
  media-type rj45
+ pppoe enable
+ pppoe-client dial-pool-number 79
 !
 interface GigabitEthernet0/2
  description to SW2
- ip address 10.1.89.9 255.255.255.0
+ no ip address
  duplex full
  speed auto
  media-type rj45
+ pppoe enable
+ pppoe-client dial-pool-number 89
 !
 interface GigabitEthernet0/3
  description to R26
@@ -3614,6 +4370,48 @@ interface GigabitEthernet0/3
  duplex full
  speed auto
  media-type rj45
+!
+interface Dialer79
+ mtu 1492
+ ip address 10.1.79.9 255.255.255.0
+ encapsulation ppp
+ dialer pool 79
+ no peer neighbor-route
+ no cdp enable
+!
+interface Dialer89
+ mtu 1492
+ ip address 10.1.89.9 255.255.255.0
+ encapsulation ppp
+ dialer pool 89
+ no peer neighbor-route
+ no cdp enable
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  af-interface GigabitEthernet0/3
+   summary-address 0.0.0.0 0.0.0.0
+  exit-af-interface
+  !
+  af-interface Dialer79
+   summary-address 192.168.0.0 255.255.0.0
+  exit-af-interface
+  !
+  af-interface Dialer89
+   summary-address 192.168.0.0 255.255.0.0
+  exit-af-interface
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.9 0.0.0.0
+  network 10.1.79.9 0.0.0.0
+  network 10.1.89.9 0.0.0.0
+  network 192.168.96.9 0.0.0.0
+  eigrp stub connected summary
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -3655,6 +4453,8 @@ line vty 5 100
  transport input telnet
 !
 no scheduler allocate
+event manager environment _server mail.ine.com
+event manager environment _to_address admin@ine.com
 event manager applet CLI_AFTER_BOOT
  event none
  action 1.0 cli command "enable"
@@ -3663,6 +4463,15 @@ event manager applet CLI_AFTER_BOOT
  action 4.0 cli command "no banner login"
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
+event manager applet ROUTE_MON
+ event tag 1 routing network 0.0.0.0/0 type all protocol all le 32 ratelimit 10
+ event tag 2 none
+ trigger
+  correlate event 1 or event 2
+ action 100 cli command "enable"
+ action 120 cli command "show ip interface brief"
+ action 130 puts "$_cli_result"
+ action 140 mail server "$_server" to "$_to_address" from "r9@ine.com" subject "Routing Table Update" body "$_cli_result"
 !
 end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"/>
@@ -3676,7 +4485,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.205</entry>
             <entry key="static_serial_port_0" type="Integer">12005</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3721,6 +4530,7 @@ mmi snmp-timeout 180
 !
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing 
 ip cef
 ipv6 unicast-routing
 ipv6 cef
@@ -3764,6 +4574,7 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R6
  ip address 10.1.56.5 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
@@ -3771,15 +4582,38 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  description to USW4
  ip address 10.1.100.5 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+   redistribute bgp 11911 metric 1500 1 1 1 1
+  exit-af-topology
+  network 10.0.0.5 0.0.0.0
+  network 10.1.56.5 0.0.0.0
+  network 10.1.100.5 0.0.0.0
+ exit-address-family
+!
+router bgp 11911
+ bgp log-neighbor-changes
+ redistribute eigrp 100
+ neighbor 10.0.0.6 remote-as 11811
+ neighbor 10.0.0.6 disable-connected-check
+ neighbor 10.0.0.6 update-source Loopback0
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip pim rp-address 10.10.10.10
+ip route 10.0.0.6 255.255.255.255 10.1.56.6
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -3835,7 +4669,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.214</entry>
             <entry key="static_serial_port_0" type="Integer">12014</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3911,6 +4745,14 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.14 255.255.255.255
+ ip ospf 1 area 51
+!
+interface Tunnel145
+ ip address 10.0.145.14 255.255.255.0
+ ip ospf 1 area 51
+ tunnel source Loopback0
+ tunnel mode ipip
+ tunnel destination 10.0.0.15
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -3923,9 +4765,14 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R10
  ip address 10.2.114.14 255.255.255.0
+ ip ospf 1 area 51
  duplex full
  speed auto
  media-type rj45
+!
+router ospf 1
+ router-id 10.0.0.14
+ distribute-list prefix PL_OSPF_FILTER in Tunnel145
 !
 ip forward-protocol nd
 !
@@ -3935,6 +4782,9 @@ no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
+!
+ip prefix-list PL_OSPF_FILTER seq 5 deny 10.0.0.15/32
+ip prefix-list PL_OSPF_FILTER seq 10 permit 0.0.0.0/0 le 32
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
 !
@@ -3986,7 +4836,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.216</entry>
             <entry key="static_serial_port_0" type="Integer">12016</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:12 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4078,6 +4928,13 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
 !
+router rip
+ version 2
+ network 10.0.0.0
+ distance 255
+ distance 120 0.0.0.0 255.255.255.255 ACL_DEFAULT
+ no auto-summary
+!
 ip forward-protocol nd
 !
 !
@@ -4085,6 +4942,9 @@ no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
+!
+ip access-list standard ACL_DEFAULT
+ permit 0.0.0.0
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -4137,7 +4997,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.226</entry>
             <entry key="static_serial_port_0" type="Integer">12026</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4243,6 +5103,16 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
 !
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+!
 ip forward-protocol nd
 !
 !
@@ -4304,7 +5174,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.204</entry>
             <entry key="static_serial_port_0" type="Integer">12004</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:14 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4316,6 +5186,11 @@ hostname CFG-R4
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition DMVPN
+ !
+ address-family ipv4
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -4349,6 +5224,7 @@ mmi snmp-timeout 180
 !
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing 
 ip cef
 ipv6 unicast-routing
 ipv6 cef
@@ -4365,11 +5241,23 @@ redundancy
 no cdp run
 !
 ! 
+crypto keyring VRF_PSK vrf DMVPN 
+  pre-shared-key address 0.0.0.0 0.0.0.0 key cisco
 !
 !
 !
 !
+crypto isakmp policy 1
+ encr aes 256
+ authentication pre-share
+ group 14
 !
+!
+crypto ipsec transform-set TS_1 esp-aes 256 esp-sha-hmac 
+ mode transport
+!
+crypto ipsec profile IP_1
+ set transform-set TS_1 
 !
 !
 !
@@ -4380,6 +5268,37 @@ no cdp run
 interface Loopback0
  description Loopback
  ip address 10.0.0.4 255.255.255.255
+!
+interface Loopback100
+ vrf forwarding DMVPN
+ ip address 10.100.100.4 255.255.255.255
+!
+interface Tunnel134
+ ip address 10.1.134.4 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp network-id 134
+ ip nhrp nhs 10.1.134.1 nbma 10.100.100.1 multicast
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 134
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1 shared
+!
+interface Tunnel234
+ ip address 10.1.234.4 255.255.255.0
+ no ip redirects
+ ip pim sparse-mode
+ ip nhrp authentication cisco
+ ip nhrp network-id 234
+ ip nhrp nhs 10.1.234.2 nbma 10.100.100.2 multicast
+ delay 100
+ tunnel source Loopback100
+ tunnel mode gre multipoint
+ tunnel key 234
+ tunnel vrf DMVPN
+ tunnel protection ipsec profile IP_1 shared
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -4392,28 +5311,55 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to SW1
  ip address 10.1.47.4 255.255.255.0
+ ip pim sparse-mode
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/2
  description to SW2
+ vrf forwarding DMVPN
  ip address 10.1.24.4 255.255.255.0
  duplex full
  speed auto
  media-type rj45
 !
 interface GigabitEthernet0/3
+ vrf forwarding DMVPN
  ip address 10.1.14.4 255.255.255.0
  duplex auto
  speed auto
  media-type rj45
+!
+!
+router eigrp DMVPN
+ !
+ address-family ipv4 unicast vrf DMVPN autonomous-system 1000
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 10.0.0.4 0.0.0.0
+  network 10.1.47.4 0.0.0.0
+  network 10.1.134.4 0.0.0.0
+  network 10.1.234.4 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
 !
 no ip http server
 no ip http secure-server
+ip pim rp-address 10.10.10.10
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 ip ssh server algorithm authentication password
 !
@@ -4470,7 +5416,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.227</entry>
             <entry key="static_serial_port_0" type="Integer">12027</entry>
             <entry key="config" type="string">!
-! Last configuration change at 17:32:43 UTC Mon Nov 6 2017
+! Last configuration change at 23:21:13 UTC Sat Nov 4 2017
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4568,6 +5514,16 @@ interface GigabitEthernet0/2
  duplex full
  speed auto
  media-type rj45
+!
+!
+router eigrp CCIE
+ !
+ address-family ipv4 unicast autonomous-system 100
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
 !
 ip forward-protocol nd
 !
