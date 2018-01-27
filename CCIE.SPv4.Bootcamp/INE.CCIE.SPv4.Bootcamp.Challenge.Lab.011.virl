@@ -1313,6 +1313,7 @@ end</entry>
         <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.34" ipv6="2001:db8:a:0:1:1:0:23" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.22" ipv6="2001:db8:a:0:1:1:0:17" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.62" ipv6="2001:db8:a:0:1:1:0:3e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet5"/>
     </node>
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="286,508" ipv4="1.1.1.6" ipv6="2001:cc13::6">
         <extensions>
@@ -2573,6 +2574,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.111</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.53" ipv6="2001:db8:a:0:1:1:0:37" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="509,379" ipv4="1.1.1.12" ipv6="2001:cc13::12">
         <extensions>
@@ -3179,6 +3181,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.82" ipv6="2001:db8:a:0:1:1:0:53" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.85" ipv6="2001:db8:a:0:1:1:0:56" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet4"/>
     </node>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="998,360" ipv4="1.1.1.15" ipv6="2001:cc13::15">
         <extensions>
@@ -3369,6 +3372,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.115</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.86" ipv6="2001:db8:a:0:1:1:0:57" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R16" type="SIMPLE" subtype="IOS XRv" location="1136,594" ipv4="1.1.1.16" ipv6="2001:cc13::16">
         <extensions>
@@ -3626,6 +3630,7 @@ end</entry>
         <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.90" ipv6="2001:db8:a:0:1:1:0:5b" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.97" ipv6="2001:db8:a:0:1:1:0:62" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="10.0.0.65" ipv6="2001:db8:a:0:1:1:0:43" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5"/>
     </node>
     <node name="R18" type="SIMPLE" subtype="IOS XRv" location="1003,712" ipv4="1.1.1.18" ipv6="2001:cc13::18">
         <extensions>
@@ -3910,6 +3915,7 @@ end</entry>
         <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.102" ipv6="2001:db8:a:0:1:1:0:67" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.110" ipv6="2001:db8:a:0:1:1:0:6f" netPrefixLenV4="30" netPrefixLenV6="126"/>
         <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.117" ipv6="2001:db8:a:0:1:1:0:76" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4"/>
     </node>
     <node name="R20" type="SIMPLE" subtype="IOS XRv" location="820,709" ipv4="1.1.1.20" ipv6="2001:cc13::20">
         <extensions>
@@ -4073,4 +4079,7 @@ end</entry>
     <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[13]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[14]/virl:interface[2]"/>
     <connection dst="/virl:topology/virl:node[11]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[4]" src="/virl:topology/virl:node[11]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[17]/virl:interface[6]" src="/virl:topology/virl:node[15]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[3]" src="/virl:topology/virl:node[19]/virl:interface[5]"/>
 </topology>
