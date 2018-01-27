@@ -1,0 +1,4076 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
+    <extensions>
+        <entry key="lxc.node.static_ip" type="String">172.16.1.99</entry>
+        <entry key="lxc.host.static_ip" type="String">172.16.1.100</entry>
+        <entry key="management_network" type="String">flat</entry>
+        <entry key="AutoNetkit.infrastructure_only" type="Boolean">true</entry>
+    </extensions>
+    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="389,608" ipv4="1.1.1.1" ipv6="2001:cc13::1">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:21:38 UTC Sat Jan 27 2018
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+ethernet lmi ce
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2904609086
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2904609086
+ revocation-check none
+ rsakeypair TP-self-signed-2904609086
+!
+!
+crypto pki certificate chain TP-self-signed-2904609086
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 94YUVUS8XFW
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$ObFw$sh86AaD0qhQTEMaAoQfhe1
+username ccie password 0 spv4
+username ccie autocommand menu main_menu
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.1 255.255.255.255
+ ipv6 address 2001:CC13::1/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.10 255.255.255.0 secondary
+ ip address 172.16.1.101 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ description to R2
+ ip address 10.0.0.5 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:6/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R3
+ ip address 10.0.0.9 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:A/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.1
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface Loopback0
+ network 1.1.1.1 0.0.0.0 area 0
+ network 10.0.0.4 0.0.0.3 area 0
+ network 10.0.0.8 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+kron occurrence KRONJOB in 1 recurring system-startup
+ policy-list KRONPOLICY
+!
+kron policy-list KRONPOLICY
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+ cli event manager run CLI_AFTER_BOOT
+!
+!
+menu main_menu prompt ^CEnter Selection: ^C
+menu main_menu text 1. Connect to R1
+menu main_menu command 1. telnet 172.16.1.101  /vrf Mgmt-intf
+menu main_menu text 2. Connect to R2
+menu main_menu command 2. telnet 172.16.1.102 /vrf Mgmt-intf
+menu main_menu text 3. Connect to R3
+menu main_menu command 3. telnet 172.16.1.103 /vrf Mgmt-intf
+menu main_menu text 4. Connect to R4
+menu main_menu command 4. telnet 172.16.1.104 /vrf Mgmt-intf
+menu main_menu text 5. Connect to R5
+menu main_menu command 5. telnet 172.16.1.105 /vrf Mgmt-intf
+menu main_menu text 6. Connect to R6
+menu main_menu command 6. telnet 172.16.1.106 /vrf Mgmt-intf
+menu main_menu text 7. Connect to R7
+menu main_menu command 7. telnet 172.16.1.107 /vrf Mgmt-intf
+menu main_menu text 8. Connect to R8
+menu main_menu command 8. telnet 172.16.1.108 /vrf Mgmt-intf
+menu main_menu text 9. Connect to R9
+menu main_menu command 9. telnet 172.16.1.109 /vrf Mgmt-intf
+menu main_menu text 10. Connect to R10
+menu main_menu command 10. telnet 172.16.1.110 /vrf Mgmt-intf
+menu main_menu text 11. Connect to R11
+menu main_menu command 11. telnet 172.16.1.111 /vrf Mgmt-intf
+menu main_menu text 12. Connect to R12
+menu main_menu command 12. telnet 172.16.1.112 /vrf Mgmt-intf
+menu main_menu text 13. Connect to R13
+menu main_menu command 13. telnet 172.16.1.113 /vrf Mgmt-intf
+menu main_menu text 14. Connect to R14
+menu main_menu command 14. telnet 172.16.1.114 /vrf Mgmt-intf
+menu main_menu text 15. Connect to R15
+menu main_menu command 15. telnet 172.16.1.115 /vrf Mgmt-intf
+menu main_menu text 16. Connect to R16
+menu main_menu command 16. telnet 172.16.1.116 /vrf Mgmt-intf
+menu main_menu text 17. Connect to R17
+menu main_menu command 17. telnet 172.16.1.117 /vrf Mgmt-intf
+menu main_menu text 18. Connect to R18
+menu main_menu command 18. telnet 172.16.1.118 /vrf Mgmt-intf
+menu main_menu text 19. Connect to R19
+menu main_menu command 19. telnet 172.16.1.119 /vrf Mgmt-intf
+menu main_menu text 20. Connect to R20
+menu main_menu command 20. telnet 172.16.1.120 /vrf Mgmt-intf
+menu main_menu text Q. Quit
+menu main_menu command Q. Exit
+menu main_menu clear-screen
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+privilege exec level 0 telnet
+privilege exec level 0 menu
+privilege exec level 0 exit
+privilege exec level 0 clear line
+privilege exec level 0 clear
+!
+line con 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ privilege level 15
+ password cisco
+ no login
+ length 0
+ transport input telnet ssh
+line vty 5 100
+ exec-timeout 720 0
+ privilege level 15
+ password cisco
+ no login
+ length 0
+ transport input telnet ssh
+line vty 101 500
+ exec-timeout 720 0
+ privilege level 15
+ login local
+ rotary 1
+ transport input all
+!
+!
+!
+!
+!
+event manager applet CLI_AFTER_BOOT
+ event none
+ action 1.0 cli command "enable"
+ action 2.0 cli command "configure terminal"
+ action 3.0 cli command "no banner motd"
+ action 4.0 cli command "no banner login"
+ action 5.0 cli command "no banner incoming"
+ action 6.0 cli command "no banner exec"
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.101</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.5" ipv6="2001:db8:a:0:1:1:0:6" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.9" ipv6="2001:db8:a:0:1:1:0:a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="504,511" ipv4="1.1.1.2" ipv6="2001:cc13::2">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:29:20 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3777123833
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3777123833
+ revocation-check none
+ rsakeypair TP-self-signed-3777123833
+!
+!
+crypto pki certificate chain TP-self-signed-3777123833
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 953I367DMBD
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$KBhb$IreuL5blKw.RIjQZAM5QC0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.2 255.255.255.255
+ ipv6 address 2001:CC13::2/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.102 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R1
+ ip address 10.0.0.6 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:7/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R3
+ ip address 10.0.0.13 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:E/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet4
+ description to R4
+ ip address 10.0.0.17 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:12/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet5
+ description to R5
+ ip address 10.0.0.21 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:16/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet6
+ description to R6
+ ip address 10.0.0.25 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:1A/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet7
+ description to R12
+ ip address 10.0.0.50 255.255.255.252
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:32/126
+!
+router ospfv3 1
+ router-id 1.1.1.2
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface GigabitEthernet6
+ passive-interface GigabitEthernet7
+ passive-interface Loopback0
+ network 1.1.1.2 0.0.0.0 area 0
+ network 10.0.0.4 0.0.0.3 area 0
+ network 10.0.0.12 0.0.0.3 area 0
+ network 10.0.0.16 0.0.0.3 area 0
+ network 10.0.0.20 0.0.0.3 area 0
+ network 10.0.0.24 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.102</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.6" ipv6="2001:db8:a:0:1:1:0:7" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.13" ipv6="2001:db8:a:0:1:1:0:e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.17" ipv6="2001:db8:a:0:1:1:0:12" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet5" ipv4="10.0.0.21" ipv6="2001:db8:a:0:1:1:0:16" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="4" name="GigabitEthernet6" ipv4="10.0.0.25" ipv6="2001:db8:a:0:1:1:0:1a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="5" name="GigabitEthernet7" ipv4="10.0.0.50" ipv6="2001:db8:a:0:1:1:0:32" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="505,715" ipv4="1.1.1.3" ipv6="2001:cc13::3">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:29:51 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1980061958
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1980061958
+ revocation-check none
+ rsakeypair TP-self-signed-1980061958
+!
+!
+crypto pki certificate chain TP-self-signed-1980061958
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9IQF8VMG8NK
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$v6r.$N8p.T.bTQevbTX6.7khAd0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.3 255.255.255.255
+ ipv6 address 2001:CC13::3/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.103 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R1
+ ip address 10.0.0.10 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:B/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R2
+ ip address 10.0.0.14 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:F/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet4
+ description to R5
+ ip address 10.0.0.33 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:22/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet5
+ description to R4
+ ip address 10.0.0.29 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:1E/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet6
+ description to R7
+ ip address 10.0.0.37 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:26/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet7
+ description to R11
+ ip address 10.0.0.54 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:36/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.3
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface GigabitEthernet6
+ passive-interface GigabitEthernet7
+ passive-interface Loopback0
+ network 1.1.1.3 0.0.0.0 area 0
+ network 10.0.0.8 0.0.0.3 area 0
+ network 10.0.0.12 0.0.0.3 area 0
+ network 10.0.0.28 0.0.0.3 area 0
+ network 10.0.0.32 0.0.0.3 area 0
+ network 10.0.0.36 0.0.0.3 area 0
+ network 10.0.0.52 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.103</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.10" ipv6="2001:db8:a:0:1:1:0:b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.14" ipv6="2001:db8:a:0:1:1:0:f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.33" ipv6="2001:db8:a:0:1:1:0:22" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet5" ipv4="10.0.0.29" ipv6="2001:db8:a:0:1:1:0:1e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="4" name="GigabitEthernet6" ipv4="10.0.0.37" ipv6="2001:db8:a:0:1:1:0:26" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="5" name="GigabitEthernet7" ipv4="10.0.0.54" ipv6="2001:db8:a:0:1:1:0:36" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="670,505" ipv4="1.1.1.4" ipv6="2001:cc13::4">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:30:36 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R4
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-4207949847
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4207949847
+ revocation-check none
+ rsakeypair TP-self-signed-4207949847
+!
+!
+crypto pki certificate chain TP-self-signed-4207949847
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9E6VO75QZI5
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$zP9f$1pQ055lvKD4zjFvcNaXyd0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.4 255.255.255.255
+ ipv6 address 2001:CC13::4/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.104 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R2
+ ip address 10.0.0.18 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:13/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R3
+ ip address 10.0.0.30 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:1F/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet4
+ description to R19
+ ip address 10.0.0.58 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:3A/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.4
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface GigabitEthernet4
+ passive-interface Loopback0
+ network 1.1.1.4 0.0.0.0 area 0
+ network 10.0.0.16 0.0.0.3 area 0
+ network 10.0.0.28 0.0.0.3 area 0
+ network 10.0.0.56 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.104</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.18" ipv6="2001:db8:a:0:1:1:0:13" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.30" ipv6="2001:db8:a:0:1:1:0:1f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.58" ipv6="2001:db8:a:0:1:1:0:3a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="665,714" ipv4="1.1.1.5" ipv6="2001:cc13::5">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:30:55 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R5
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2962200799
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2962200799
+ revocation-check none
+ rsakeypair TP-self-signed-2962200799
+!
+!
+crypto pki certificate chain TP-self-signed-2962200799
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9ER9WKVYSMG
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$0UrG$79IpdQors.f2a6m0sJ/Fo.
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.5 255.255.255.255
+ ipv6 address 2001:CC13::5/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.105 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R3
+ ip address 10.0.0.34 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:23/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R2
+ ip address 10.0.0.22 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:17/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet4
+ description to R20
+ ip address 10.0.0.62 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:3E/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.5
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface GigabitEthernet4
+ passive-interface Loopback0
+ network 1.1.1.5 0.0.0.0 area 0
+ network 10.0.0.20 0.0.0.3 area 0
+ network 10.0.0.32 0.0.0.3 area 0
+ network 10.0.0.60 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.105</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.34" ipv6="2001:db8:a:0:1:1:0:23" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.22" ipv6="2001:db8:a:0:1:1:0:17" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet4" ipv4="10.0.0.62" ipv6="2001:db8:a:0:1:1:0:3e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="286,508" ipv4="1.1.1.6" ipv6="2001:cc13::6">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:34:24 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R6
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3494552362
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3494552362
+ revocation-check none
+ rsakeypair TP-self-signed-3494552362
+!
+!
+crypto pki certificate chain TP-self-signed-3494552362
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9GEZASVVK2H
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$.lkw$HxBdMW41Mqg/66l449uT/.
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.6 255.255.255.255
+ ipv6 address 2001:CC13::6/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.106 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R2
+ ip address 10.0.0.26 255.255.255.252
+ ip ospf 1 area 1
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:1B/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R8
+ ip address 10.0.0.41 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:2A/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.6
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface Loopback0
+ network 1.1.1.6 0.0.0.0 area 0
+ network 10.0.0.24 0.0.0.3 area 0
+ network 10.0.0.40 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.106</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.26" ipv6="2001:db8:a:0:1:1:0:1b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.41" ipv6="2001:db8:a:0:1:1:0:2a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="280,708" ipv4="1.1.1.7" ipv6="2001:cc13::7">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:34:14 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R7
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1656830116
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1656830116
+ revocation-check none
+ rsakeypair TP-self-signed-1656830116
+!
+!
+crypto pki certificate chain TP-self-signed-1656830116
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9DKMLX49QPI
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$kcEw$b1WA/9gT2bqD0hzS0pR/k/
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.7 255.255.255.255
+ ipv6 address 2001:CC13::7/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.107 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R3
+ ip address 10.0.0.38 255.255.255.252
+ ip ospf 1 area 1
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:27/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R8
+ ip address 10.0.0.45 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:2E/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.7
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface Loopback0
+ network 1.1.1.7 0.0.0.0 area 0
+ network 10.0.0.36 0.0.0.3 area 0
+ network 10.0.0.44 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.107</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.38" ipv6="2001:db8:a:0:1:1:0:27" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.45" ipv6="2001:db8:a:0:1:1:0:2e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="169,603" ipv4="1.1.1.8" ipv6="2001:cc13::8">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:19:03 UTC Sat Jan 27 2018
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R8
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2756627388
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2756627388
+ revocation-check none
+ rsakeypair TP-self-signed-2756627388
+!
+!
+crypto pki certificate chain TP-self-signed-2756627388
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9DXQ1HQI3T1
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$Eu6.$HSzh3yXHBdJGI/9pNBGQ21
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.8 255.255.255.255
+ ipv6 address 2001:CC13::8/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.108 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R6
+ ip address 10.0.0.42 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:2B/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R7
+ ip address 10.0.0.46 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:2F/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.8
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface Loopback0
+ network 1.1.1.8 0.0.0.0 area 0
+ network 10.0.0.40 0.0.0.3 area 0
+ network 10.0.0.44 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.108</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.42" ipv6="2001:db8:a:0:1:1:0:2b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.46" ipv6="2001:db8:a:0:1:1:0:2f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="1294,586" ipv4="1.1.1.9" ipv6="2001:cc13::9">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:34:57 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R9
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-3237393029
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3237393029
+ revocation-check none
+ rsakeypair TP-self-signed-3237393029
+!
+!
+crypto pki certificate chain TP-self-signed-3237393029
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 98LQSSGWVUO
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$3.NY$clKVR4vIlfcdywoDmE9go1
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.9 255.255.255.255
+ ipv6 address 2001:CC13::9/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.109 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R17
+ ip address 10.0.0.66 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:42/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R18
+ ip address 10.0.0.70 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:46/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.9
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ network 0.0.0.0 255.255.255.255 area 1
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.109</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.66" ipv6="2001:db8:a:0:1:1:0:42" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.70" ipv6="2001:db8:a:0:1:1:0:46" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="1006,841" ipv4="1.1.1.10" ipv6="2001:cc13::10">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:33:24 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R10
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-837569203
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-837569203
+ revocation-check none
+ rsakeypair TP-self-signed-837569203
+!
+!
+crypto pki certificate chain TP-self-signed-837569203
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9BXS3ODEHEK
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$ijRa$5/OxDOaeGEXeF7WrLemcV0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.10 255.255.255.255
+ ipv6 address 2001:CC13::10/128
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.110 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R18
+ ip address 10.0.0.73 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:4A/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.110</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.73" ipv6="2001:db8:a:0:1:1:0:4a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="508,845" ipv4="1.1.1.11" ipv6="2001:cc13::11">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:17:02 UTC Sat Jan 27 2018
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R11
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-1949777472
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1949777472
+ revocation-check none
+ rsakeypair TP-self-signed-1949777472
+!
+!
+crypto pki certificate chain TP-self-signed-1949777472
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9YTJ5M544LL
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$IBc4$YH5akY0LAT7fP4TGAOWAp0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.11 255.255.255.255
+ ipv6 address 2001:CC13::11/128
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.111 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R3
+ ip address 10.0.0.53 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:37/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+router ospfv3 1
+ router-id 1.1.1.11
+ !
+ address-family ipv6 unicast
+ exit-address-family
+!
+router ospf 1
+ passive-interface Loopback0
+ network 1.1.1.11 0.0.0.0 area 0
+ network 10.0.0.52 0.0.0.3 area 0
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.111</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.53" ipv6="2001:db8:a:0:1:1:0:37" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="509,379" ipv4="1.1.1.12" ipv6="2001:cc13::12">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R12
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-275811550
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-275811550
+ revocation-check none
+ rsakeypair TP-self-signed-275811550
+!
+!
+crypto pki certificate chain TP-self-signed-275811550
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9K30S4P9PCN
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$k1Jf$w3TETS5FvAL/5RTNneLTi.
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.12 255.255.255.255
+ ipv6 address 2001:CC13::12/128
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.112 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R2
+ ip address 10.0.0.49 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:33/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R13
+ ip address 10.0.0.77 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:4E/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.112</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.49" ipv6="2001:db8:a:0:1:1:0:33" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.77" ipv6="2001:db8:a:0:1:1:0:4e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="673,369" ipv4="1.1.1.13" ipv6="2001:cc13::13">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R13
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2928848184
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2928848184
+ revocation-check none
+ rsakeypair TP-self-signed-2928848184
+!
+!
+crypto pki certificate chain TP-self-signed-2928848184
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9EJPSVSGHH7
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$oVN6$JaCpK3TwlSw7tgojNuw980
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.13 255.255.255.255
+ ipv6 address 2001:CC13::13/128
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.113 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R12
+ ip address 10.0.0.78 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:4F/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R14
+ ip address 10.0.0.81 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:52/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.113</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.78" ipv6="2001:db8:a:0:1:1:0:4f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.81" ipv6="2001:db8:a:0:1:1:0:52" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="812,360" ipv4="1.1.1.14" ipv6="2001:cc13::14">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R14
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2747758358
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2747758358
+ revocation-check none
+ rsakeypair TP-self-signed-2747758358
+!
+!
+crypto pki certificate chain TP-self-signed-2747758358
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9ZFOOQHBUYF
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$Exsy$Bn5EAcqCQHVuUUUV9vJAW0
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.14 255.255.255.255
+ ipv6 address 2001:CC13::14/128
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.114 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R13
+ ip address 10.0.0.82 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:53/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet3
+ description to R15
+ ip address 10.0.0.85 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:56/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.114</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.82" ipv6="2001:db8:a:0:1:1:0:53" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet3" ipv4="10.0.0.85" ipv6="2001:db8:a:0:1:1:0:56" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="998,360" ipv4="1.1.1.15" ipv6="2001:cc13::15">
+        <extensions>
+            <entry key="config" type="string">!
+! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+!
+version 16.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R15
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 4 tnhtc92DXBhelxjYk8LWJrPV36S2i4ntXrpb4RFmfqY
+enable password cisco
+!
+no aaa new-model
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name virl.info
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+ipv6 unicast-routing
+!
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-2503470677
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2503470677
+ revocation-check none
+ rsakeypair TP-self-signed-2503470677
+!
+!
+crypto pki certificate chain TP-self-signed-2503470677
+ certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+!
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 9XL1AEOUZ0I
+license accept end user agreement
+license boot level ax
+diagnostic bootup level minimal
+spanning-tree extend system-id
+!
+!
+!
+username cisco privilege 15 secret 5 $1$Nu.m$/APVk6sXl1oEdnU02jFf4/
+!
+redundancy
+!
+!
+!
+!
+!
+!
+cdp run
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface Loopback0
+ description Loopback
+ ip address 1.1.1.15 255.255.255.255
+ ipv6 address 2001:CC13::15/128
+ ipv6 ospf cost 1
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.115 255.255.255.0
+ negotiation auto
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+interface GigabitEthernet2
+ description to R14
+ ip address 10.0.0.86 255.255.255.252
+ ip ospf cost 1
+ negotiation auto
+ ipv6 address 2001:DB8:A:0:1:1:0:57/126
+ ipv6 ospf cost 1
+ no mop enabled
+ no mop sysid
+ cdp enable
+!
+!
+virtual-service csr_mgmt
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+!
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ password cisco
+ stopbits 1
+line vty 0 4
+ exec-timeout 720 0
+ password cisco
+ login local
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.115</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet2" ipv4="10.0.0.86" ipv6="2001:db8:a:0:1:1:0:57" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R16" type="SIMPLE" subtype="IOS XRv" location="1136,594" ipv4="1.1.1.16" ipv6="2001:cc13::16">
+        <extensions>
+            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sat Jan 27 14:18:36 2018 by CVAC
+!
+!  IOS-XR Config generated on 2018-01-27 04:28
+! by autonetkit_0.23.5
+hostname R16
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 1.1.1.16 255.255.255.255
+ ipv6 address 2001:CC13::16/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ cdp
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.116 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to R17
+ cdp
+ ipv4 address 10.0.0.89 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:5a/126
+!
+interface GigabitEthernet0/0/0/1
+ description to R18
+ cdp
+ ipv4 address 10.0.0.93 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:5e/126
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router ospf 1
+ log adjacency changes
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+ !
+!
+router ospfv3 1
+ router-id 1.1.1.16
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+ !
+ address-family ipv6 unicast
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.116</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.89" ipv6="2001:db8:a:0:1:1:0:5a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.93" ipv6="2001:db8:a:0:1:1:0:5e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R17" type="SIMPLE" subtype="IOS XRv" location="1005,489" ipv4="1.1.1.17" ipv6="2001:cc13::17">
+        <extensions>
+            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sat Jan 27 14:32:56 2018 by cisco
+!
+!  IOS-XR Config generated on 2018-01-27 04:28
+! by autonetkit_0.23.5
+hostname R17
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 1.1.1.17 255.255.255.255
+ ipv6 address 2001:CC13::17/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ cdp
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.117 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to R19
+ cdp
+ ipv4 address 10.0.0.101 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:66/126
+!
+interface GigabitEthernet0/0/0/1
+ description to R20
+ cdp
+ ipv4 address 10.0.0.105 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:6a/126
+!
+interface GigabitEthernet0/0/0/2
+ description to R16
+ cdp
+ ipv4 address 10.0.0.90 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:5b/126
+!
+interface GigabitEthernet0/0/0/3
+ description to R18
+ cdp
+ ipv4 address 10.0.0.97 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:62/126
+!
+interface GigabitEthernet0/0/0/4
+ description to R9
+ cdp
+ ipv4 address 10.0.0.65 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:43/126
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router ospf 1
+ log adjacency changes
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+!
+router ospfv3 1
+ router-id 1.1.1.17
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+ address-family ipv6 unicast
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.117</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.101" ipv6="2001:db8:a:0:1:1:0:66" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.105" ipv6="2001:db8:a:0:1:1:0:6a" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.90" ipv6="2001:db8:a:0:1:1:0:5b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.97" ipv6="2001:db8:a:0:1:1:0:62" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="10.0.0.65" ipv6="2001:db8:a:0:1:1:0:43" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R18" type="SIMPLE" subtype="IOS XRv" location="1003,712" ipv4="1.1.1.18" ipv6="2001:cc13::18">
+        <extensions>
+            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sat Jan 27 14:32:37 2018 by cisco
+!
+!  IOS-XR Config generated on 2018-01-27 04:28
+! by autonetkit_0.23.5
+hostname R18
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 1.1.1.18 255.255.255.255
+ ipv6 address 2001:CC13::18/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ cdp
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.118 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to R20
+ cdp
+ ipv4 address 10.0.0.113 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:72/126
+!
+interface GigabitEthernet0/0/0/1
+ description to R19
+ cdp
+ ipv4 address 10.0.0.109 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:6e/126
+!
+interface GigabitEthernet0/0/0/2
+ description to R16
+ cdp
+ ipv4 address 10.0.0.94 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:5f/126
+!
+interface GigabitEthernet0/0/0/3
+ description to R17
+ cdp
+ ipv4 address 10.0.0.98 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:63/126
+!
+interface GigabitEthernet0/0/0/4
+ description to R9
+ cdp
+ ipv4 address 10.0.0.69 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:47/126
+!
+interface GigabitEthernet0/0/0/5
+ description to R10
+ cdp
+ ipv4 address 10.0.0.74 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:4b/126
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router ospf 1
+ log adjacency changes
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+!
+router ospfv3 1
+ router-id 1.1.1.18
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface GigabitEthernet0/0/0/0
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+ address-family ipv6 unicast
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.118</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.113" ipv6="2001:db8:a:0:1:1:0:72" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.109" ipv6="2001:db8:a:0:1:1:0:6e" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.94" ipv6="2001:db8:a:0:1:1:0:5f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.98" ipv6="2001:db8:a:0:1:1:0:63" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="4" name="GigabitEthernet0/0/0/4" ipv4="10.0.0.69" ipv6="2001:db8:a:0:1:1:0:47" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="5" name="GigabitEthernet0/0/0/5" ipv4="10.0.0.74" ipv6="2001:db8:a:0:1:1:0:4b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R19" type="SIMPLE" subtype="IOS XRv" location="814,503" ipv4="1.1.1.19" ipv6="2001:cc13::19">
+        <extensions>
+            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sat Jan 27 14:31:56 2018 by cisco
+!
+!  IOS-XR Config generated on 2018-01-27 04:28
+! by autonetkit_0.23.5
+hostname R19
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 1.1.1.19 255.255.255.255
+ ipv6 address 2001:CC13::19/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ cdp
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.119 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to R4
+ cdp
+ ipv4 address 10.0.0.57 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:3b/126
+!
+interface GigabitEthernet0/0/0/1
+ description to R17
+ cdp
+ ipv4 address 10.0.0.102 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:67/126
+!
+interface GigabitEthernet0/0/0/2
+ description to R18
+ cdp
+ ipv4 address 10.0.0.110 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:6f/126
+!
+interface GigabitEthernet0/0/0/3
+ description to R20
+ cdp
+ ipv4 address 10.0.0.117 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:76/126
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router ospf 1
+ log adjacency changes
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+!
+router ospfv3 1
+ router-id 1.1.1.19
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+ address-family ipv6 unicast
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.119</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.57" ipv6="2001:db8:a:0:1:1:0:3b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.102" ipv6="2001:db8:a:0:1:1:0:67" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.110" ipv6="2001:db8:a:0:1:1:0:6f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.117" ipv6="2001:db8:a:0:1:1:0:76" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <node name="R20" type="SIMPLE" subtype="IOS XRv" location="820,709" ipv4="1.1.1.20" ipv6="2001:cc13::20">
+        <extensions>
+            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sat Jan 27 14:31:33 2018 by cisco
+!
+!  IOS-XR Config generated on 2018-01-27 04:28
+! by autonetkit_0.23.5
+hostname R20
+service timestamps log datetime msec
+service timestamps debug datetime msec
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+domain name virl.info
+domain lookup disable
+cdp
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+line template vty
+ timestamp
+ exec-timeout 720 0
+!
+line console
+ exec-timeout 0 0
+!
+line default
+ exec-timeout 720 0
+!
+vty-pool default 0 50
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+interface Loopback0
+ description Loopback
+ ipv4 address 1.1.1.20 255.255.255.255
+ ipv6 address 2001:CC13::20/128
+!
+interface MgmtEth0/0/CPU0/0
+ description OOB Management
+ cdp
+ ! Configured on launch
+ vrf Mgmt-intf
+ ipv4 address 172.16.1.120 255.255.255.0
+!
+interface GigabitEthernet0/0/0/0
+ description to R5
+ cdp
+ ipv4 address 10.0.0.61 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:3f/126
+!
+interface GigabitEthernet0/0/0/1
+ description to R18
+ cdp
+ ipv4 address 10.0.0.114 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:73/126
+!
+interface GigabitEthernet0/0/0/2
+ description to R17
+ cdp
+ ipv4 address 10.0.0.106 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:6b/126
+!
+interface GigabitEthernet0/0/0/3
+ description to R19
+ cdp
+ ipv4 address 10.0.0.118 255.255.255.252
+ ipv6 address 2001:db8:a:0:1:1:0:77/126
+!
+route-policy bgp_in
+  pass
+end-policy
+!
+route-policy bgp_out
+  pass
+end-policy
+!
+router ospf 1
+ log adjacency changes
+ area 0
+  interface Loopback0
+   passive enable
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+!
+router ospfv3 1
+ router-id 1.1.1.20
+ area 0
+  interface Loopback0
+   passive
+  !
+  interface GigabitEthernet0/0/0/1
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/2
+   cost 1
+  !
+  interface GigabitEthernet0/0/0/3
+   cost 1
+  !
+ !
+ address-family ipv6 unicast
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+end</entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="Auto-generate config" type="Boolean">false</entry>
+            <entry key="static_ip" type="String">172.16.1.120</entry>
+        </extensions>
+        <interface id="0" name="GigabitEthernet0/0/0/0" ipv4="10.0.0.61" ipv6="2001:db8:a:0:1:1:0:3f" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="1" name="GigabitEthernet0/0/0/1" ipv4="10.0.0.114" ipv6="2001:db8:a:0:1:1:0:73" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="2" name="GigabitEthernet0/0/0/2" ipv4="10.0.0.106" ipv6="2001:db8:a:0:1:1:0:6b" netPrefixLenV4="30" netPrefixLenV6="126"/>
+        <interface id="3" name="GigabitEthernet0/0/0/3" ipv4="10.0.0.118" ipv6="2001:db8:a:0:1:1:0:77" netPrefixLenV4="30" netPrefixLenV6="126"/>
+    </node>
+    <annotations/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[1]" src="/virl:topology/virl:node[1]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[1]" src="/virl:topology/virl:node[2]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[2]" src="/virl:topology/virl:node[3]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[2]" src="/virl:topology/virl:node[2]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[19]/virl:interface[1]" src="/virl:topology/virl:node[4]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[20]/virl:interface[1]" src="/virl:topology/virl:node[5]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[17]/virl:interface[1]" src="/virl:topology/virl:node[19]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[1]" src="/virl:topology/virl:node[20]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[2]" src="/virl:topology/virl:node[19]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[17]/virl:interface[2]" src="/virl:topology/virl:node[20]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[20]/virl:interface[4]" src="/virl:topology/virl:node[19]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[1]" src="/virl:topology/virl:node[17]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[16]/virl:interface[2]" src="/virl:topology/virl:node[18]/virl:interface[3]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[4]" src="/virl:topology/virl:node[17]/virl:interface[4]"/>
+    <connection dst="/virl:topology/virl:node[9]/virl:interface[1]" src="/virl:topology/virl:node[17]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[9]/virl:interface[2]" src="/virl:topology/virl:node[18]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[18]/virl:interface[6]" src="/virl:topology/virl:node[10]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[6]/virl:interface[1]" src="/virl:topology/virl:node[2]/virl:interface[5]"/>
+    <connection dst="/virl:topology/virl:node[8]/virl:interface[1]" src="/virl:topology/virl:node[6]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[7]/virl:interface[2]" src="/virl:topology/virl:node[8]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[12]/virl:interface[1]" src="/virl:topology/virl:node[2]/virl:interface[6]"/>
+    <connection dst="/virl:topology/virl:node[13]/virl:interface[1]" src="/virl:topology/virl:node[12]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[14]/virl:interface[1]" src="/virl:topology/virl:node[13]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[15]/virl:interface[1]" src="/virl:topology/virl:node[14]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[11]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[6]"/>
+</topology>
