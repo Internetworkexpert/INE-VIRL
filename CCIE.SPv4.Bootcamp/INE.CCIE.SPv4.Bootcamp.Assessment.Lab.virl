@@ -2547,7 +2547,7 @@ interface Gig0/0/0/0.1314
 !
 ! For VIRL HOST
 !
-! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.1.10:23
+! sudo iptables -t nat -A PREROUTING -i eth2 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.1.10:23
 !
 ! FILL IN THESE VARIABLES FOR THE USER
 !
