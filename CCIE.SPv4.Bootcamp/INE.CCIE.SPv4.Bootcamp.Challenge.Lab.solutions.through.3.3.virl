@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
     <extensions>
         <entry key="lxc.node.static_ip" type="String">172.16.1.99</entry>
@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="389,608" ipv4="1.1.1.1" ipv6="2001:cc13::1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:21:38 UTC Sat Jan 27 2018
+! Last configuration change at 02:26:29 UTC Sun Jan 28 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -91,7 +91,7 @@ crypto pki certificate chain TP-self-signed-2904609086
 !
 !
 !
-license udi pid CSR1000V sn 94YUVUS8XFW
+license udi pid CSR1000V sn 967ILPX7ASZ
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -138,7 +138,6 @@ interface Loopback0
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.1.10 255.255.255.0 secondary
  ip address 172.16.1.101 255.255.255.0
  negotiation auto
  no mop enabled
@@ -147,11 +146,14 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R2
  ip address 10.0.0.5 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:6/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -159,26 +161,102 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R3
  ip address 10.0.0.9 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:A/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
 !
 router ospfv3 1
  router-id 1.1.1.1
+ prefix-suppression
+ bfd all-interfaces
  !
  address-family ipv6 unicast
  exit-address-family
 !
 router ospf 1
+ prefix-suppression
+ fast-reroute per-prefix enable area 0 prefix-priority high
  passive-interface Loopback0
  network 1.1.1.1 0.0.0.0 area 0
  network 10.0.0.4 0.0.0.3 area 0
  network 10.0.0.8 0.0.0.3 area 0
+ bfd all-interfaces
+ mpls ldp autoconfig
+!
+router bgp 100
+ template peer-policy IBGP_POLICY
+  route-reflector-client
+ exit-peer-policy
+ !
+ template peer-session IBGP_SESSIONS
+  remote-as 100
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.2 inherit peer-session IBGP_SESSIONS
+ neighbor 1.1.1.3 inherit peer-session IBGP_SESSIONS
+ neighbor 1.1.1.4 inherit peer-session IBGP_SESSIONS
+ neighbor 1.1.1.5 inherit peer-session IBGP_SESSIONS
+ neighbor 1.1.1.16 remote-as 200
+ neighbor 1.1.1.16 ebgp-multihop 255
+ neighbor 1.1.1.16 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 1.1.1.2 activate
+  neighbor 1.1.1.2 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.3 activate
+  neighbor 1.1.1.3 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.4 activate
+  neighbor 1.1.1.4 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.5 activate
+  neighbor 1.1.1.5 inherit peer-policy IBGP_POLICY
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.2 activate
+  neighbor 1.1.1.2 send-community extended
+  neighbor 1.1.1.2 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.3 activate
+  neighbor 1.1.1.3 send-community extended
+  neighbor 1.1.1.3 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.4 activate
+  neighbor 1.1.1.4 send-community extended
+  neighbor 1.1.1.4 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.5 activate
+  neighbor 1.1.1.5 send-community extended
+  neighbor 1.1.1.5 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.16 activate
+  neighbor 1.1.1.16 send-community extended
+  neighbor 1.1.1.16 next-hop-unchanged
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.2 activate
+  neighbor 1.1.1.2 send-community extended
+  neighbor 1.1.1.2 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.3 activate
+  neighbor 1.1.1.3 send-community extended
+  neighbor 1.1.1.3 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.4 activate
+  neighbor 1.1.1.4 send-community extended
+  neighbor 1.1.1.4 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.5 activate
+  neighbor 1.1.1.5 send-community extended
+  neighbor 1.1.1.5 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.16 activate
+  neighbor 1.1.1.16 send-community extended
+  neighbor 1.1.1.16 next-hop-unchanged
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -205,7 +283,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
 !
 !
-menu main_menu prompt ^CEnter Selection: ^C
+menu main_menu prompt ^CCEnter Selection: ^C
 menu main_menu text 1. Connect to R1
 menu main_menu command 1. telnet 172.16.1.101  /vrf Mgmt-intf
 menu main_menu text 2. Connect to R2
@@ -302,7 +380,7 @@ event manager applet CLI_AFTER_BOOT
  action 6.0 cli command "no banner exec"
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.101</entry>
         </extensions>
@@ -312,7 +390,7 @@ end</entry>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="504,511" ipv4="1.1.1.2" ipv6="2001:cc13::2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:29:20 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:38:40 UTC Sun Jan 28 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -393,7 +471,7 @@ crypto pki certificate chain TP-self-signed-3777123833
 !
 !
 !
-license udi pid CSR1000V sn 953I367DMBD
+license udi pid CSR1000V sn 9EH3GEBNJOR
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -447,11 +525,14 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R1
  ip address 10.0.0.6 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:7/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -459,11 +540,14 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R3
  ip address 10.0.0.13 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:E/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -471,11 +555,14 @@ interface GigabitEthernet3
 interface GigabitEthernet4
  description to R4
  ip address 10.0.0.17 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:12/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -483,11 +570,14 @@ interface GigabitEthernet4
 interface GigabitEthernet5
  description to R5
  ip address 10.0.0.21 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:16/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -496,6 +586,7 @@ interface GigabitEthernet6
  description to R6
  ip address 10.0.0.25 255.255.255.252
  ip ospf cost 1
+ shutdown
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:1A/126
  ipv6 ospf 1 area 0
@@ -509,14 +600,21 @@ interface GigabitEthernet7
  ip address 10.0.0.50 255.255.255.252
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:32/126
+ mpls bgp forwarding
+ no mop enabled
+ no mop sysid
 !
 router ospfv3 1
  router-id 1.1.1.2
+ prefix-suppression
+ bfd all-interfaces
  !
  address-family ipv6 unicast
  exit-address-family
 !
 router ospf 1
+ prefix-suppression
+ fast-reroute per-prefix enable area 0 prefix-priority high
  passive-interface GigabitEthernet6
  passive-interface GigabitEthernet7
  passive-interface Loopback0
@@ -526,6 +624,33 @@ router ospf 1
  network 10.0.0.16 0.0.0.3 area 0
  network 10.0.0.20 0.0.0.3 area 0
  network 10.0.0.24 0.0.0.3 area 0
+ bfd all-interfaces
+ mpls ldp autoconfig
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 100
+ neighbor 1.1.1.1 update-source Loopback0
+ neighbor 10.0.0.49 remote-as 300
+ !
+ address-family ipv4
+  neighbor 1.1.1.1 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+  neighbor 10.0.0.49 activate
+  neighbor 10.0.0.49 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+  neighbor 10.0.0.49 activate
+  neighbor 10.0.0.49 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -566,7 +691,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.102</entry>
         </extensions>
@@ -580,7 +705,7 @@ end</entry>
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="505,715" ipv4="1.1.1.3" ipv6="2001:cc13::3">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:29:51 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 01:26:08 UTC Sun Jan 28 2018 by cisco
 !
 version 16.6
 service timestamps debug datetime msec
@@ -661,7 +786,7 @@ crypto pki certificate chain TP-self-signed-1980061958
 !
 !
 !
-license udi pid CSR1000V sn 9IQF8VMG8NK
+license udi pid CSR1000V sn 9L83B4D6XKI
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -715,11 +840,14 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R1
  ip address 10.0.0.10 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:B/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -727,11 +855,14 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R2
  ip address 10.0.0.14 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:F/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -739,11 +870,14 @@ interface GigabitEthernet3
 interface GigabitEthernet4
  description to R5
  ip address 10.0.0.33 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:22/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -751,11 +885,14 @@ interface GigabitEthernet4
 interface GigabitEthernet5
  description to R4
  ip address 10.0.0.29 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:1E/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -764,6 +901,7 @@ interface GigabitEthernet6
  description to R7
  ip address 10.0.0.37 255.255.255.252
  ip ospf cost 1
+ shutdown
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:26/126
  ipv6 ospf 1 area 0
@@ -776,6 +914,7 @@ interface GigabitEthernet7
  description to R11
  ip address 10.0.0.54 255.255.255.252
  ip ospf cost 1
+ shutdown
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:36/126
  ipv6 ospf 1 area 0
@@ -786,11 +925,15 @@ interface GigabitEthernet7
 !
 router ospfv3 1
  router-id 1.1.1.3
+ prefix-suppression
+ bfd all-interfaces
  !
  address-family ipv6 unicast
  exit-address-family
 !
 router ospf 1
+ prefix-suppression
+ fast-reroute per-prefix enable area 0 prefix-priority high
  passive-interface GigabitEthernet6
  passive-interface GigabitEthernet7
  passive-interface Loopback0
@@ -801,6 +944,28 @@ router ospf 1
  network 10.0.0.32 0.0.0.3 area 0
  network 10.0.0.36 0.0.0.3 area 0
  network 10.0.0.52 0.0.0.3 area 0
+ bfd all-interfaces
+ mpls ldp autoconfig
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 100
+ neighbor 1.1.1.1 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 1.1.1.1 activate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -841,7 +1006,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.103</entry>
         </extensions>
@@ -855,7 +1020,7 @@ end</entry>
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="670,505" ipv4="1.1.1.4" ipv6="2001:cc13::4">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:30:36 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:22:08 UTC Sun Jan 28 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -936,7 +1101,7 @@ crypto pki certificate chain TP-self-signed-4207949847
 !
 !
 !
-license udi pid CSR1000V sn 9E6VO75QZI5
+license udi pid CSR1000V sn 9IE8TKDGCFO
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -990,11 +1155,14 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R2
  ip address 10.0.0.18 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:13/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -1002,11 +1170,14 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R3
  ip address 10.0.0.30 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:1F/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -1017,6 +1188,7 @@ interface GigabitEthernet4
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:3A/126
+ mpls bgp forwarding
  ipv6 ospf cost 1
  no mop enabled
  no mop sysid
@@ -1024,17 +1196,51 @@ interface GigabitEthernet4
 !
 router ospfv3 1
  router-id 1.1.1.4
+ prefix-suppression
+ bfd all-interfaces
  !
  address-family ipv6 unicast
  exit-address-family
 !
 router ospf 1
+ prefix-suppression
+ fast-reroute per-prefix enable area 0 prefix-priority high
+ redistribute bgp 100 subnets route-map BGP_TO_OSPF
  passive-interface GigabitEthernet4
  passive-interface Loopback0
  network 1.1.1.4 0.0.0.0 area 0
  network 10.0.0.16 0.0.0.3 area 0
  network 10.0.0.28 0.0.0.3 area 0
  network 10.0.0.56 0.0.0.3 area 0
+ bfd all-interfaces
+ mpls ldp autoconfig
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 100
+ neighbor 1.1.1.1 update-source Loopback0
+ neighbor 10.0.0.57 remote-as 200
+ !
+ address-family ipv4
+  network 1.1.1.1 mask 255.255.255.255
+  network 2.2.2.2 mask 255.255.255.255
+  network 3.3.3.3 mask 255.255.255.255
+  network 5.5.5.5 mask 255.255.255.255
+  neighbor 1.1.1.1 activate
+  neighbor 10.0.0.57 activate
+  neighbor 10.0.0.57 send-label
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -1050,6 +1256,11 @@ ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
+ip prefix-list LOOPBACKS seq 5 permit 0.0.0.0/0 ge 32
+!
+!
+route-map BGP_TO_OSPF permit 10 
+ match ip address prefix-list LOOPBACKS
 !
 !
 !
@@ -1075,7 +1286,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.104</entry>
         </extensions>
@@ -1086,7 +1297,7 @@ end</entry>
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="665,714" ipv4="1.1.1.5" ipv6="2001:cc13::5">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:30:55 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:24:05 UTC Sun Jan 28 2018 by cisco
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1167,7 +1378,7 @@ crypto pki certificate chain TP-self-signed-2962200799
 !
 !
 !
-license udi pid CSR1000V sn 9ER9WKVYSMG
+license udi pid CSR1000V sn 999A6H6UGS7
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1221,11 +1432,14 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R3
  ip address 10.0.0.34 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:23/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -1233,11 +1447,14 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R2
  ip address 10.0.0.22 255.255.255.252
+ ip ospf network point-to-point
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:17/126
  ipv6 ospf 1 area 0
+ ipv6 ospf network point-to-point
  ipv6 ospf cost 1
+ bfd interval 333 min_rx 333 multiplier 3
  no mop enabled
  no mop sysid
  cdp enable
@@ -1248,24 +1465,66 @@ interface GigabitEthernet4
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:3E/126
+ mpls bgp forwarding
  ipv6 ospf cost 1
  no mop enabled
  no mop sysid
  cdp enable
 !
+interface GigabitEthernet5
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
 router ospfv3 1
  router-id 1.1.1.5
+ prefix-suppression
+ bfd all-interfaces
  !
  address-family ipv6 unicast
  exit-address-family
 !
 router ospf 1
+ prefix-suppression
+ fast-reroute per-prefix enable area 0 prefix-priority high
+ redistribute bgp 100 subnets route-map BGP_TO_OSPF
  passive-interface GigabitEthernet4
  passive-interface Loopback0
  network 1.1.1.5 0.0.0.0 area 0
  network 10.0.0.20 0.0.0.3 area 0
  network 10.0.0.32 0.0.0.3 area 0
  network 10.0.0.60 0.0.0.3 area 0
+ bfd all-interfaces
+ mpls ldp autoconfig
+!
+router bgp 100
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 1.1.1.1 remote-as 100
+ neighbor 1.1.1.1 update-source Loopback0
+ neighbor 10.0.0.61 remote-as 200
+ !
+ address-family ipv4
+  network 1.1.1.1 mask 255.255.255.255
+  network 2.2.2.2 mask 255.255.255.255
+  network 3.3.3.3 mask 255.255.255.255
+  network 5.5.5.5 mask 255.255.255.255
+  neighbor 1.1.1.1 activate
+  neighbor 10.0.0.61 activate
+  neighbor 10.0.0.61 send-label
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -1281,6 +1540,11 @@ ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
+ip prefix-list LOOPBACKS seq 5 permit 0.0.0.0/0 ge 32
+!
+!
+route-map BGP_TO_OSPF permit 10 
+ match ip address prefix-list LOOPBACKS
 !
 !
 !
@@ -1306,7 +1570,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.105</entry>
         </extensions>
@@ -1318,7 +1582,7 @@ end</entry>
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="286,508" ipv4="1.1.1.6" ipv6="2001:cc13::6">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:34:24 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 19:16:45 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1399,7 +1663,7 @@ crypto pki certificate chain TP-self-signed-3494552362
 !
 !
 !
-license udi pid CSR1000V sn 9GEZASVVK2H
+license udi pid CSR1000V sn 9FQ6BET9FKX
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1526,7 +1790,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.106</entry>
         </extensions>
@@ -1536,7 +1800,7 @@ end</entry>
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="280,708" ipv4="1.1.1.7" ipv6="2001:cc13::7">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:34:14 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 19:16:56 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1617,7 +1881,7 @@ crypto pki certificate chain TP-self-signed-1656830116
 !
 !
 !
-license udi pid CSR1000V sn 9DKMLX49QPI
+license udi pid CSR1000V sn 9QZQSTLQVMY
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1744,7 +2008,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.107</entry>
         </extensions>
@@ -1754,7 +2018,7 @@ end</entry>
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="169,603" ipv4="1.1.1.8" ipv6="2001:cc13::8">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:19:03 UTC Sat Jan 27 2018
+! Last configuration change at 19:16:56 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1835,7 +2099,7 @@ crypto pki certificate chain TP-self-signed-2756627388
 !
 !
 !
-license udi pid CSR1000V sn 9DXQ1HQI3T1
+license udi pid CSR1000V sn 931WILARNVE
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1961,7 +2225,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.108</entry>
         </extensions>
@@ -1971,7 +2235,7 @@ end</entry>
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="1294,586" ipv4="1.1.1.9" ipv6="2001:cc13::9">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:34:57 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 19:17:09 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2052,7 +2316,7 @@ crypto pki certificate chain TP-self-signed-3237393029
 !
 !
 !
-license udi pid CSR1000V sn 98LQSSGWVUO
+license udi pid CSR1000V sn 96G46AC5UDD
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2175,7 +2439,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.109</entry>
         </extensions>
@@ -2185,7 +2449,7 @@ end</entry>
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="1006,841" ipv4="1.1.1.10" ipv6="2001:cc13::10">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:33:24 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 19:14:47 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2266,7 +2530,7 @@ crypto pki certificate chain TP-self-signed-837569203
 !
 !
 !
-license udi pid CSR1000V sn 9BXS3ODEHEK
+license udi pid CSR1000V sn 9UOIK3DYERT
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2366,7 +2630,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.110</entry>
         </extensions>
@@ -2375,7 +2639,7 @@ end</entry>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="508,845" ipv4="1.1.1.11" ipv6="2001:cc13::11">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:17:02 UTC Sat Jan 27 2018
+! Last configuration change at 19:14:56 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2456,7 +2720,7 @@ crypto pki certificate chain TP-self-signed-1949777472
 !
 !
 !
-license udi pid CSR1000V sn 9YTJ5M544LL
+license udi pid CSR1000V sn 9BECYY932D5
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2519,6 +2783,13 @@ interface GigabitEthernet2
  no mop sysid
  cdp enable
 !
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
 router ospfv3 1
  router-id 1.1.1.11
  !
@@ -2569,7 +2840,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.111</entry>
         </extensions>
@@ -2579,7 +2850,7 @@ end</entry>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="509,379" ipv4="1.1.1.12" ipv6="2001:cc13::12">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:38:41 UTC Sun Jan 28 2018 by cisco
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2660,7 +2931,7 @@ crypto pki certificate chain TP-self-signed-275811550
 !
 !
 !
-license udi pid CSR1000V sn 9K30S4P9PCN
+license udi pid CSR1000V sn 9K3SB5IMQV3
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2698,6 +2969,7 @@ cdp run
 interface Loopback0
  description Loopback
  ip address 1.1.1.12 255.255.255.255
+ ip ospf 1 area 0
  ipv6 address 2001:CC13::12/128
  ipv6 ospf cost 1
 !
@@ -2716,6 +2988,7 @@ interface GigabitEthernet2
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:33/126
+ mpls bgp forwarding
  ipv6 ospf cost 1
  no mop enabled
  no mop sysid
@@ -2724,6 +2997,7 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R13
  ip address 10.0.0.77 255.255.255.252
+ ip ospf 1 area 0
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:4E/126
@@ -2731,6 +3005,29 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
  cdp enable
+!
+router ospf 1
+ mpls ldp autoconfig
+!
+router bgp 300
+ bgp log-neighbor-changes
+ neighbor 1.1.1.14 remote-as 300
+ neighbor 1.1.1.14 update-source Loopback0
+ neighbor 10.0.0.50 remote-as 100
+ !
+ address-family vpnv4
+  neighbor 1.1.1.14 activate
+  neighbor 1.1.1.14 send-community extended
+  neighbor 10.0.0.50 activate
+  neighbor 10.0.0.50 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.14 activate
+  neighbor 1.1.1.14 send-community extended
+  neighbor 10.0.0.50 activate
+  neighbor 10.0.0.50 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -2771,7 +3068,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.112</entry>
         </extensions>
@@ -2781,7 +3078,7 @@ end</entry>
     <node name="R13" type="SIMPLE" subtype="CSR1000v" location="673,369" ipv4="1.1.1.13" ipv6="2001:cc13::13">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:35:13 UTC Sun Jan 28 2018 by cisco
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2862,7 +3159,7 @@ crypto pki certificate chain TP-self-signed-2928848184
 !
 !
 !
-license udi pid CSR1000V sn 9EJPSVSGHH7
+license udi pid CSR1000V sn 9Q8ER5CML8N
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2900,6 +3197,7 @@ cdp run
 interface Loopback0
  description Loopback
  ip address 1.1.1.13 255.255.255.255
+ ip ospf 1 area 0
  ipv6 address 2001:CC13::13/128
  ipv6 ospf cost 1
 !
@@ -2915,6 +3213,7 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R12
  ip address 10.0.0.78 255.255.255.252
+ ip ospf 1 area 0
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:4F/126
@@ -2926,6 +3225,7 @@ interface GigabitEthernet2
 interface GigabitEthernet3
  description to R14
  ip address 10.0.0.81 255.255.255.252
+ ip ospf 1 area 0
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:52/126
@@ -2933,6 +3233,9 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
  cdp enable
+!
+router ospf 1
+ mpls ldp autoconfig
 !
 !
 virtual-service csr_mgmt
@@ -2973,7 +3276,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.113</entry>
         </extensions>
@@ -2983,7 +3286,7 @@ end</entry>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="812,360" ipv4="1.1.1.14" ipv6="2001:cc13::14">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 02:35:45 UTC Sun Jan 28 2018 by cisco
 !
 version 16.6
 service timestamps debug datetime msec
@@ -3064,7 +3367,7 @@ crypto pki certificate chain TP-self-signed-2747758358
 !
 !
 !
-license udi pid CSR1000V sn 9ZFOOQHBUYF
+license udi pid CSR1000V sn 9RGND5T83NM
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3102,6 +3405,7 @@ cdp run
 interface Loopback0
  description Loopback
  ip address 1.1.1.14 255.255.255.255
+ ip ospf 1 area 0
  ipv6 address 2001:CC13::14/128
  ipv6 ospf cost 1
 !
@@ -3117,6 +3421,7 @@ interface GigabitEthernet1
 interface GigabitEthernet2
  description to R13
  ip address 10.0.0.82 255.255.255.252
+ ip ospf 1 area 0
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:53/126
@@ -3135,6 +3440,31 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
  cdp enable
+!
+interface GigabitEthernet4
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+router ospf 1
+ mpls ldp autoconfig
+!
+router bgp 300
+ bgp log-neighbor-changes
+ neighbor 1.1.1.12 remote-as 300
+ neighbor 1.1.1.12 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 1.1.1.12 activate
+  neighbor 1.1.1.12 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 1.1.1.12 activate
+  neighbor 1.1.1.12 send-community extended
+ exit-address-family
 !
 !
 virtual-service csr_mgmt
@@ -3175,7 +3505,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.114</entry>
         </extensions>
@@ -3186,7 +3516,7 @@ end</entry>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="998,360" ipv4="1.1.1.15" ipv6="2001:cc13::15">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:35:23 UTC Sat Jan 27 2018 by cisco
+! Last configuration change at 19:15:30 UTC Sat Jan 27 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -3267,7 +3597,7 @@ crypto pki certificate chain TP-self-signed-2503470677
 !
 !
 !
-license udi pid CSR1000V sn 9XL1AEOUZ0I
+license udi pid CSR1000V sn 9T77BO3ZZWN
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3328,6 +3658,13 @@ interface GigabitEthernet2
  no mop sysid
  cdp enable
 !
+interface GigabitEthernet3
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
 !
 virtual-service csr_mgmt
 !
@@ -3367,7 +3704,7 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.115</entry>
         </extensions>
@@ -3377,7 +3714,7 @@ end</entry>
     <node name="R16" type="SIMPLE" subtype="IOS XRv" location="1136,594" ipv4="1.1.1.16" ipv6="2001:cc13::16">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Sat Jan 27 14:18:36 2018 by CVAC
+!! Last configuration change at Sun Jan 28 02:28:00 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -3418,7 +3755,7 @@ control-plane
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.16 255.255.255.255
- ipv6 address 2001:CC13::16/128
+ ipv6 address 2001:cc13::16/128
 !
 interface MgmtEth0/0/CPU0/0
  description OOB Management
@@ -3439,6 +3776,10 @@ interface GigabitEthernet0/0/0/1
  ipv4 address 10.0.0.93 255.255.255.252
  ipv6 address 2001:db8:a:0:1:1:0:5e/126
 !
+route-policy PASS
+  pass
+end-policy
+!
 route-policy bgp_in
   pass
 end-policy
@@ -3446,6 +3787,52 @@ end-policy
 route-policy bgp_out
   pass
 end-policy
+!
+router isis 1
+ is-type level-2-only
+ net 49.0001.0000.0000.0016.00
+ address-family ipv4 unicast
+  distance 109
+  mpls ldp auto-config
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  distance 109
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
 !
 router ospf 1
  log adjacency changes
@@ -3476,10 +3863,99 @@ router ospfv3 1
  !
  address-family ipv6 unicast
 !
+router bgp 200
+ address-family ipv4 unicast
+ !
+ address-family vpnv4 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ af-group IPV4-UNICAST-RR-CLIENT-POLICY address-family ipv4 unicast
+  route-reflector-client
+ !
+ af-group VPNV4-UNICAST-RR-CLIENT-POLICY address-family vpnv4 unicast
+  route-reflector-client
+ !
+ af-group VPNV6-UNICAST-RR-CLIENT-POLICY address-family vpnv6 unicast
+  route-reflector-client
+ !
+ session-group IBGP-SESSIONS
+  remote-as 200
+  update-source Loopback0
+ !
+ neighbor 1.1.1.1
+  remote-as 100
+  ebgp-multihop 255
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-policy PASS in
+   route-policy PASS out
+   next-hop-unchanged
+  !
+  address-family vpnv6 unicast
+   route-policy PASS in
+   route-policy PASS out
+   next-hop-unchanged
+  !
+ !
+ neighbor 1.1.1.17
+  use session-group IBGP-SESSIONS
+  address-family ipv4 unicast
+   use af-group IPV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv4 unicast
+   use af-group VPNV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv6 unicast
+   use af-group VPNV6-UNICAST-RR-CLIENT-POLICY
+  !
+ !
+ neighbor 1.1.1.18
+  use session-group IBGP-SESSIONS
+  address-family ipv4 unicast
+   use af-group IPV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv4 unicast
+   use af-group VPNV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv6 unicast
+   use af-group VPNV6-UNICAST-RR-CLIENT-POLICY
+  !
+ !
+ neighbor 1.1.1.19
+  use session-group IBGP-SESSIONS
+  address-family ipv4 unicast
+   use af-group IPV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv4 unicast
+   use af-group VPNV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv6 unicast
+   use af-group VPNV6-UNICAST-RR-CLIENT-POLICY
+  !
+ !
+ neighbor 1.1.1.20
+  use session-group IBGP-SESSIONS
+  address-family ipv4 unicast
+   use af-group IPV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv4 unicast
+   use af-group VPNV4-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family vpnv6 unicast
+   use af-group VPNV6-UNICAST-RR-CLIENT-POLICY
+  !
+ !
+!
+mpls ldp
+ log
+  neighbor
+ !
+!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.116</entry>
         </extensions>
@@ -3489,7 +3965,7 @@ end</entry>
     <node name="R17" type="SIMPLE" subtype="IOS XRv" location="1005,489" ipv4="1.1.1.17" ipv6="2001:cc13::17">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Sat Jan 27 14:32:56 2018 by cisco
+!! Last configuration change at Sun Jan 28 01:30:35 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -3530,7 +4006,7 @@ control-plane
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.17 255.255.255.255
- ipv6 address 2001:CC13::17/128
+ ipv6 address 2001:cc13::17/128
 !
 interface MgmtEth0/0/CPU0/0
  description OOB Management
@@ -3569,6 +4045,9 @@ interface GigabitEthernet0/0/0/4
  ipv4 address 10.0.0.65 255.255.255.252
  ipv6 address 2001:db8:a:0:1:1:0:43/126
 !
+interface GigabitEthernet0/0/0/5
+ shutdown
+!
 route-policy bgp_in
   pass
 end-policy
@@ -3576,6 +4055,77 @@ end-policy
 route-policy bgp_out
   pass
 end-policy
+!
+router isis 1
+ is-type level-2-only
+ net 49.0001.0000.0000.0017.00
+ address-family ipv4 unicast
+  distance 109
+  mpls ldp auto-config
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  distance 109
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
 !
 router ospf 1
  log adjacency changes
@@ -3618,10 +4168,33 @@ router ospfv3 1
  !
  address-family ipv6 unicast
 !
+router bgp 200
+ address-family ipv4 unicast
+ !
+ address-family vpnv4 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ neighbor 1.1.1.16
+  remote-as 200
+  update-source Loopback0
+  address-family ipv4 unicast
+  !
+  address-family vpnv4 unicast
+  !
+  address-family vpnv6 unicast
+  !
+ !
+!
+mpls ldp
+ log
+  neighbor
+ !
+!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.117</entry>
         </extensions>
@@ -3635,7 +4208,7 @@ end</entry>
     <node name="R18" type="SIMPLE" subtype="IOS XRv" location="1003,712" ipv4="1.1.1.18" ipv6="2001:cc13::18">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Sat Jan 27 14:32:37 2018 by cisco
+!! Last configuration change at Sun Jan 28 02:08:11 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -3676,7 +4249,7 @@ control-plane
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.18 255.255.255.255
- ipv6 address 2001:CC13::18/128
+ ipv6 address 2001:cc13::18/128
 !
 interface MgmtEth0/0/CPU0/0
  description OOB Management
@@ -3729,6 +4302,79 @@ route-policy bgp_out
   pass
 end-policy
 !
+router isis 1
+ is-type level-2-only
+ net 49.0001.0000.0000.0018.00
+ log adjacency changes
+ address-family ipv4 unicast
+  distance 109
+  mpls ldp auto-config
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  distance 109
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/0
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+!
 router ospf 1
  log adjacency changes
  area 0
@@ -3770,10 +4416,33 @@ router ospfv3 1
  !
  address-family ipv6 unicast
 !
+router bgp 200
+ address-family ipv4 unicast
+ !
+ address-family vpnv4 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ neighbor 1.1.1.16
+  remote-as 200
+  update-source Loopback0
+  address-family ipv4 unicast
+  !
+  address-family vpnv4 unicast
+  !
+  address-family vpnv6 unicast
+  !
+ !
+!
+mpls ldp
+ log
+  neighbor
+ !
+!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.118</entry>
         </extensions>
@@ -3787,11 +4456,12 @@ end</entry>
     <node name="R19" type="SIMPLE" subtype="IOS XRv" location="814,503" ipv4="1.1.1.19" ipv6="2001:cc13::19">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Sat Jan 27 14:31:56 2018 by cisco
+!! Last configuration change at Sun Jan 28 02:17:07 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
 hostname R19
+logging monitor debugging
 service timestamps log datetime msec
 service timestamps debug datetime msec
 telnet vrf default ipv4 server max-servers 10
@@ -3828,7 +4498,7 @@ control-plane
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.19 255.255.255.255
- ipv6 address 2001:CC13::19/128
+ ipv6 address 2001:cc13::19/128
 !
 interface MgmtEth0/0/CPU0/0
  description OOB Management
@@ -3861,6 +4531,13 @@ interface GigabitEthernet0/0/0/3
  ipv4 address 10.0.0.117 255.255.255.252
  ipv6 address 2001:db8:a:0:1:1:0:76/126
 !
+interface GigabitEthernet0/0/0/4
+ shutdown
+!
+route-policy PASS
+  pass
+end-policy
+!
 route-policy bgp_in
   pass
 end-policy
@@ -3868,6 +4545,79 @@ end-policy
 route-policy bgp_out
   pass
 end-policy
+!
+route-policy BGP_TO_ISIS
+  if destination in (0.0.0.0/0 ge 32) then
+    pass
+  else
+    drop
+  endif
+end-policy
+!
+router static
+ address-family ipv4 unicast
+  10.0.0.58/32 GigabitEthernet0/0/0/0
+ !
+!
+router isis 1
+ is-type level-2-only
+ net 49.0001.0000.0000.0019.00
+ address-family ipv4 unicast
+  redistribute bgp 200 level-2 route-policy BGP_TO_ISIS
+  distance 109
+  mpls ldp auto-config
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  distance 109
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
 !
 router ospf 1
  log adjacency changes
@@ -3904,10 +4654,44 @@ router ospfv3 1
  !
  address-family ipv6 unicast
 !
+router bgp 200
+ address-family ipv4 unicast
+  network 1.1.1.16/32
+  network 1.1.1.17/32
+  network 1.1.1.18/32
+  allocate-label all
+ !
+ address-family vpnv4 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ neighbor 1.1.1.16
+  remote-as 200
+  update-source Loopback0
+  address-family ipv4 unicast
+  !
+  address-family vpnv4 unicast
+  !
+  address-family vpnv6 unicast
+  !
+ !
+ neighbor 10.0.0.58
+  remote-as 100
+  address-family ipv4 labeled-unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+ !
+!
+mpls ldp
+ log
+  neighbor
+ !
+!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.119</entry>
         </extensions>
@@ -3920,7 +4704,7 @@ end</entry>
     <node name="R20" type="SIMPLE" subtype="IOS XRv" location="820,709" ipv4="1.1.1.20" ipv6="2001:cc13::20">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Sat Jan 27 14:31:33 2018 by cisco
+!! Last configuration change at Sun Jan 28 02:18:43 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -3961,7 +4745,7 @@ control-plane
 interface Loopback0
  description Loopback
  ipv4 address 1.1.1.20 255.255.255.255
- ipv6 address 2001:CC13::20/128
+ ipv6 address 2001:cc13::20/128
 !
 interface MgmtEth0/0/CPU0/0
  description OOB Management
@@ -3994,6 +4778,10 @@ interface GigabitEthernet0/0/0/3
  ipv4 address 10.0.0.118 255.255.255.252
  ipv6 address 2001:db8:a:0:1:1:0:77/126
 !
+route-policy PASS
+  pass
+end-policy
+!
 route-policy bgp_in
   pass
 end-policy
@@ -4001,6 +4789,80 @@ end-policy
 route-policy bgp_out
   pass
 end-policy
+!
+route-policy BGP_TO_ISIS
+  if destination in (0.0.0.0/0 ge 32) then
+    pass
+  else
+    drop
+  endif
+end-policy
+!
+router static
+ address-family ipv4 unicast
+  10.0.0.62/32 GigabitEthernet0/0/0/0
+ !
+!
+router isis 1
+ is-type level-2-only
+ net 49.0001.0000.0000.0020.00
+ log adjacency changes
+ address-family ipv4 unicast
+  redistribute bgp 200 level-2 route-policy BGP_TO_ISIS
+  distance 109
+  mpls ldp auto-config
+ !
+ address-family ipv6 unicast
+  metric-style wide
+  distance 109
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/1
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/2
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
+ interface GigabitEthernet0/0/0/3
+  suppressed
+  bfd minimum-interval 333
+  bfd multiplier 3
+  bfd fast-detect ipv4
+  bfd fast-detect ipv6
+  point-to-point
+  address-family ipv4 unicast
+   fast-reroute per-prefix
+  !
+  address-family ipv6 unicast
+  !
+ !
 !
 router ospf 1
  log adjacency changes
@@ -4037,10 +4899,44 @@ router ospfv3 1
  !
  address-family ipv6 unicast
 !
+router bgp 200
+ address-family ipv4 unicast
+  network 1.1.1.16/32
+  network 1.1.1.17/32
+  network 1.1.1.18/32
+  allocate-label all
+ !
+ address-family vpnv4 unicast
+ !
+ address-family vpnv6 unicast
+ !
+ neighbor 1.1.1.16
+  remote-as 200
+  update-source Loopback0
+  address-family ipv4 unicast
+  !
+  address-family vpnv4 unicast
+  !
+  address-family vpnv6 unicast
+  !
+ !
+ neighbor 10.0.0.62
+  remote-as 100
+  address-family ipv4 labeled-unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+ !
+!
+mpls ldp
+ log
+  neighbor
+ !
+!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="Auto-generate config" type="Boolean">false</entry>
             <entry key="static_ip" type="String">172.16.1.120</entry>
         </extensions>
