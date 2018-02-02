@@ -209,7 +209,7 @@ kron policy-list KRONPOLICY
 !
 !
 !
-menu main_menu prompt ^CEnter Selection: ^C
+menu main_menu prompt ^Enter Selection: ^
 menu main_menu text 1. Connect to R1
 menu main_menu command 1. telnet 172.16.1.101  /vrf Mgmt-intf
 menu main_menu text 2. Connect to R2
@@ -273,28 +273,13 @@ privilege exec level 0 clear
 !
 line con 0
  stopbits 1
-line vty 0
+line vty 0 10
  exec-timeout 720 0
  privilege level 15
  password cisco
  no login
  length 0
  transport input telnet ssh
-line vty 1 4
- exec-timeout 720 0
- password cisco
- login local
- rotary 1
- length 0
- transport input all
-line vty 5 10
- exec-timeout 720 0
- privilege level 15
- password cisco
- login local
- rotary 1
- length 0
- transport input all
 line vty 11 90
  exec-timeout 720 0
  privilege level 15
