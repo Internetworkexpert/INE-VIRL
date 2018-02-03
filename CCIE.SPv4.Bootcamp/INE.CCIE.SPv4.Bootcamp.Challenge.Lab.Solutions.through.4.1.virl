@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="389,608" ipv4="1.1.1.1" ipv6="2001:cc13::1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:09:07 UTC Fri Feb 2 2018
+! Last configuration change at 23:18:26 UTC Sat Feb 3 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -260,6 +260,15 @@ router bgp 100
   neighbor 1.1.1.16 next-hop-unchanged
   neighbor 1.1.1.16 route-map RT_REWRITE in
  exit-address-family
+ !
+ address-family l2vpn vpls
+  neighbor 1.1.1.2 activate
+  neighbor 1.1.1.5 activate
+  neighbor 1.1.1.5 inherit peer-policy IBGP_POLICY
+  neighbor 1.1.1.16 activate
+  neighbor 1.1.1.16 prefix-length-size 2
+  neighbor 1.1.1.16 next-hop-unchanged
+ exit-address-family
 !
 
 threat-visibility
@@ -407,7 +416,7 @@ end</entry>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="504,511" ipv4="1.1.1.2" ipv6="2001:cc13::2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:09:16 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 22:31:41 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -474,6 +483,7 @@ subscriber templating
 ! 
 ! 
 !
+mpls ldp discovery targeted-hello accept
 !
 !
 multilink bundle-name authenticated
@@ -629,6 +639,8 @@ interface GigabitEthernet7
  ip address 10.0.0.50 255.255.255.252
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:32/126
+ mpls ip
+ mpls ldp discovery transport-address interface
  mpls bgp forwarding
  no mop enabled
  no mop sysid
@@ -694,6 +706,14 @@ router bgp 100
   neighbor 10.0.0.49 activate
   neighbor 10.0.0.49 send-community extended
   neighbor 10.0.0.49 route-map RT_REWRITE in
+ exit-address-family
+ !
+ address-family l2vpn vpls
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community extended
+  neighbor 1.1.1.1 next-hop-self
+  neighbor 10.0.0.49 activate
+  neighbor 10.0.0.49 send-community extended
  exit-address-family
  !
  address-family ipv4 vrf A
@@ -1438,7 +1458,7 @@ end</entry>
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="665,714" ipv4="1.1.1.5" ipv6="2001:cc13::5">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:25:45 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 23:06:03 UTC Sat Feb 3 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1494,9 +1514,19 @@ subscriber templating
 ! 
 ! 
 !
+mpls ldp discovery targeted-hello accept
 !
 !
 multilink bundle-name authenticated
+l2vpn vfi context VPLS_BGP 
+l2vpn vfi context VPLS_BGP_AD 
+ vpn id 1
+ autodiscovery bgp signaling ldp 
+  vpls-id 100:200
+  rd 100:200
+  route-target export 100:200
+  route-target import 100:200
+!
 !
 !
 !
@@ -1530,6 +1560,10 @@ spanning-tree extend system-id
 username cisco privilege 15 secret 5 $1$0UrG$79IpdQors.f2a6m0sJ/Fo.
 !
 redundancy
+bridge-domain 1 
+ member GigabitEthernet5 service-instance 1
+ member vfi VPLS_BGP_AD
+!
 !
 !
 !
@@ -1537,6 +1571,8 @@ redundancy
 !
 cdp run
 !
+l2 pseudowire routing
+ terminating-pe tie-breaker
 ! 
 !
 !
@@ -1591,6 +1627,7 @@ interface GigabitEthernet3
  ip address 10.0.0.22 255.255.255.252
  ip ospf network point-to-point
  ip ospf cost 1
+ shutdown
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:17/126
  ipv6 ospf 1 area 0
@@ -1615,10 +1652,12 @@ interface GigabitEthernet4
 !
 interface GigabitEthernet5
  no ip address
- shutdown
  negotiation auto
  no mop enabled
  no mop sysid
+ service instance 1 ethernet
+  encapsulation default
+ !
 !
 router ospfv3 1
  router-id 1.1.1.5
@@ -1650,9 +1689,9 @@ router bgp 100
  !
  address-family ipv4
   network 1.1.1.1 mask 255.255.255.255
-  network 2.2.2.2 mask 255.255.255.255
-  network 3.3.3.3 mask 255.255.255.255
-  network 5.5.5.5 mask 255.255.255.255
+  network 1.1.1.2 mask 255.255.255.255
+  network 1.1.1.3 mask 255.255.255.255
+  network 1.1.1.5 mask 255.255.255.255
   neighbor 1.1.1.1 activate
   neighbor 10.0.0.61 activate
   neighbor 10.0.0.61 send-label
@@ -1666,6 +1705,10 @@ router bgp 100
  address-family vpnv6
   neighbor 1.1.1.1 activate
   neighbor 1.1.1.1 send-community extended
+ exit-address-family
+ !
+ address-family l2vpn vpls
+  neighbor 1.1.1.1 activate
  exit-address-family
 !
 
@@ -2854,7 +2897,7 @@ end</entry>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="508,845" ipv4="1.1.1.11" ipv6="2001:cc13::11">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:36 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 21:43:59 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3000,8 +3043,7 @@ interface GigabitEthernet2
  no mop sysid
 !
 interface GigabitEthernet3
- no ip address
- shutdown
+ ip address 192.168.0.11 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -3088,7 +3130,7 @@ end</entry>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="509,379" ipv4="1.1.1.12" ipv6="2001:cc13::12">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:07:54 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 22:31:56 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3144,6 +3186,7 @@ subscriber templating
 ! 
 ! 
 !
+mpls ldp discovery targeted-hello accept
 !
 !
 multilink bundle-name authenticated
@@ -3227,6 +3270,8 @@ interface GigabitEthernet2
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:33/126
+ mpls ip
+ mpls ldp discovery transport-address interface
  mpls bgp forwarding
  ipv6 ospf cost 1
  cdp enable
@@ -3271,6 +3316,14 @@ router bgp 300
   neighbor 10.0.0.50 activate
   neighbor 10.0.0.50 send-community extended
   neighbor 10.0.0.50 route-map RT_REWRITE in
+ exit-address-family
+ !
+ address-family l2vpn vpls
+  neighbor 1.1.1.14 activate
+  neighbor 1.1.1.14 send-community extended
+  neighbor 1.1.1.14 next-hop-self
+  neighbor 10.0.0.50 activate
+  neighbor 10.0.0.50 send-community extended
  exit-address-family
 !
 
@@ -3557,7 +3610,7 @@ end</entry>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="812,360" ipv4="1.1.1.14" ipv6="2001:cc13::14">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:45 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 22:24:36 UTC Fri Feb 2 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3624,9 +3677,18 @@ subscriber templating
 ! 
 ! 
 !
+mpls ldp discovery targeted-hello accept
 !
 !
 multilink bundle-name authenticated
+l2vpn vfi context VPLS_BGP_AD 
+ vpn id 1
+ autodiscovery bgp signaling ldp 
+  vpls-id 100:200
+  rd 100:200
+  route-target export 100:200
+  route-target import 100:200
+!
 !
 !
 !
@@ -3660,6 +3722,10 @@ spanning-tree extend system-id
 username cisco privilege 15 secret 5 $1$Exsy$Bn5EAcqCQHVuUUUV9vJAW0
 !
 redundancy
+bridge-domain 1 
+ member GigabitEthernet4 service-instance 1
+ member vfi VPLS_BGP_AD
+!
 !
 !
 !
@@ -3667,6 +3733,8 @@ redundancy
 !
 cdp run
 !
+l2 pseudowire routing
+ terminating-pe tie-breaker
 ! 
 !
 !
@@ -3726,10 +3794,12 @@ interface GigabitEthernet3
 !
 interface GigabitEthernet4
  no ip address
- shutdown
  negotiation auto
  no mop enabled
  no mop sysid
+ service instance 1 ethernet
+  encapsulation default
+ !
 !
 router ospf 1
  mpls ldp autoconfig
@@ -3747,6 +3817,10 @@ router bgp 300
  address-family vpnv6
   neighbor 1.1.1.12 activate
   neighbor 1.1.1.12 send-community extended
+ exit-address-family
+ !
+ address-family l2vpn vpls
+  neighbor 1.1.1.12 activate
  exit-address-family
  !
  address-family ipv4 vrf B
@@ -3817,7 +3891,7 @@ end</entry>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="998,360" ipv4="1.1.1.15" ipv6="2001:cc13::15">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:50 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 21:43:54 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3961,8 +4035,7 @@ interface GigabitEthernet2
  no mop sysid
 !
 interface GigabitEthernet3
- no ip address
- shutdown
+ ip address 192.168.0.15 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -4038,7 +4111,7 @@ end</entry>
     <node name="R16" type="SIMPLE" subtype="IOS XRv" location="1136,594" ipv4="1.1.1.16" ipv6="2001:cc13::16">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Feb  2 21:04:11 2018 by cisco
+!! Last configuration change at Sat Feb  3 23:15:32 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -4204,6 +4277,11 @@ router bgp 200
  !
  address-family vpnv6 unicast
  !
+ address-family l2vpn vpls-vpws
+ !
+ af-group L2VPN-VPLS-RR-CLIENT-POLICY address-family l2vpn vpls-vpws
+  route-reflector-client
+ !
  af-group IPV4-UNICAST-RR-CLIENT-POLICY address-family ipv4 unicast
   route-reflector-client
  !
@@ -4231,6 +4309,11 @@ router bgp 200
    route-policy PASS out
    next-hop-unchanged
   !
+  address-family l2vpn vpls-vpws
+   route-policy PASS in
+   route-policy PASS out
+   next-hop-unchanged
+  !
  !
  neighbor 1.1.1.17
   use session-group IBGP-SESSIONS
@@ -4242,6 +4325,9 @@ router bgp 200
   !
   address-family vpnv6 unicast
    use af-group VPNV6-UNICAST-RR-CLIENT-POLICY
+  !
+  address-family l2vpn vpls-vpws
+   use af-group L2VPN-VPLS-RR-CLIENT-POLICY
   !
  !
  neighbor 1.1.1.18
@@ -4296,7 +4382,7 @@ end</entry>
     <node name="R17" type="SIMPLE" subtype="IOS XRv" location="1005,489" ipv4="1.1.1.17" ipv6="2001:cc13::17">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Feb  2 20:20:23 2018 by cisco
+!! Last configuration change at Sat Feb  3 23:35:51 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -4397,7 +4483,8 @@ interface GigabitEthernet0/0/0/4
  ipv6 address 2001:db8:a:0:1:1:0:43/126
 !
 interface GigabitEthernet0/0/0/5
- shutdown
+ l2transport
+ !
 !
 route-policy bgp_in
   pass
@@ -4545,6 +4632,8 @@ router bgp 200
  !
  address-family vpnv6 unicast
  !
+ address-family l2vpn vpls-vpws
+ !
  neighbor 1.1.1.16
   remote-as 200
   update-source Loopback0
@@ -4554,6 +4643,8 @@ router bgp 200
   !
   address-family vpnv6 unicast
   !
+  address-family l2vpn vpls-vpws
+  !
  !
  vrf A
   rd 1:1
@@ -4562,6 +4653,24 @@ router bgp 200
   !
   address-family ipv6 unicast
    redistribute ospfv3 100
+  !
+ !
+!
+l2vpn
+ bridge group 1
+  bridge-domain 1
+   interface GigabitEthernet0/0/0/5
+   !
+   vfi VPLS_BGP_AD
+    vpn-id 1
+    autodiscovery bgp
+     rd auto
+     route-target 100:200
+     signaling-protocol ldp
+      vpls-id 100:200
+     !
+    !
+   !
   !
  !
 !
@@ -4921,7 +5030,7 @@ end</entry>
     <node name="R19" type="SIMPLE" subtype="IOS XRv" location="814,503" ipv4="1.1.1.19" ipv6="2001:cc13::19">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Feb  2 20:09:58 2018 by cisco
+!! Last configuration change at Fri Feb  2 21:44:29 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -4997,7 +5106,7 @@ interface GigabitEthernet0/0/0/3
  ipv6 address 2001:db8:a:0:1:1:0:76/126
 !
 interface GigabitEthernet0/0/0/4
- shutdown
+ ipv4 address 192.168.0.19 255.255.255.0
 !
 route-policy PASS
   pass

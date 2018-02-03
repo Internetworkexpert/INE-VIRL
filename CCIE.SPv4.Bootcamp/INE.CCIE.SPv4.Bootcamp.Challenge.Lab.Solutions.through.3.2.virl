@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="389,608" ipv4="1.1.1.1" ipv6="2001:cc13::1">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:09:07 UTC Fri Feb 2 2018
+! Last configuration change at 20:08:21 UTC Fri Feb 2 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -239,7 +239,6 @@ router bgp 100
   neighbor 1.1.1.16 activate
   neighbor 1.1.1.16 send-community extended
   neighbor 1.1.1.16 next-hop-unchanged
-  neighbor 1.1.1.16 route-map RT_REWRITE in
  exit-address-family
  !
  address-family vpnv6
@@ -258,7 +257,6 @@ router bgp 100
   neighbor 1.1.1.16 activate
   neighbor 1.1.1.16 send-community extended
   neighbor 1.1.1.16 next-hop-unchanged
-  neighbor 1.1.1.16 route-map RT_REWRITE in
  exit-address-family
 !
 
@@ -272,7 +270,6 @@ ip http authentication local
 ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
-ip extcommunity-list 1 permit rt 200:18
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
@@ -335,13 +332,6 @@ menu main_menu command 20. telnet 172.16.1.120 /vrf Mgmt-intf
 menu main_menu text Q. Quit
 menu main_menu command Q. Exit
 menu main_menu clear-screen
-route-map RT_REWRITE permit 10
- match extcommunity 1
- set extcomm-list 1 delete
- set extcommunity rt 100:3 additive
-!
-route-map RT_REWRITE permit 20
-!
 !
 !
 control-plane
@@ -407,7 +397,7 @@ end</entry>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="504,511" ipv4="1.1.1.2" ipv6="2001:cc13::2">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:09:16 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 20:20:51 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -669,7 +659,6 @@ router ospf 1
 router bgp 100
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- no bgp default route-target filter
  neighbor 1.1.1.1 remote-as 100
  neighbor 1.1.1.1 update-source Loopback0
  neighbor 10.0.0.49 remote-as 300
@@ -684,7 +673,6 @@ router bgp 100
   neighbor 1.1.1.1 next-hop-self
   neighbor 10.0.0.49 activate
   neighbor 10.0.0.49 send-community extended
-  neighbor 10.0.0.49 route-map RT_REWRITE in
  exit-address-family
  !
  address-family vpnv6
@@ -693,7 +681,6 @@ router bgp 100
   neighbor 1.1.1.1 next-hop-self
   neighbor 10.0.0.49 activate
   neighbor 10.0.0.49 send-community extended
-  neighbor 10.0.0.49 route-map RT_REWRITE in
  exit-address-family
  !
  address-family ipv4 vrf A
@@ -715,19 +702,11 @@ ip http authentication local
 ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
-ip extcommunity-list 1 permit rt 1:1
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
-!
-route-map RT_REWRITE permit 10
- match extcommunity 1
- set extcomm-list 1 delete
- set extcommunity rt 100:3 additive
-!
-route-map RT_REWRITE permit 20
 !
 !
 !
@@ -771,7 +750,7 @@ end</entry>
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="505,715" ipv4="1.1.1.3" ipv6="2001:cc13::3">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:42:52 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 20:20:52 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -790,17 +769,6 @@ vrf definition A
  rd 1:1
  route-target export 1:1
  route-target import 1:1
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-vrf definition B
- rd 2:2
- route-target export 100:3
- route-target import 100:3
  !
  address-family ipv4
  exit-address-family
@@ -1001,11 +969,12 @@ interface GigabitEthernet6
 !
 interface GigabitEthernet7
  description to R11
- vrf forwarding B
  ip address 10.0.0.54 255.255.255.252
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:36/126
+ ipv6 ospf 1 area 0
+ ipv6 ospf cost 1
  cdp enable
  no mop enabled
  no mop sysid
@@ -1032,6 +1001,7 @@ router ospf 100 vrf A
 router ospf 1
  prefix-suppression
  fast-reroute per-prefix enable area 0 prefix-priority high
+ passive-interface GigabitEthernet7
  passive-interface Loopback0
  network 1.1.1.3 0.0.0.0 area 0
  network 10.0.0.8 0.0.0.3 area 0
@@ -1069,18 +1039,6 @@ router bgp 100
  !
  address-family ipv6 vrf A
   redistribute ospf 100
- exit-address-family
- !
- address-family ipv4 vrf B
-  neighbor 10.0.0.53 remote-as 65001
-  neighbor 10.0.0.53 activate
-  neighbor 10.0.0.53 as-override
- exit-address-family
- !
- address-family ipv6 vrf B
-  neighbor 2001:DB8:A:0:1:1:0:37 remote-as 65001
-  neighbor 2001:DB8:A:0:1:1:0:37 activate
-  neighbor 2001:DB8:A:0:1:1:0:37 as-override
  exit-address-family
 !
 
@@ -2641,7 +2599,7 @@ end</entry>
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="1006,841" ipv4="1.1.1.10" ipv6="2001:cc13::10">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:34 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 19:51:02 UTC Fri Feb 2 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2784,22 +2742,6 @@ interface GigabitEthernet2
  no mop enabled
  no mop sysid
 !
-router bgp 65001
- bgp log-neighbor-changes
- no bgp default ipv4-unicast
- neighbor 10.0.0.74 remote-as 200
- neighbor 2001:DB8:A:0:1:1:0:4B remote-as 200
- !
- address-family ipv4
-  redistribute connected
-  neighbor 10.0.0.74 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 2001:DB8:A:0:1:1:0:4B activate
- exit-address-family
-!
 
 threat-visibility
 !
@@ -2854,7 +2796,7 @@ end</entry>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="508,845" ipv4="1.1.1.11" ipv6="2001:cc13::11">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:36 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 19:51:11 UTC Fri Feb 2 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3017,22 +2959,6 @@ router ospf 1
  network 1.1.1.11 0.0.0.0 area 0
  network 10.0.0.52 0.0.0.3 area 0
 !
-router bgp 65001
- bgp log-neighbor-changes
- no bgp default ipv4-unicast
- neighbor 10.0.0.54 remote-as 100
- neighbor 2001:DB8:A:0:1:1:0:36 remote-as 100
- !
- address-family ipv4
-  redistribute connected
-  neighbor 10.0.0.54 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 2001:DB8:A:0:1:1:0:36 activate
- exit-address-family
-!
 
 threat-visibility
 !
@@ -3088,7 +3014,7 @@ end</entry>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="509,379" ipv4="1.1.1.12" ipv6="2001:cc13::12">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 21:07:54 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 20:13:50 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3250,7 +3176,6 @@ router ospf 1
 !
 router bgp 300
  bgp log-neighbor-changes
- no bgp default route-target filter
  neighbor 1.1.1.14 remote-as 300
  neighbor 1.1.1.14 update-source Loopback0
  neighbor 10.0.0.50 remote-as 100
@@ -3261,7 +3186,6 @@ router bgp 300
   neighbor 1.1.1.14 next-hop-self
   neighbor 10.0.0.50 activate
   neighbor 10.0.0.50 send-community extended
-  neighbor 10.0.0.50 route-map RT_REWRITE in
  exit-address-family
  !
  address-family vpnv6
@@ -3270,7 +3194,6 @@ router bgp 300
   neighbor 1.1.1.14 next-hop-self
   neighbor 10.0.0.50 activate
   neighbor 10.0.0.50 send-community extended
-  neighbor 10.0.0.50 route-map RT_REWRITE in
  exit-address-family
 !
 
@@ -3284,25 +3207,11 @@ ip http authentication local
 ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
 !
-ip extcommunity-list 1 permit rt 100:3
-ip extcommunity-list 2 permit rt 1:1
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
-!
-route-map RT_REWRITE permit 10
- match extcommunity 1
- set extcomm-list 1 delete
- set extcommunity rt 1:1 additive
-!
-route-map RT_REWRITE permit 20
- match extcommunity 2
- set extcomm-list 2 delete
- set extcommunity rt 12345:1 additive
-!
-route-map RT_REWRITE permit 30
 !
 !
 !
@@ -3557,7 +3466,7 @@ end</entry>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="812,360" ipv4="1.1.1.14" ipv6="2001:cc13::14">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:45 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 20:14:10 UTC Fri Feb 2 2018 by cisco
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3571,17 +3480,6 @@ hostname R14
 boot-start-marker
 boot-end-marker
 !
-!
-vrf definition B
- rd 2:2
- route-target export 1:1
- route-target import 1:1
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -3715,11 +3613,11 @@ interface GigabitEthernet2
 !
 interface GigabitEthernet3
  description to R15
- vrf forwarding B
  ip address 10.0.0.85 255.255.255.252
  ip ospf cost 1
  negotiation auto
  ipv6 address 2001:DB8:A:0:1:1:0:56/126
+ ipv6 ospf cost 1
  cdp enable
  no mop enabled
  no mop sysid
@@ -3747,18 +3645,6 @@ router bgp 300
  address-family vpnv6
   neighbor 1.1.1.12 activate
   neighbor 1.1.1.12 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf B
-  neighbor 10.0.0.86 remote-as 65001
-  neighbor 10.0.0.86 activate
-  neighbor 10.0.0.86 as-override
- exit-address-family
- !
- address-family ipv6 vrf B
-  neighbor 2001:DB8:A:0:1:1:0:57 remote-as 65001
-  neighbor 2001:DB8:A:0:1:1:0:57 activate
-  neighbor 2001:DB8:A:0:1:1:0:57 as-override
  exit-address-family
 !
 
@@ -3817,7 +3703,7 @@ end</entry>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="998,360" ipv4="1.1.1.15" ipv6="2001:cc13::15">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:43:50 UTC Fri Feb 2 2018 by cisco
+! Last configuration change at 19:51:32 UTC Fri Feb 2 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3967,22 +3853,6 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router bgp 65001
- bgp log-neighbor-changes
- no bgp default ipv4-unicast
- neighbor 10.0.0.85 remote-as 300
- neighbor 2001:DB8:A:0:1:1:0:56 remote-as 300
- !
- address-family ipv4
-  redistribute connected
-  neighbor 10.0.0.85 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 2001:DB8:A:0:1:1:0:56 activate
- exit-address-family
-!
 
 threat-visibility
 !
@@ -4038,7 +3908,7 @@ end</entry>
     <node name="R16" type="SIMPLE" subtype="IOS XRv" location="1136,594" ipv4="1.1.1.16" ipv6="2001:cc13::16">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Feb  2 21:04:11 2018 by cisco
+!! Last configuration change at Fri Feb  2 20:08:45 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -4111,15 +3981,6 @@ end-policy
 !
 route-policy bgp_out
   pass
-end-policy
-!
-route-policy RT_REWRITE
-  if extcommunity rt matches-any (100:3) then
-    set extcommunity rt (200:18) additive
-    pass
-  else
-    pass
-  endif
 end-policy
 !
 router isis 1
@@ -4222,12 +4083,12 @@ router bgp 200
   ebgp-multihop 255
   update-source Loopback0
   address-family vpnv4 unicast
-   route-policy RT_REWRITE in
+   route-policy PASS in
    route-policy PASS out
    next-hop-unchanged
   !
   address-family vpnv6 unicast
-   route-policy RT_REWRITE in
+   route-policy PASS in
    route-policy PASS out
    next-hop-unchanged
   !
@@ -4584,7 +4445,7 @@ end</entry>
     <node name="R18" type="SIMPLE" subtype="IOS XRv" location="1003,712" ipv4="1.1.1.18" ipv6="2001:cc13::18">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Feb  2 20:36:29 2018 by cisco
+!! Last configuration change at Fri Feb  2 20:20:32 2018 by cisco
 !
 !  IOS-XR Config generated on 2018-01-27 04:28
 ! by autonetkit_0.23.5
@@ -4612,24 +4473,6 @@ vrf A
   !
   export route-target
    1:1
-  !
- !
-!
-vrf B
- address-family ipv4 unicast
-  import route-target
-   200:18
-  !
-  export route-target
-   200:18
-  !
- !
- address-family ipv6 unicast
-  import route-target
-   200:18
-  !
-  export route-target
-   200:18
   !
  !
 !
@@ -4705,13 +4548,8 @@ interface GigabitEthernet0/0/0/4
 interface GigabitEthernet0/0/0/5
  description to R10
  cdp
- vrf B
  ipv4 address 10.0.0.74 255.255.255.252
  ipv6 address 2001:db8:a:0:1:1:0:4b/126
-!
-route-policy PASS
-  pass
-end-policy
 !
 route-policy bgp_in
   pass
@@ -4876,29 +4714,6 @@ router bgp 200
   !
   address-family ipv6 unicast
    redistribute ospfv3 100
-  !
- !
- vrf B
-  rd 2:2
-  address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
-  !
-  neighbor 10.0.0.73
-   remote-as 65001
-   address-family ipv4 unicast
-    route-policy PASS in
-    route-policy PASS out
-    as-override
-   !
-  !
-  neighbor 2001:db8:a:0:1:1:0:4a
-   remote-as 65001
-   address-family ipv6 unicast
-    route-policy PASS in
-    route-policy PASS out
-    as-override
-   !
   !
  !
 !
