@@ -2441,7 +2441,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240" excludeFromLaunch="true">
+    <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:18:31 UTC Sat Oct 1 2016
@@ -2665,7 +2665,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240" excludeFromLaunch="true">
+    <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 13:10:46 UTC Sat Oct 1 2016
@@ -2920,7 +2920,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240" excludeFromLaunch="true">
+    <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:18:44 UTC Sat Oct 1 2016
@@ -3153,7 +3153,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240" excludeFromLaunch="true">
+    <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:18:49 UTC Sat Oct 1 2016
@@ -3361,7 +3361,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240" excludeFromLaunch="true">
+    <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:18:55 UTC Sat Oct 1 2016
@@ -3548,7 +3548,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400" excludeFromLaunch="true">
+    <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 16:50:53 UTC Sat Oct 1 2016
@@ -3766,7 +3766,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400" excludeFromLaunch="true">
+    <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:19:06 UTC Sat Oct 1 2016
@@ -4021,7 +4021,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400" excludeFromLaunch="true">
+    <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 16:42:23 UTC Sat Oct 1 2016
@@ -4227,7 +4227,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400" excludeFromLaunch="true">
+    <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:19:18 UTC Sat Oct 1 2016
@@ -4430,7 +4430,7 @@ end</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400" excludeFromLaunch="true">
+    <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400">
         <extensions>
             <entry key="config" type="string">!
 ! Last configuration change at 15:19:24 UTC Sat Oct 1 2016
