@@ -4116,6 +4116,7 @@ menu main_menu text 23. Connect to XR3
 menu main_menu command 23. telnet 172.16.1.123 /vrf Mgmt-intf
 menu main_menu text 24. Connect to XR4
 menu main_menu command 24. telnet 172.16.1.124 /vrf Mgmt-intf
+
 menu main_menu text Q. Quit
 menu main_menu command Q. Exit
 menu main_menu clear-screen
