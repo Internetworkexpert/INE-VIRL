@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:33:22 UTC Fri Jan 12 2018
+! Last configuration change at 17:31:16 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -36,14 +36,11 @@ vrf definition B
  exit-address-family
 !
 vrf definition CSC
- rd 1.1.1.1:1
- route-target export 1000:1000
- route-target import 1000:1000
+ rd 4:4
+ route-target export 4:4
+ route-target import 4:4
  !
  address-family ipv4
- exit-address-family
- !
- address-family ipv6
  exit-address-family
 !
 vrf definition Mgmt-intf
@@ -114,7 +111,7 @@ crypto pki certificate chain TP-self-signed-2218225626
 !
 !
 !
-license udi pid CSR1000V sn 90ZF2EEIOF6
+license udi pid CSR1000V sn 9QJ7YSLWQR7
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -207,7 +204,6 @@ interface GigabitEthernet2.161
  encapsulation dot1Q 161
  vrf forwarding CSC
  ip address 10.16.1.1 255.255.255.0
- ipv6 address 2001:10:16:1::1/64
  mpls bgp forwarding
 !
 interface GigabitEthernet3
@@ -219,7 +215,6 @@ interface GigabitEthernet3
 !
 router ospf 100 vrf B
  redistribute bgp 123 subnets
- default-information originate
 !
 router isis 1
  net 00.0000.0000.0001.00
@@ -321,7 +316,7 @@ end</entry>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:47:33 UTC Fri Jan 12 2018
+! Last configuration change at 17:40:01 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -415,7 +410,7 @@ crypto pki certificate chain TP-self-signed-3531813211
 !
 !
 !
-license udi pid CSR1000V sn 9KQTNBWXYFJ
+license udi pid CSR1000V sn 9GB8VLZDXDU
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -620,6 +615,7 @@ router bgp 123
   neighbor 13.13.13.13 inherit peer-policy RR_CLIENTS
   neighbor 14.14.14.14 activate
   neighbor 14.14.14.14 send-community extended
+  neighbor 14.14.14.14 next-hop-unchanged
  exit-address-family
  !
  address-family vpnv6
@@ -729,7 +725,7 @@ end</entry>
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:32:45 UTC Fri Jan 12 2018
+! Last configuration change at 17:39:21 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -743,17 +739,6 @@ hostname R3
 boot-start-marker
 boot-end-marker
 !
-!
-vrf definition A
- rd 1:1
- route-target export 1:1
- route-target import 1:1
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
 !
 vrf definition B
  rd 2:2
@@ -835,7 +820,7 @@ crypto pki certificate chain TP-self-signed-48631291
 !
 !
 !
-license udi pid CSR1000V sn 9TIXYUGKQX9
+license udi pid CSR1000V sn 9WEU9650LY2
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -895,7 +880,6 @@ interface GigabitEthernet2
 interface GigabitEthernet2.23
  encapsulation dot1Q 23
  ip address 10.2.3.3 255.255.255.0
- ip nat inside
  ip ospf network point-to-point
  ip ospf 1 area 0
  ipv6 address 2001:10:2:3::3/64
@@ -906,19 +890,12 @@ interface GigabitEthernet2.37
  encapsulation dot1Q 37
  vrf forwarding B
  ip address 10.3.7.3 255.255.255.0
- ip nat inside
  ip ospf 100 area 2
  ipv6 address 2001:10:3:7::3/64
-!
-interface GigabitEthernet2.153
- encapsulation dot1Q 153
- ip address 10.15.3.3 255.255.255.0
- ip nat outside
 !
 interface GigabitEthernet2.312
  encapsulation dot1Q 312
  ip address 10.3.12.3 255.255.255.0
- ip nat inside
  ip ospf network point-to-point
  ip ospf 1 area 0
  ipv6 address 2001:10:3:12::3/64
@@ -928,7 +905,6 @@ interface GigabitEthernet2.312
 interface GigabitEthernet2.313
  encapsulation dot1Q 313
  ip address 10.3.13.3 255.255.255.0
- ip nat inside
  ip ospf network point-to-point
  ip ospf 1 area 0
  ipv6 address 2001:10:3:13::3/64
@@ -942,7 +918,6 @@ router ospfv3 1
 !
 router ospf 100 vrf B
  redistribute bgp 123 subnets
- default-information originate
 !
 router ospf 1
  mpls ldp sync
@@ -950,12 +925,10 @@ router ospf 1
 !
 router bgp 123
  bgp log-neighbor-changes
- redistribute static
  neighbor 2.2.2.2 remote-as 123
  neighbor 2.2.2.2 update-source Loopback0
  neighbor 12.12.12.12 remote-as 123
  neighbor 12.12.12.12 update-source Loopback0
- default-information originate
  !
  address-family vpnv4
   neighbor 2.2.2.2 activate
@@ -971,15 +944,8 @@ router bgp 123
   neighbor 12.12.12.12 send-community extended
  exit-address-family
  !
- address-family ipv4 vrf A
-  redistribute static
-  default-information originate
- exit-address-family
- !
  address-family ipv4 vrf B
-  redistribute static
   redistribute ospf 100 match internal external 1 external 2
-  default-information originate
  exit-address-family
 !
 
@@ -987,21 +953,14 @@ threat-visibility
 !
 virtual-service csr_mgmt
 !
-ip nat inside source list NAT interface GigabitEthernet2.153 vrf A overload
-ip nat inside source list NAT interface GigabitEthernet2.153 vrf B overload
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
-ip route vrf B 0.0.0.0 0.0.0.0 GigabitEthernet2.153 10.15.3.15 global
-ip route vrf A 0.0.0.0 0.0.0.0 GigabitEthernet2.153 10.15.3.15 global
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
-!
-ip access-list extended NAT
- permit ip any any
 !
 !
 !
@@ -1044,7 +1003,7 @@ end</entry>
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:47:52 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:56 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1125,7 +1084,7 @@ crypto pki certificate chain TP-self-signed-1079546728
 !
 !
 !
-license udi pid CSR1000V sn 92LEFCTI56W
+license udi pid CSR1000V sn 9LFSVO7OXPI
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1261,7 +1220,7 @@ end</entry>
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:47:48 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:59 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1342,7 +1301,7 @@ crypto pki certificate chain TP-self-signed-3214708155
 !
 !
 !
-license udi pid CSR1000V sn 9RTHL47I9XE
+license udi pid CSR1000V sn 9A6OU25ISYG
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1478,7 +1437,7 @@ end</entry>
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:48:02 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:48 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1559,7 +1518,7 @@ crypto pki certificate chain TP-self-signed-321365217
 !
 !
 !
-license udi pid CSR1000V sn 9UDDN5UME7T
+license udi pid CSR1000V sn 98JT27Y1D5X
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1682,7 +1641,7 @@ end</entry>
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:48:07 UTC Fri Jan 12 2018
+! Last configuration change at 17:33:07 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1763,7 +1722,7 @@ crypto pki certificate chain TP-self-signed-325565931
 !
 !
 !
-license udi pid CSR1000V sn 96L6JKA8KHK
+license udi pid CSR1000V sn 91M6YDFGP6S
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1896,7 +1855,7 @@ end</entry>
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:48:19 UTC Fri Jan 12 2018
+! Last configuration change at 17:33:02 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1977,7 +1936,7 @@ crypto pki certificate chain TP-self-signed-51374854
 !
 !
 !
-license udi pid CSR1000V sn 9BI34BCZXN9
+license udi pid CSR1000V sn 95BVGIJMZNL
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2060,7 +2019,10 @@ router bgp 8
  address-family ipv4
   network 8.8.8.8 mask 255.255.255.255
   neighbor 10.8.9.9 activate
+  neighbor 10.8.9.9 route-map FROM_AS_9 in
+  neighbor 10.8.9.9 filter-list 1 out
   neighbor 10.8.11.11 activate
+  neighbor 10.8.11.11 filter-list 1 out
  exit-address-family
  !
  address-family ipv6
@@ -2079,11 +2041,15 @@ ip http server
 ip http authentication local
 ip http secure-server
 !
+ip as-path access-list 1 permit ^$
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
+!
+route-map FROM_AS_9 permit 10
+ set local-preference 200
 !
 !
 !
@@ -2125,7 +2091,7 @@ end</entry>
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:48:22 UTC Fri Jan 12 2018
+! Last configuration change at 17:33:19 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2217,7 +2183,7 @@ crypto pki certificate chain TP-self-signed-1804261350
 !
 !
 !
-license udi pid CSR1000V sn 9TVKQXZE19A
+license udi pid CSR1000V sn 95JV0IRD4MP
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2372,7 +2338,7 @@ end</entry>
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:46:21 UTC Fri Jan 12 2018
+! Last configuration change at 17:31:12 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2453,7 +2419,7 @@ crypto pki certificate chain TP-self-signed-2367346627
 !
 !
 !
-license udi pid CSR1000V sn 9HK8VYG1RL8
+license udi pid CSR1000V sn 99MCVDFDAOY
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2584,7 +2550,7 @@ end</entry>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:06:20 UTC Fri Jan 12 2018
+! Last configuration change at 17:31:22 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2665,7 +2631,7 @@ crypto pki certificate chain TP-self-signed-3883307542
 !
 !
 !
-license udi pid CSR1000V sn 9ZIB4FUIRU9
+license udi pid CSR1000V sn 9P4GE7HF1KX
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2723,16 +2689,16 @@ interface GigabitEthernet2
 interface GigabitEthernet2.1211
  encapsulation dot1Q 1211
  ip address 10.12.11.11 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:12:11::11/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1311
  encapsulation dot1Q 1311
  ip address 10.13.11.11 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:13:11::11/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1411
  encapsulation dot1Q 1411
@@ -2740,12 +2706,16 @@ interface GigabitEthernet2.1411
  ipv6 address 2001:10:14:11::11/64
  mpls bgp forwarding
 !
-router isis 1
- net 00.0000.0000.0011.00
+router isis 1000
+ net 49.0001.0000.0000.0011.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  redistribute bgp 1000 level-1
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 router bgp 1000
@@ -2753,10 +2723,8 @@ router bgp 1000
  neighbor 10.14.11.14 remote-as 24
  !
  address-family ipv4
-  network 1.12.12.12 mask 255.255.255.255
-  network 1.13.13.13 mask 255.255.255.255
+  redistribute isis 1000 level-1-2
   neighbor 10.14.11.14 activate
-  neighbor 10.14.11.14 allowas-in
   neighbor 10.14.11.14 send-label
  exit-address-family
 !
@@ -2815,7 +2783,7 @@ end</entry>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:11:52 UTC Fri Jan 12 2018
+! Last configuration change at 17:31:30 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2830,10 +2798,10 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition C
- rd 1.12.12.12:1
- route-target export 123:123
- route-target import 123:123
+vrf definition CE
+ rd 3:3
+ route-target export 3:3
+ route-target import 3:3
  !
  address-family ipv4
  exit-address-family
@@ -2907,7 +2875,7 @@ crypto pki certificate chain TP-self-signed-1266773485
 !
 !
 !
-license udi pid CSR1000V sn 9YTAQW4ZV9G
+license udi pid CSR1000V sn 9YJJ2QD872T
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2965,39 +2933,49 @@ interface GigabitEthernet2
 interface GigabitEthernet2.1211
  encapsulation dot1Q 1211
  ip address 10.12.11.12 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:12:11::12/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1412
  encapsulation dot1Q 1412
- vrf forwarding C
+ vrf forwarding CE
  ip address 10.14.12.12 255.255.255.0
  ipv6 address 2001:10:14:12::12/64
 !
 !
-router eigrp C
+router eigrp CE
  !
- address-family ipv4 unicast vrf C autonomous-system 1419
+ address-family ipv4 unicast vrf CE autonomous-system 1419
   !
   topology base
    redistribute bgp 1000
   exit-af-topology
-  network 10.0.0.0
+  network 0.0.0.0
  exit-address-family
  !
- address-family ipv6 unicast vrf C autonomous-system 1419
+ address-family ipv6 unicast vrf CE autonomous-system 1419
   !
   topology base
-   redistribute bgp 1000
   exit-af-topology
  exit-address-family
 !
-router isis 1
- net 00.0000.0000.0012.00
+!
+router eigrp 1419
+ !
+ address-family ipv4 vrf CE 
+  redistribute bgp 1000
+ exit-address-family
+!
+router isis 1000
+ net 49.0001.0000.0000.0012.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 router bgp 1000
@@ -3010,16 +2988,7 @@ router bgp 1000
   neighbor 1.17.17.17 send-community extended
  exit-address-family
  !
- address-family vpnv6
-  neighbor 1.17.17.17 activate
-  neighbor 1.17.17.17 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf C
-  redistribute eigrp 1419
- exit-address-family
- !
- address-family ipv6 vrf C
+ address-family ipv4 vrf CE
   redistribute eigrp 1419
  exit-address-family
 !
@@ -3078,7 +3047,7 @@ end</entry>
     <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:28:01 UTC Fri Jan 12 2018
+! Last configuration change at 17:41:07 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3093,10 +3062,12 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition C
- rd 1.13.13.13:1
- route-target export 123:123
- route-target import 123:123
+vrf definition CE
+ rd 33:33
+ route-target export 33:33
+ route-target export 3:3
+ route-target import 33:33
+ route-target import 3:3
  !
  address-family ipv4
  exit-address-family
@@ -3170,7 +3141,7 @@ crypto pki certificate chain TP-self-signed-4065964133
 !
 !
 !
-license udi pid CSR1000V sn 9VJV860O769
+license udi pid CSR1000V sn 9C01QYQ5KO7
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3228,39 +3199,42 @@ interface GigabitEthernet2
 interface GigabitEthernet2.1311
  encapsulation dot1Q 1311
  ip address 10.13.11.13 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:13:11::13/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1413
  encapsulation dot1Q 1413
- vrf forwarding C
+ vrf forwarding CE
  ip address 10.14.13.13 255.255.255.0
  ipv6 address 2001:10:14:13::13/64
 !
 !
-router eigrp C
+router eigrp CE
  !
- address-family ipv4 unicast vrf C autonomous-system 1419
+ address-family ipv4 unicast vrf CE autonomous-system 1419
   !
   topology base
    redistribute bgp 1000
   exit-af-topology
-  network 10.0.0.0
+  network 0.0.0.0
  exit-address-family
  !
- address-family ipv6 unicast vrf C autonomous-system 1419
+ address-family ipv6 unicast vrf CE autonomous-system 1419
   !
   topology base
-   redistribute bgp 1000
   exit-af-topology
  exit-address-family
 !
-router isis 1
- net 00.0000.0000.0013.00
+router isis 1000
+ net 49.0001.0000.0000.0013.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 router bgp 1000
@@ -3273,16 +3247,7 @@ router bgp 1000
   neighbor 1.17.17.17 send-community extended
  exit-address-family
  !
- address-family vpnv6
-  neighbor 1.17.17.17 activate
-  neighbor 1.17.17.17 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf C
-  redistribute eigrp 1419
- exit-address-family
- !
- address-family ipv6 vrf C
+ address-family ipv4 vrf CE
   redistribute eigrp 1419
  exit-address-family
 !
@@ -3341,7 +3306,7 @@ end</entry>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:01:37 UTC Fri Jan 12 2018
+! Last configuration change at 17:31:45 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3422,7 +3387,7 @@ crypto pki certificate chain TP-self-signed-2459937040
 !
 !
 !
-license udi pid CSR1000V sn 98BSXRWWIAC
+license udi pid CSR1000V sn 917IBG0UIFI
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3558,7 +3523,7 @@ end</entry>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:00:46 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:04 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3639,7 +3604,7 @@ crypto pki certificate chain TP-self-signed-3128980604
 !
 !
 !
-license udi pid CSR1000V sn 9BUJ3JZGX6B
+license udi pid CSR1000V sn 9OD9XF2IN9P
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3754,7 +3719,7 @@ end</entry>
     <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:07:46 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:06 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3835,7 +3800,7 @@ crypto pki certificate chain TP-self-signed-2423851387
 !
 !
 !
-license udi pid CSR1000V sn 9JDOX0K90S2
+license udi pid CSR1000V sn 9ELAY7DWP8J
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3899,16 +3864,20 @@ interface GigabitEthernet2.161
 interface GigabitEthernet2.1816
  encapsulation dot1Q 1816
  ip address 10.18.16.16 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:18:16::16/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
-router isis 1
- net 00.0000.0000.0016.00
+router isis 1000
+ net 49.0001.0000.0000.0016.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  redistribute bgp 1000 level-1
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 router bgp 1000
@@ -3976,7 +3945,7 @@ end</entry>
     <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:12:38 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:15 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -3991,10 +3960,10 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition C
- rd 1.17.17.17:1
- route-target export 123:123
- route-target import 123:123
+vrf definition CE
+ rd 3:3
+ route-target export 3:3
+ route-target import 3:3
  !
  address-family ipv4
  exit-address-family
@@ -4068,7 +4037,7 @@ crypto pki certificate chain TP-self-signed-4245171263
 !
 !
 !
-license udi pid CSR1000V sn 9WUSXADY6JN
+license udi pid CSR1000V sn 92RFHEYI6V3
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4126,39 +4095,49 @@ interface GigabitEthernet2
 interface GigabitEthernet2.1817
  encapsulation dot1Q 1817
  ip address 10.18.17.17 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:18:17::17/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1917
  encapsulation dot1Q 1917
- vrf forwarding C
+ vrf forwarding CE
  ip address 10.19.17.17 255.255.255.0
  ipv6 address 2001:10:19:17::17/64
 !
 !
-router eigrp C
+router eigrp CE
  !
- address-family ipv4 unicast vrf C autonomous-system 1419
+ address-family ipv4 unicast vrf CE autonomous-system 1419
   !
   topology base
    redistribute bgp 1000
   exit-af-topology
-  network 10.0.0.0
+  network 0.0.0.0
  exit-address-family
  !
- address-family ipv6 unicast vrf C autonomous-system 1419
+ address-family ipv6 unicast vrf CE autonomous-system 1419
   !
   topology base
-   redistribute bgp 1000
   exit-af-topology
  exit-address-family
 !
-router isis 1
- net 00.0000.0000.0017.00
+!
+router eigrp 1419
+ !
+ address-family ipv4 vrf CE 
+  redistribute bgp 1000
+ exit-address-family
+!
+router isis 1000
+ net 49.0001.0000.0000.0017.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 router bgp 1000
@@ -4175,18 +4154,7 @@ router bgp 1000
   neighbor 1.13.13.13 send-community extended
  exit-address-family
  !
- address-family vpnv6
-  neighbor 1.12.12.12 activate
-  neighbor 1.12.12.12 send-community extended
-  neighbor 1.13.13.13 activate
-  neighbor 1.13.13.13 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf C
-  redistribute eigrp 1419
- exit-address-family
- !
- address-family ipv6 vrf C
+ address-family ipv4 vrf CE
   redistribute eigrp 1419
  exit-address-family
 !
@@ -4245,7 +4213,7 @@ end</entry>
     <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:05:06 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:22 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -4326,7 +4294,7 @@ crypto pki certificate chain TP-self-signed-3513785742
 !
 !
 !
-license udi pid CSR1000V sn 9PTJPM541II
+license udi pid CSR1000V sn 90Q6PD0KQCM
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4384,22 +4352,26 @@ interface GigabitEthernet2
 interface GigabitEthernet2.1816
  encapsulation dot1Q 1816
  ip address 10.18.16.18 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:18:16::18/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1817
  encapsulation dot1Q 1817
  ip address 10.18.17.18 255.255.255.0
- ip router isis 1
+ ip router isis 1000
  ipv6 address 2001:10:18:17::18/64
- ipv6 router isis 1
+ ipv6 router isis 1000
 !
-router isis 1
- net 00.0000.0000.0018.00
+router isis 1000
+ net 49.0001.0000.0000.0018.00
  is-type level-1
- metric-style narrow
+ metric-style wide
  passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
  mpls ldp autoconfig
 !
 
@@ -4457,7 +4429,7 @@ end</entry>
     <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:01:24 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:21 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -4538,7 +4510,7 @@ crypto pki certificate chain TP-self-signed-120961135
 !
 !
 !
-license udi pid CSR1000V sn 98P89M6SL4H
+license udi pid CSR1000V sn 9C21Z83PPF8
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4669,7 +4641,7 @@ end</entry>
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:15:16 UTC Fri Jan 12 2018
+! Last configuration change at 17:32:30 UTC Wed Feb 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -4750,7 +4722,7 @@ crypto pki certificate chain TP-self-signed-1383894549
 !
 !
 !
-license udi pid CSR1000V sn 94WMRYLVQZZ
+license udi pid CSR1000V sn 9VS2R2ZG503
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4810,21 +4782,6 @@ interface GigabitEthernet2.2013
  ip address 10.20.13.20 255.255.255.0
  ipv6 address 2001:10:20:13::20/64
 !
-router bgp 20
- bgp log-neighbor-changes
- neighbor 10.20.13.13 remote-as 123
- !
- address-family ipv4
-  redistribute connected
-  neighbor 10.20.13.13 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 10.20.13.13 activate
-  neighbor 10.20.13.13 route-map SET_IPV6_NEXT_HOP out
- exit-address-family
-!
 
 threat-visibility
 !
@@ -4840,9 +4797,6 @@ ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
-!
-route-map SET_IPV6_NEXT_HOP permit 10
- set ipv6 next-hop 2001:10:20:13::20
 !
 !
 !
@@ -4883,7 +4837,7 @@ end</entry>
     <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Jan 12 19:48:47 2018 by CVAC
+!! Last configuration change at Wed Feb  7 17:38:55 2018 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -5012,6 +4966,10 @@ interface GigabitEthernet0/0/0/0.1112
 interface GigabitEthernet0/0/0/1
  description to XR2
 !
+route-policy PASS
+  pass
+end-policy
+!
 router isis 1
  apply-group ISIS_OPTIONS
  is-type level-2-only
@@ -5068,6 +5026,18 @@ router bgp 123
   address-family vpnv6 unicast
   !
  !
+ vrf A
+  rd 1:1
+  address-family ipv4 unicast
+  !
+  neighbor 10.8.11.8
+   remote-as 8
+   address-family ipv4 unicast
+    route-policy PASS in
+    route-policy PASS out
+   !
+  !
+ !
  vrf B
   rd 2:2
   address-family ipv4 unicast
@@ -5098,7 +5068,7 @@ end</entry>
     <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Jan 12 19:48:53 2018 by CVAC
+!! Last configuration change at Wed Feb  7 17:33:52 2018 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -5345,7 +5315,7 @@ end</entry>
     <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Jan 12 20:15:36 2018 by cisco
+!! Last configuration change at Wed Feb  7 18:27:20 2018 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -5388,28 +5358,6 @@ vrf B
    2:2
   !
   export route-target
-   2:2
-  !
- !
-!
-vrf 20
- address-family ipv4 unicast
-  import route-target
-   1:1
-   2:2
-  !
-  export route-target
-   1:1
-   2:2
-  !
- !
- address-family ipv6 unicast
-  import route-target
-   1:1
-   2:2
-  !
-  export route-target
-   1:1
    2:2
   !
  !
@@ -5481,7 +5429,6 @@ interface GigabitEthernet0/0/0/0.1314
  encapsulation dot1q 1314
 !
 interface GigabitEthernet0/0/0/0.2013
- vrf 20
  ipv4 address 10.20.13.13 255.255.255.0
  ipv6 address 2001:10:20:13::13/64
  encapsulation dot1q 2013
@@ -5542,6 +5489,7 @@ router ospfv3 1
 !
 router bgp 123
  address-family ipv4 unicast
+  network 1.1.1.1/32
   network 2.2.2.2/32
   network 12.12.12.12/32
   allocate-label all
@@ -5579,24 +5527,6 @@ router bgp 123
    redistribute ospf 100
   !
  !
- vrf 20
-  rd 20:20
-  address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
-  !
-  neighbor 10.20.13.20
-   remote-as 20
-   address-family ipv4 unicast
-    route-policy PASS in
-    route-policy PASS out
-   !
-   address-family ipv6 unicast
-    route-policy PASS in
-    route-policy PASS out
-   !
-  !
- !
 !
 mpls ldp
  session protection duration 300
@@ -5620,12 +5550,11 @@ end</entry>
     <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Fri Jan 12 20:06:03 2018 by cisco
+!! Last configuration change at Wed Feb  7 17:34:02 2018 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 hostname XR4
-logging console debugging
 service timestamps log datetime msec
 service timestamps debug datetime msec
 telnet vrf default ipv4 server max-servers 10
@@ -5635,10 +5564,10 @@ domain lookup disable
 vrf CSC
  address-family ipv4 unicast
   import route-target
-   1000:1000
+   4:4
   !
   export route-target
-   1000:1000
+   4:4
   !
  !
 !
@@ -5710,6 +5639,9 @@ interface GigabitEthernet0/0/0/0.1411
  ipv6 address 2001:10:14:11::14/64
  encapsulation dot1q 1411
 !
+rd-set 4:4
+end-set
+!
 route-policy PASS
   pass
 end-policy
@@ -5765,24 +5697,35 @@ router bgp 24
    route-policy PASS out
   !
  !
+ neighbor 12.12.12.12
+  remote-as 123
+  ebgp-multihop 255
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+  address-family vpnv6 unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+ !
  vrf CSC
-  rd 14.14.14.14:1
+  rd 4:4
   address-family ipv4 unicast
-   allocate-label all
   !
   neighbor 10.14.11.11
    remote-as 1000
    address-family ipv4 labeled-unicast
     route-policy PASS in
     route-policy PASS out
+    as-override
    !
   !
  !
  vrf ASDF
   rd 1:1
   address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
   !
  !
 !
@@ -5832,7 +5775,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="config" type="String">!
-! Last configuration change at 17:22:32 UTC Wed Sep 28 2016
+! Last configuration change at 13:12:09 UTC Sat Oct 1 2016
 !
 version 15.6
 service timestamps debug datetime msec
