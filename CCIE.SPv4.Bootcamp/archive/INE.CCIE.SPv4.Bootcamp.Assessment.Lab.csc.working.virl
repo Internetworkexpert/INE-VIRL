@@ -9,12 +9,11 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:08 UTC Wed Feb 7 2018
+! Last configuration change at 21:40:32 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -33,6 +32,14 @@ vrf definition B
  exit-address-family
  !
  address-family ipv6
+ exit-address-family
+!
+vrf definition CSC
+ rd 4:4
+ route-target export 4:4
+ route-target import 4:4
+ !
+ address-family ipv4
  exit-address-family
 !
 vrf definition Mgmt-intf
@@ -57,6 +64,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -71,10 +80,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 mpls ldp label
  allocate global host-routes
@@ -95,6 +100,8 @@ crypto pki trustpoint TP-self-signed-2218225626
 !
 crypto pki certificate chain TP-self-signed-2218225626
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -102,14 +109,12 @@ crypto pki certificate chain TP-self-signed-2218225626
 !
 !
 !
-!
-license udi pid CSR1000V sn 9TYLJ1A97WD
+license udi pid CSR1000V sn 9J9W44LTCZ5
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$b1wx$AA3C7iHuuh02FnY9eHHMk/
 !
@@ -133,7 +138,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -148,15 +156,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.101 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.12
  encapsulation dot1Q 12
@@ -189,17 +193,19 @@ interface GigabitEthernet2.112
  ipv6 router isis 1
  isis network point-to-point 
 !
+interface GigabitEthernet2.122
+ isis network point-to-point 
+!
 interface GigabitEthernet2.161
- encapsulation dot1q 161
+ encapsulation dot1Q 161
+ vrf forwarding CSC
  ip address 10.16.1.1 255.255.255.0
- ipv6 address 2001:10:16:1::1/64
+ mpls bgp forwarding
 !
 interface GigabitEthernet3
  description to R2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router ospf 100 vrf B
  redistribute bgp 123 subnets
@@ -240,20 +246,22 @@ router bgp 123
  address-family ipv4 vrf B
   redistribute ospf 100
  exit-address-family
+ !
+ address-family ipv4 vrf CSC
+  neighbor 10.16.1.16 remote-as 1000
+  neighbor 10.16.1.16 activate
+  neighbor 10.16.1.16 as-override
+  neighbor 10.16.1.16 send-label
+ exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -297,12 +305,11 @@ end</entry>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:12 UTC Wed Feb 7 2018
+! Last configuration change at 22:29:58 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -345,6 +352,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -359,10 +368,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 mpls ldp label
  allocate global host-routes
@@ -383,6 +388,8 @@ crypto pki trustpoint TP-self-signed-3531813211
 !
 crypto pki certificate chain TP-self-signed-3531813211
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -390,14 +397,12 @@ crypto pki certificate chain TP-self-signed-3531813211
 !
 !
 !
-!
-license udi pid CSR1000V sn 9RY872H5KK5
+license udi pid CSR1000V sn 929WJKLTWEA
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$MmhO$Etq44HvAuYbSS/EI6RGrz/
 !
@@ -421,7 +426,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -438,20 +446,17 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.102 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.12
  encapsulation dot1Q 12
  ip address 10.1.2.2 255.255.255.0
  ip router isis 1
+ shutdown
  ipv6 address 2001:10:1:2::2/64
  ipv6 router isis 1
  isis network point-to-point 
@@ -475,6 +480,7 @@ interface GigabitEthernet2.211
  encapsulation dot1Q 211
  ip address 10.2.11.2 255.255.255.0
  ip router isis 1
+ shutdown
  ipv6 address 2001:10:2:11::2/64
  ipv6 router isis 1
  isis network point-to-point 
@@ -485,6 +491,7 @@ interface GigabitEthernet2.212
  ip router isis 1
  ip ospf network point-to-point
  ip ospf 1 area 0
+ shutdown
  ipv6 address 2001:10:2:12::2/64
  ipv6 router isis 1
  ospfv3 network point-to-point
@@ -496,6 +503,7 @@ interface GigabitEthernet2.213
  ip address 10.2.13.2 255.255.255.0
  ip ospf network point-to-point
  ip ospf 1 area 0
+ shutdown
  ipv6 address 2001:10:2:13::2/64
  ospfv3 network point-to-point
  ospfv3 1 ipv6 area 0
@@ -504,15 +512,11 @@ interface GigabitEthernet3
  description to R1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet4
  description to R9
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 !
 router eigrp A
@@ -550,6 +554,7 @@ router isis 1
  metric-style wide
  redistribute ospf 1 route-map OSPF_TO_ISIS
  passive-interface Loopback0
+ distance 109 0.0.0.0 255.255.255.255 1
  !
  address-family ipv6
   multi-topology
@@ -596,6 +601,7 @@ router bgp 123
   neighbor 13.13.13.13 inherit peer-policy RR_CLIENTS
   neighbor 14.14.14.14 activate
   neighbor 14.14.14.14 send-community extended
+  neighbor 14.14.14.14 next-hop-unchanged
  exit-address-family
  !
  address-family vpnv6
@@ -626,20 +632,15 @@ router bgp 123
   redistribute eigrp 10
  exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
-ip route profile
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip route profile
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 ip prefix-list R1_LOOPBACK seq 5 permit 1.1.1.1/32
@@ -705,12 +706,11 @@ end</entry>
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:36 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -753,6 +753,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -767,10 +769,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 mpls ldp session protection duration 300
 mpls ldp label
@@ -792,6 +790,8 @@ crypto pki trustpoint TP-self-signed-48631291
 !
 crypto pki certificate chain TP-self-signed-48631291
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -799,14 +799,12 @@ crypto pki certificate chain TP-self-signed-48631291
 !
 !
 !
-!
-license udi pid CSR1000V sn 9H6F6CAK4HE
+license udi pid CSR1000V sn 9YBOSRK2DQN
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$Hh0q$w6WYVLNAoaHFC16dkv/Ju1
 !
@@ -830,7 +828,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -847,15 +848,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.103 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.23
  encapsulation dot1Q 23
@@ -872,11 +869,6 @@ interface GigabitEthernet2.37
  ip address 10.3.7.3 255.255.255.0
  ip ospf 100 area 2
  ipv6 address 2001:10:3:7::3/64
-!
-interface GigabitEthernet2.153
- encapsulation dot1Q 153
- ip address 10.15.3.3 255.255.255.0
- ipv6 address 2001:10:15:3::3/64
 !
 interface GigabitEthernet2.312
  encapsulation dot1Q 312
@@ -933,19 +925,14 @@ router bgp 123
   redistribute ospf 100 match internal external 1 external 2
  exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -988,12 +975,11 @@ end</entry>
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:38 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -1025,6 +1011,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -1039,10 +1027,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -1061,6 +1045,8 @@ crypto pki trustpoint TP-self-signed-1079546728
 !
 crypto pki certificate chain TP-self-signed-1079546728
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -1068,14 +1054,12 @@ crypto pki certificate chain TP-self-signed-1079546728
 !
 !
 !
-!
-license udi pid CSR1000V sn 9BUCT65HG4M
+license udi pid CSR1000V sn 9IKF51VK0S6
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$dXdt$toszjWL/P5DbehtVoTJl0/
 !
@@ -1099,7 +1083,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -1114,15 +1101,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.104 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.45
  encapsulation dot1Q 45
@@ -1143,25 +1126,18 @@ interface GigabitEthernet3
  description to R7
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router ospf 100
  network 0.0.0.0 255.255.255.255 area 1
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -1205,12 +1181,11 @@ end</entry>
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:55 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -1242,6 +1217,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -1256,10 +1233,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -1278,6 +1251,8 @@ crypto pki trustpoint TP-self-signed-3214708155
 !
 crypto pki certificate chain TP-self-signed-3214708155
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -1285,14 +1260,12 @@ crypto pki certificate chain TP-self-signed-3214708155
 !
 !
 !
-!
-license udi pid CSR1000V sn 9PZWNYY3WP6
+license udi pid CSR1000V sn 9IHGZFGSEP1
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$Rkir$sJksvJgNd7W7BNgS6dHkw1
 !
@@ -1316,7 +1289,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -1331,15 +1307,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.105 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.15
  encapsulation dot1Q 15
@@ -1360,25 +1332,18 @@ interface GigabitEthernet3
  description to R8
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router ospf 100
  network 0.0.0.0 255.255.255.255 area 1
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -1422,12 +1387,11 @@ end</entry>
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:49 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -1459,6 +1423,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -1473,10 +1439,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -1495,6 +1457,8 @@ crypto pki trustpoint TP-self-signed-321365217
 !
 crypto pki certificate chain TP-self-signed-321365217
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -1502,14 +1466,12 @@ crypto pki certificate chain TP-self-signed-321365217
 !
 !
 !
-!
-license udi pid CSR1000V sn 94M0L7BJYRL
+license udi pid CSR1000V sn 97XMEE58ZJM
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$iJAt$STdhM6gwkNZYXjp0fLQbW0
 !
@@ -1533,7 +1495,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -1548,15 +1513,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.106 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.46
  encapsulation dot1Q 46
@@ -1571,19 +1532,14 @@ interface GigabitEthernet2.56
 router ospf 100
  network 0.0.0.0 255.255.255.255 area 1
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -1626,12 +1582,11 @@ end</entry>
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:45 UTC Wed Feb 7 2018
+! Last configuration change at 17:19:58 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -1663,6 +1618,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -1677,10 +1634,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -1699,6 +1652,8 @@ crypto pki trustpoint TP-self-signed-325565931
 !
 crypto pki certificate chain TP-self-signed-325565931
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -1706,14 +1661,12 @@ crypto pki certificate chain TP-self-signed-325565931
 !
 !
 !
-!
-license udi pid CSR1000V sn 9TI13RDJBA5
+license udi pid CSR1000V sn 9QHVCT0IPJH
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$WxOt$q3.EKvkqeXygvGWbWJbX1.
 !
@@ -1737,7 +1690,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -1753,15 +1709,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.107 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.37
  encapsulation dot1Q 37
@@ -1779,24 +1731,17 @@ interface GigabitEthernet3
  description to R4
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router ospf 1
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -1840,12 +1785,11 @@ end</entry>
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:56 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -1877,6 +1821,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -1891,10 +1837,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -1913,6 +1855,8 @@ crypto pki trustpoint TP-self-signed-51374854
 !
 crypto pki certificate chain TP-self-signed-51374854
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -1920,14 +1864,12 @@ crypto pki certificate chain TP-self-signed-51374854
 !
 !
 !
-!
-license udi pid CSR1000V sn 9VGBBJ02ZHH
+license udi pid CSR1000V sn 9W2AOZLWSMT
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$pwY4$NaOTU39A/qe2oFzwK8h.f.
 !
@@ -1951,7 +1893,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -1966,15 +1911,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.108 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.89
  encapsulation dot1Q 89
@@ -1990,8 +1931,6 @@ interface GigabitEthernet3
  description to R5
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router bgp 8
  bgp log-neighbor-changes
@@ -2013,19 +1952,14 @@ router bgp 8
   neighbor 2001:10:8:11::11 activate
  exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -2069,12 +2003,11 @@ end</entry>
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:21:00 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -2117,6 +2050,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -2131,10 +2066,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -2153,6 +2084,8 @@ crypto pki trustpoint TP-self-signed-1804261350
 !
 crypto pki certificate chain TP-self-signed-1804261350
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -2160,14 +2093,12 @@ crypto pki certificate chain TP-self-signed-1804261350
 !
 !
 !
-!
-license udi pid CSR1000V sn 9MQGHCHE678
+license udi pid CSR1000V sn 97TZRJGYGXO
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$00JU$VsNx9xeZGlQwcCvFWPaKw/
 !
@@ -2191,7 +2122,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -2206,15 +2140,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.109 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.89
  encapsulation dot1Q 89
@@ -2232,8 +2162,6 @@ interface GigabitEthernet3
  description to R2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 router bgp 9
  bgp log-neighbor-changes
@@ -2260,19 +2188,14 @@ router bgp 9
   neighbor 2001:10:8:9::8 activate
  exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -2316,12 +2239,11 @@ end</entry>
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:01 UTC Wed Feb 7 2018
+! Last configuration change at 17:20:09 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -2353,6 +2275,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -2367,10 +2291,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -2389,6 +2309,8 @@ crypto pki trustpoint TP-self-signed-2367346627
 !
 crypto pki certificate chain TP-self-signed-2367346627
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -2396,14 +2318,12 @@ crypto pki certificate chain TP-self-signed-2367346627
 !
 !
 !
-!
-license udi pid CSR1000V sn 9H3SVFGOJEB
+license udi pid CSR1000V sn 918N99JLPWU
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$1INj$dkFkg4hJuPBz4i1ezPktD.
 !
@@ -2427,7 +2347,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -2442,15 +2365,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.110 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_1
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.210
  encapsulation dot1Q 210
@@ -2473,19 +2392,14 @@ router eigrp A
   exit-af-topology
  exit-address-family
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -2528,12 +2442,11 @@ end</entry>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:12 UTC Wed Feb 7 2018
+! Last configuration change at 21:36:48 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -2565,6 +2478,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -2579,10 +2494,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -2601,6 +2512,8 @@ crypto pki trustpoint TP-self-signed-3883307542
 !
 crypto pki certificate chain TP-self-signed-3883307542
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -2608,14 +2521,12 @@ crypto pki certificate chain TP-self-signed-3883307542
 !
 !
 !
-!
-license udi pid CSR1000V sn 976CLN1OOLA
+license udi pid CSR1000V sn 9OCTLHW2PTS
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$oOkl$KOFgCmxWixBRZP7mhixbt.
 !
@@ -2639,7 +2550,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -2654,44 +2568,62 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.111 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1211
  encapsulation dot1Q 1211
  ip address 10.12.11.11 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:12:11::11/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1311
  encapsulation dot1Q 1311
  ip address 10.13.11.11 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:13:11::11/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1411
  encapsulation dot1Q 1411
  ip address 10.14.11.11 255.255.255.0
  ipv6 address 2001:10:14:11::11/64
+ mpls bgp forwarding
 !
-
-threat-visibility
+router isis 1000
+ net 49.0001.0000.0000.0011.00
+ is-type level-1
+ metric-style wide
+ redistribute bgp 1000 level-1
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
 !
-virtual-service csr_mgmt
+router bgp 1000
+ bgp log-neighbor-changes
+ neighbor 10.14.11.14 remote-as 24
+ !
+ address-family ipv4
+  redistribute isis 1000 level-1-2
+  neighbor 10.14.11.14 activate
+  neighbor 10.14.11.14 send-label
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -2734,12 +2666,11 @@ end</entry>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:31 UTC Wed Feb 7 2018
+! Last configuration change at 22:19:27 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -2748,6 +2679,17 @@ hostname R12
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition CE
+ rd 3:3
+ route-target export 3:3
+ route-target import 3:3
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -2771,6 +2713,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -2785,10 +2729,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -2807,6 +2747,8 @@ crypto pki trustpoint TP-self-signed-1266773485
 !
 crypto pki certificate chain TP-self-signed-1266773485
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -2814,14 +2756,12 @@ crypto pki certificate chain TP-self-signed-1266773485
 !
 !
 !
-!
-license udi pid CSR1000V sn 9PB3W0UW8HS
+license udi pid CSR1000V sn 98BRA4U04HH
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$.00g$HDLHieGSHvJd6z/ibtckh/
 !
@@ -2845,7 +2785,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -2860,39 +2803,82 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.112 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1211
  encapsulation dot1Q 1211
  ip address 10.12.11.12 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:12:11::12/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1412
  encapsulation dot1Q 1412
+ vrf forwarding CE
  ip address 10.14.12.12 255.255.255.0
  ipv6 address 2001:10:14:12::12/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
+router eigrp CE
+ !
+ address-family ipv4 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+   redistribute bgp 1000
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+!
+router eigrp 1419
+ !
+ address-family ipv4 vrf CE 
+  redistribute bgp 1000
+ exit-address-family
+!
+router isis 1000
+ net 49.0001.0000.0000.0012.00
+ is-type level-1
+ metric-style wide
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
+!
+router bgp 1000
+ bgp log-neighbor-changes
+ neighbor 1.17.17.17 remote-as 1000
+ neighbor 1.17.17.17 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 1.17.17.17 activate
+  neighbor 1.17.17.17 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CE
+  redistribute eigrp 1419
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -2935,12 +2921,11 @@ end</entry>
     <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:40 UTC Wed Feb 7 2018
+! Last configuration change at 20:59:31 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -2949,6 +2934,17 @@ hostname R13
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition CE
+ rd 3:3
+ route-target export 3:3
+ route-target import 3:3
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -2972,6 +2968,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -2986,10 +2984,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -3008,6 +3002,8 @@ crypto pki trustpoint TP-self-signed-4065964133
 !
 crypto pki certificate chain TP-self-signed-4065964133
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -3015,14 +3011,12 @@ crypto pki certificate chain TP-self-signed-4065964133
 !
 !
 !
-!
-license udi pid CSR1000V sn 9SSQE3YWXT1
+license udi pid CSR1000V sn 98P9XZ3K9RL
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$ipYi$8Ie1U5.hDNYgtPrkHRw/7.
 !
@@ -3046,7 +3040,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -3061,39 +3058,60 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.113 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1311
  encapsulation dot1Q 1311
  ip address 10.13.11.13 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:13:11::13/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1413
  encapsulation dot1Q 1413
+ vrf forwarding CE
  ip address 10.14.13.13 255.255.255.0
  ipv6 address 2001:10:14:13::13/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
+router eigrp CE
+ !
+ address-family ipv4 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+router isis 1000
+ net 49.0001.0000.0000.0013.00
+ is-type level-1
+ metric-style wide
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -3136,12 +3154,11 @@ end</entry>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:45 UTC Wed Feb 7 2018
+! Last configuration change at 20:40:21 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -3173,6 +3190,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -3187,10 +3206,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -3209,6 +3224,8 @@ crypto pki trustpoint TP-self-signed-2459937040
 !
 crypto pki certificate chain TP-self-signed-2459937040
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -3216,14 +3233,12 @@ crypto pki certificate chain TP-self-signed-2459937040
 !
 !
 !
-!
-license udi pid CSR1000V sn 9R177KFHZEI
+license udi pid CSR1000V sn 9OMMJL1UBDX
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$GNsI$BnRBw1mBHqxNbmIQuo5CD.
 !
@@ -3247,7 +3262,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -3262,15 +3280,11 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.114 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1412
  encapsulation dot1Q 1412
@@ -3282,19 +3296,30 @@ interface GigabitEthernet2.1413
  ip address 10.14.13.14 255.255.255.0
  ipv6 address 2001:10:14:13::14/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
+router eigrp CE
+ !
+ address-family ipv4 unicast autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -3337,12 +3362,11 @@ end</entry>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:35 UTC Wed Feb 7 2018
+! Last configuration change at 17:16:08 UTC Wed Sep 28 2016 by cisco
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -3374,6 +3398,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -3388,10 +3414,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -3410,6 +3432,8 @@ crypto pki trustpoint TP-self-signed-3128980604
 !
 crypto pki certificate chain TP-self-signed-3128980604
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -3417,14 +3441,12 @@ crypto pki certificate chain TP-self-signed-3128980604
 !
 !
 !
-!
-license udi pid CSR1000V sn 90NVDJ3F2J8
+license udi pid CSR1000V sn 9KH5QYRCN2X
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$PlBC$3Cbwd783GcDbCBE9e324c1
 !
@@ -3448,7 +3470,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -3463,34 +3488,25 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.115 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.153
  encapsulation dot1Q 153
  ip address 10.15.3.15 255.255.255.0
  ipv6 address 2001:10:15:3::15/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -3533,12 +3549,11 @@ end</entry>
     <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:19:40 UTC Wed Feb 7 2018
+! Last configuration change at 21:40:32 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -3570,6 +3585,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -3584,10 +3601,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -3606,6 +3619,8 @@ crypto pki trustpoint TP-self-signed-2423851387
 !
 crypto pki certificate chain TP-self-signed-2423851387
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -3613,14 +3628,12 @@ crypto pki certificate chain TP-self-signed-2423851387
 !
 !
 !
-!
-license udi pid CSR1000V sn 96VZZPIMV5C
+license udi pid CSR1000V sn 95O21A4JD2I
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$M/WO$vP/.wwKD5F/.Qvf9y6v151
 !
@@ -3644,7 +3657,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -3659,39 +3675,55 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.116 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.161
  encapsulation dot1Q 161
  ip address 10.16.1.16 255.255.255.0
  ipv6 address 2001:10:16:1::16/64
+ mpls bgp forwarding
 !
 interface GigabitEthernet2.1816
  encapsulation dot1Q 1816
  ip address 10.18.16.16 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:18:16::16/64
+ ipv6 router isis 1000
 !
-
-threat-visibility
+router isis 1000
+ net 49.0001.0000.0000.0016.00
+ is-type level-1
+ metric-style wide
+ redistribute bgp 1000 level-1
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
 !
-virtual-service csr_mgmt
+router bgp 1000
+ bgp log-neighbor-changes
+ neighbor 10.16.1.1 remote-as 123
+ !
+ address-family ipv4
+  network 1.17.17.17 mask 255.255.255.255
+  neighbor 10.16.1.1 activate
+  neighbor 10.16.1.1 send-label
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -3734,12 +3766,11 @@ end</entry>
     <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:04 UTC Wed Feb 7 2018
+! Last configuration change at 22:18:31 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -3748,6 +3779,17 @@ hostname R17
 boot-start-marker
 boot-end-marker
 !
+!
+vrf definition CE
+ rd 3:3
+ route-target export 3:3
+ route-target import 3:3
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 vrf definition Mgmt-intf
  !
@@ -3771,6 +3813,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -3785,10 +3829,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -3807,6 +3847,8 @@ crypto pki trustpoint TP-self-signed-4245171263
 !
 crypto pki certificate chain TP-self-signed-4245171263
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -3814,14 +3856,12 @@ crypto pki certificate chain TP-self-signed-4245171263
 !
 !
 !
-!
-license udi pid CSR1000V sn 967R7UBI3TU
+license udi pid CSR1000V sn 9YIZN76CO9Y
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$hvP.$Mr83xVSvsy/7DBnp0WBUF0
 !
@@ -3845,7 +3885,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -3860,39 +3903,82 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.117 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1817
  encapsulation dot1Q 1817
  ip address 10.18.17.17 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:18:17::17/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1917
  encapsulation dot1Q 1917
+ vrf forwarding CE
  ip address 10.19.17.17 255.255.255.0
  ipv6 address 2001:10:19:17::17/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
+router eigrp CE
+ !
+ address-family ipv4 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+   redistribute bgp 1000
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast vrf CE autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+!
+router eigrp 1419
+ !
+ address-family ipv4 vrf CE 
+  redistribute bgp 1000
+ exit-address-family
+!
+router isis 1000
+ net 49.0001.0000.0000.0017.00
+ is-type level-1
+ metric-style wide
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
+!
+router bgp 1000
+ bgp log-neighbor-changes
+ neighbor 1.12.12.12 remote-as 1000
+ neighbor 1.12.12.12 update-source Loopback0
+ !
+ address-family vpnv4
+  neighbor 1.12.12.12 activate
+  neighbor 1.12.12.12 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf CE
+  redistribute eigrp 1419
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -3935,12 +4021,11 @@ end</entry>
     <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:05 UTC Wed Feb 7 2018
+! Last configuration change at 21:38:57 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -3972,6 +4057,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -3986,10 +4073,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -4008,6 +4091,8 @@ crypto pki trustpoint TP-self-signed-3513785742
 !
 crypto pki certificate chain TP-self-signed-3513785742
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -4015,14 +4100,12 @@ crypto pki certificate chain TP-self-signed-3513785742
 !
 !
 !
-!
-license udi pid CSR1000V sn 9IA54I334E0
+license udi pid CSR1000V sn 9GLNO57UVG9
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$HyU2$LpRffj76lk3WLKRbAsRD4/
 !
@@ -4046,7 +4129,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -4061,39 +4147,45 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.118 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1816
  encapsulation dot1Q 1816
  ip address 10.18.16.18 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:18:16::18/64
+ ipv6 router isis 1000
 !
 interface GigabitEthernet2.1817
  encapsulation dot1Q 1817
  ip address 10.18.17.18 255.255.255.0
+ ip router isis 1000
  ipv6 address 2001:10:18:17::18/64
+ ipv6 router isis 1000
 !
-
-threat-visibility
+router isis 1000
+ net 49.0001.0000.0000.0018.00
+ is-type level-1
+ metric-style wide
+ passive-interface Loopback0
+ !
+ address-family ipv6
+  multi-topology
+ exit-address-family
+ mpls ldp autoconfig
 !
-virtual-service csr_mgmt
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -4136,12 +4228,11 @@ end</entry>
     <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:17 UTC Wed Feb 7 2018
+! Last configuration change at 20:49:10 UTC Wed Sep 28 2016
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -4173,6 +4264,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -4187,10 +4280,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -4209,6 +4298,8 @@ crypto pki trustpoint TP-self-signed-120961135
 !
 crypto pki certificate chain TP-self-signed-120961135
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -4216,14 +4307,12 @@ crypto pki certificate chain TP-self-signed-120961135
 !
 !
 !
-!
-license udi pid CSR1000V sn 98PYWJQFKS2
+license udi pid CSR1000V sn 90TG5BBB57H
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$Lk1n$M.kb7nA9bT3m2YrVuCR8R.
 !
@@ -4247,7 +4336,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -4262,34 +4354,41 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.119 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.1917
  encapsulation dot1Q 1917
  ip address 10.19.17.19 255.255.255.0
  ipv6 address 2001:10:19:17::19/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
+router eigrp CE
+ !
+ address-family ipv4 unicast autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+  network 0.0.0.0
+ exit-address-family
+ !
+ address-family ipv6 unicast autonomous-system 1419
+  !
+  topology base
+  exit-af-topology
+ exit-address-family
+!
+!
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -4332,12 +4431,11 @@ end</entry>
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:20:29 UTC Wed Feb 7 2018
+! Last configuration change at 17:16:59 UTC Wed Sep 28 2016 by cisco
 !
-version 16.5
+version 16.3
 service timestamps debug datetime msec
 service timestamps log datetime msec
-platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console auto
 !
@@ -4369,6 +4467,8 @@ no aaa new-model
 !
 !
 
+
+
 no ip domain lookup
 ip domain name virl.info
 !
@@ -4383,10 +4483,6 @@ ipv6 unicast-routing
 !
 !
 subscriber templating
-! 
-! 
-! 
-! 
 !
 !
 !
@@ -4405,6 +4501,8 @@ crypto pki trustpoint TP-self-signed-1383894549
 !
 crypto pki certificate chain TP-self-signed-1383894549
  certificate self-signed 01 nvram:IOS-Self-Sig#2.cer
+
+
 !
 !
 !
@@ -4412,14 +4510,12 @@ crypto pki certificate chain TP-self-signed-1383894549
 !
 !
 !
-!
-license udi pid CSR1000V sn 94W0WWDCWZG
+license udi pid CSR1000V sn 96R75QAHLHI
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
 !
 spanning-tree extend system-id
-!
 !
 username cisco privilege 15 secret 5 $1$LJ.h$mwH7BJE0FEJ7IOKxcve14.
 !
@@ -4443,7 +4539,10 @@ redundancy
 !
 !
 !
-!
+! 
+! 
+! 
+! 
 ! 
 ! 
 !
@@ -4458,34 +4557,25 @@ interface GigabitEthernet1
  vrf forwarding Mgmt-intf
  ip address 172.16.1.120 255.255.255.0
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2
  description to Unmanaged_Switch_2
  no ip address
  negotiation auto
- no mop enabled
- no mop sysid
 !
 interface GigabitEthernet2.2013
  encapsulation dot1Q 2013
  ip address 10.20.13.20 255.255.255.0
  ipv6 address 2001:10:20:13::20/64
 !
-
-threat-visibility
 !
-virtual-service csr_mgmt
 !
 ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
 !
-ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
-ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
@@ -4527,8 +4617,8 @@ end</entry>
     </node>
     <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Feb  7 20:21:36 2018 by CVAC
+            <entry key="config" type="string">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Wed Sep 28 15:52:10 2016 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -4713,6 +4803,16 @@ router bgp 123
   address-family vpnv6 unicast
   !
  !
+ vrf A
+  rd 1:1
+  address-family ipv4 unicast
+  neighbor 10.8.11.8
+   remote-as 8
+   address-family ipv4 unicast
+    route-policy PASS in
+    route-policy PASS out
+  !
+ !
  vrf B
   rd 2:2
   address-family ipv4 unicast
@@ -4742,8 +4842,8 @@ end</entry>
     </node>
     <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Feb  7 20:21:45 2018 by CVAC
+            <entry key="config" type="string">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Wed Sep 28 15:01:24 2016 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -4989,8 +5089,8 @@ end</entry>
     </node>
     <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Feb  7 20:21:58 2018 by CVAC
+            <entry key="config" type="string">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Wed Sep 28 21:13:05 2016 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -5151,6 +5251,7 @@ router ospf 100
  !
 !
 router ospfv3 1
+ apply-group OSPFv3_LINKS
  area 0
   interface Loopback0
   !
@@ -5164,6 +5265,7 @@ router ospfv3 1
 !
 router bgp 123
  address-family ipv4 unicast
+  network 1.1.1.1/32
   network 2.2.2.2/32
   network 12.12.12.12/32
   allocate-label all
@@ -5223,19 +5325,28 @@ end</entry>
     </node>
     <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Feb  7 20:21:49 2018 by CVAC
+            <entry key="config" type="string">!! IOS XR Configuration 6.0.1
+!! Last configuration change at Wed Sep 28 22:58:00 2016 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 hostname XR4
-logging console debugging
 service timestamps log datetime msec
 service timestamps debug datetime msec
 telnet vrf default ipv4 server max-servers 10
 telnet vrf Mgmt-intf ipv4 server max-servers 10
 domain name virl.info
 domain lookup disable
+vrf CSC
+ address-family ipv4 unicast
+  import route-target
+   4:4
+  !
+  export route-target
+   4:4
+  !
+ !
+!
 vrf ASDF
  address-family ipv4 unicast
   import route-target
@@ -5299,9 +5410,13 @@ interface GigabitEthernet0/0/0/0.1314
  encapsulation dot1q 1314
 !
 interface GigabitEthernet0/0/0/0.1411
+ vrf CSC
  ipv4 address 10.14.11.14 255.255.255.0
  ipv6 address 2001:10:14:11::14/64
  encapsulation dot1q 1411
+!
+rd-set 4:4
+end-set
 !
 route-policy PASS
   pass
@@ -5311,6 +5426,11 @@ router static
  address-family ipv4 unicast
   10.9.14.9/32 GigabitEthernet0/0/0/0.914
   10.13.14.13/32 GigabitEthernet0/0/0/0.1314
+ !
+ vrf CSC
+  address-family ipv4 unicast
+   10.14.11.11/32 GigabitEthernet0/0/0/0.1411
+  !
  !
 !
 router bgp 24
@@ -5353,11 +5473,30 @@ router bgp 24
    route-policy PASS out
   !
  !
- vrf ASDF
-  rd 1:1
+ neighbor 12.12.12.12
+  remote-as 123
+  ebgp-multihop 255
+  update-source Loopback0
+  address-family vpnv4 unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+  address-family vpnv6 unicast
+   route-policy PASS in
+   route-policy PASS out
+  !
+ !
+ vrf CSC
+  rd 4:4
   address-family ipv4 unicast
   !
-  address-family ipv6 unicast
+  neighbor 10.14.11.11
+   remote-as 1000
+   address-family ipv4 labeled-unicast
+    route-policy PASS in
+    route-policy PASS out
+    as-override
+   !
   !
  !
 !
@@ -5407,7 +5546,7 @@ end</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="config" type="String">!
-! Last configuration change at 17:22:32 UTC Wed Sep 28 2016
+! Last configuration change at 22:59:30 UTC Wed Sep 28 2016
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5576,7 +5715,16 @@ menu main_menu text 23. Connect to XR3
 menu main_menu command 23. telnet 172.16.1.123 /vrf Mgmt-intf
 menu main_menu text 24. Connect to XR4
 menu main_menu command 24. telnet 172.16.1.124 /vrf Mgmt-intf
-
+menu main_menu text 25. Connect to XR1 Console
+menu main_menu command 25. telnet 172.16.1.100 10021 /vrf Mgmt-intf
+menu main_menu text 26. Connect to XR2 Console
+menu main_menu command 26. telnet 172.16.1.100 10022 /vrf Mgmt-intf
+menu main_menu text 27. Connect to XR3 Console
+menu main_menu command 27. telnet 172.16.1.100 10023 /vrf Mgmt-intf
+menu main_menu text 28. Connect to XR4 Console
+menu main_menu command 28. telnet 172.16.1.100 10024 /vrf Mgmt-intf
+menu main_menu text C. Console Menu
+menu main_menu command C. menu console_menu 
 menu main_menu text Q. Quit
 menu main_menu command Q. Exit
 menu main_menu clear-screen

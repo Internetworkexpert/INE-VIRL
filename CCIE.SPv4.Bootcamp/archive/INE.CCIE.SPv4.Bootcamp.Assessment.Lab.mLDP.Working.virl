@@ -1,15 +1,15 @@
-<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
     <extensions>
-        <entry key="lxc.node.static_ip" type="String">172.16.11.99</entry>
         <entry key="AutoNetkit.infrastructure_only" type="Boolean">true</entry>
-        <entry key="lxc.host.static_ip" type="String">172.16.11.100</entry>
         <entry key="management_network" type="String">flat</entry>
     </extensions>
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 16:08:22 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10001</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 04:20:47 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -24,15 +24,16 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition B
- rd 1.1.1.1:2
- route-target export 2:2
- route-target import 2:2
+vrf definition A
+ rd 1.1.1.1:1
+ vpn id 1:1
+ route-target export 1:1
+ route-target import 1:1
  !
  address-family ipv4
- exit-address-family
- !
- address-family ipv6
+  mdt default mpls mldp 12.12.12.12
+  mdt data mpls mldp 100
+  mdt data threshold 10
  exit-address-family
 !
 vrf definition Mgmt-intf
@@ -43,7 +44,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$yafn$X2Ti3U/E0okjqEW6oZHWn1
 !
 no aaa new-model
 !
@@ -58,6 +58,8 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
+ip multicast-routing vrf A distributed
 !
 !
 !
@@ -75,6 +77,9 @@ subscriber templating
 ! 
 ! 
 !
+mpls traffic-eng tunnels
+mpls ldp label
+ allocate global host-routes
 !
 !
 multilink bundle-name authenticated
@@ -83,14 +88,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-3733860540
+crypto pki trustpoint TP-self-signed-1922334375
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-3733860540
+ subject-name cn=IOS-Self-Signed-Certificate-1922334375
  revocation-check none
- rsakeypair TP-self-signed-3733860540
+ rsakeypair TP-self-signed-1922334375
 !
 !
-crypto pki certificate chain TP-self-signed-3733860540
+crypto pki certificate chain TP-self-signed-1922334375
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -100,7 +105,7 @@ crypto pki certificate chain TP-self-signed-3733860540
 !
 !
 !
-license udi pid CSR1000V sn 9I51BFRI9TZ
+license udi pid CSR1000V sn 9JRTF0PAR3R
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -108,7 +113,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$bhJr$yzUzjTr.R7m9RgLwNyV0w0
+username cisco privilege 15 secret 5 $1$D7nu$VstQi19XKUFNkmaXK7HBm1
 !
 redundancy
 !
@@ -140,14 +145,10 @@ interface Loopback0
  ip address 1.1.1.1 255.255.255.255
  ipv6 address 2001::1/128
 !
-interface Loopback11
- vrf forwarding B
- ip address 11.11.11.11 255.255.255.255
-!
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.101 255.255.255.0
+ ip address 172.16.1.143 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -158,38 +159,42 @@ interface GigabitEthernet2
  negotiation auto
  no mop enabled
  no mop sysid
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.12
  encapsulation dot1Q 12
  ip address 10.1.2.1 255.255.255.0
- ip router isis 1
+ ip router isis 100
+ shutdown
  ipv6 address 2001:10:1:2::1/64
- ipv6 router isis 1
+ mpls traffic-eng tunnels
  isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.15
  encapsulation dot1Q 15
- vrf forwarding B
+ vrf forwarding A
  ip address 10.1.5.1 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf 2 area 1
- ipv6 address 2001:10:1:5::1/64
 !
 interface GigabitEthernet2.111
  encapsulation dot1Q 111
  ip address 10.1.11.1 255.255.255.0
- ip router isis 1
+ ip router isis 100
  ipv6 address 2001:10:1:11::1/64
- ipv6 router isis 1
+ mpls traffic-eng tunnels
  isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.112
  encapsulation dot1Q 112
  ip address 10.1.12.1 255.255.255.0
- ip router isis 1
+ ip router isis 100
  ipv6 address 2001:10:1:12::1/64
- ipv6 router isis 1
+ mpls traffic-eng tunnels
  isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet3
  description to R2
@@ -198,19 +203,20 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router ospf 2 vrf B
- router-id 1.1.1.1
- area 2 sham-link 11.11.11.11 33.33.33.33
- redistribute bgp 123 subnets route-map BGP_TO_OSPF
+router ospf 200 vrf A
+ redistribute bgp 123 subnets
+ network 0.0.0.0 255.255.255.255 area 456
 !
-router isis 1
- net 00.0000.0000.0001.00
+router isis 100
+ net 49.1234.0000.0000.0001.00
  is-type level-2-only
  advertise passive-only
  metric-style wide
  passive-interface Loopback0
+ mpls traffic-eng router-id Loopback0
+ mpls traffic-eng level-2
  mpls ldp sync
- mpls ldp autoconfig level-2
+ mpls ldp autoconfig
 !
 router bgp 123
  bgp router-id 1.1.1.1
@@ -228,21 +234,8 @@ router bgp 123
   neighbor 12.12.12.12 send-community extended
  exit-address-family
  !
- address-family vpnv6
-  neighbor 2.2.2.2 activate
-  neighbor 2.2.2.2 send-community extended
-  neighbor 12.12.12.12 activate
-  neighbor 12.12.12.12 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf B
-  network 11.11.11.11 mask 255.255.255.255
-  redistribute ospf 2
-  maximum-paths eibgp 16
- exit-address-family
- !
- address-family ipv6 vrf B
-  maximum-paths eibgp 16
+ address-family ipv4 vrf A
+  redistribute ospf 200
  exit-address-family
 !
 
@@ -254,20 +247,13 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim vrf A rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
-ip prefix-list SHAMLINK seq 5 permit 11.11.11.11/32
-ip prefix-list SHAMLINK seq 10 permit 33.33.33.33/32
-!
-!
-route-map BGP_TO_OSPF deny 10
- match ip address prefix-list SHAMLINK
-!
-route-map BGP_TO_OSPF permit 20
 !
 !
 !
@@ -300,21 +286,20 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10001</entry>
-            <entry key="static_ip" type="String">172.16.11.101</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 16:44:09 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10002</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 04:20:59 UTC Sun Jan 7 2018
 !
 version 16.5
-no service timestamps debug uptime
-no service timestamps log uptime
+service timestamps debug datetime msec
+service timestamps log datetime msec
 platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console serial
@@ -327,13 +312,14 @@ boot-end-marker
 !
 vrf definition A
  rd 2.2.2.2:1
+ vpn id 1:1
  route-target export 1:1
  route-target import 1:1
  !
  address-family ipv4
- exit-address-family
- !
- address-family ipv6
+  mdt default mpls mldp 12.12.12.12
+  mdt data mpls mldp 100
+  mdt data threshold 10
  exit-address-family
 !
 vrf definition Mgmt-intf
@@ -344,7 +330,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$RP23$Wh3q261m3WMka5wU7byX40
 !
 no aaa new-model
 !
@@ -359,6 +344,8 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
+ip multicast-routing vrf A distributed
 !
 !
 !
@@ -376,6 +363,7 @@ subscriber templating
 ! 
 ! 
 !
+mpls traffic-eng tunnels
 mpls ldp label
  allocate global host-routes
 !
@@ -386,14 +374,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-1660410157
+crypto pki trustpoint TP-self-signed-986634965
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-1660410157
+ subject-name cn=IOS-Self-Signed-Certificate-986634965
  revocation-check none
- rsakeypair TP-self-signed-1660410157
+ rsakeypair TP-self-signed-986634965
 !
 !
-crypto pki certificate chain TP-self-signed-1660410157
+crypto pki certificate chain TP-self-signed-986634965
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -403,7 +391,7 @@ crypto pki certificate chain TP-self-signed-1660410157
 !
 !
 !
-license udi pid CSR1000V sn 9AIN7FR2PZF
+license udi pid CSR1000V sn 9NAYTVZ24UN
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -411,7 +399,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$AVln$SVQ6f.7aAcySIE1E1sPbh.
+username cisco privilege 15 secret 5 $1$IRLO$qhv.iHORgtin3NXBGS4LL.
 !
 redundancy
 !
@@ -441,14 +429,12 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 2.2.2.2 255.255.255.255
- ip ospf 1 area 0
  ipv6 address 2001::2/128
- ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.102 255.255.255.0
+ ip address 172.16.1.145 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -459,55 +445,61 @@ interface GigabitEthernet2
  negotiation auto
  no mop enabled
  no mop sysid
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.12
  encapsulation dot1Q 12
  ip address 10.1.2.2 255.255.255.0
- ip router isis 1
+ ip router isis 100
+ shutdown
  ipv6 address 2001:10:1:2::2/64
- ipv6 router isis 1
+ mpls traffic-eng tunnels
  isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.23
  encapsulation dot1Q 23
  ip address 10.2.3.2 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
+ shutdown
  ipv6 address 2001:10:2:3::2/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.210
  encapsulation dot1Q 210
  vrf forwarding A
  ip address 10.2.10.2 255.255.255.0
- ipv6 address 2001:10:2:10::2/64
+ ip pim sparse-mode
+ ip ospf network point-to-point
 !
 interface GigabitEthernet2.211
  encapsulation dot1Q 211
  ip address 10.2.11.2 255.255.255.0
- ip router isis 1
+ ip router isis 100
  ipv6 address 2001:10:2:11::2/64
- ipv6 router isis 1
+ mpls traffic-eng tunnels
  isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.212
  encapsulation dot1Q 212
  ip address 10.2.12.2 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
  ipv6 address 2001:10:2:12::2/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.213
  encapsulation dot1Q 213
  ip address 10.2.13.2 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
  ipv6 address 2001:10:2:13::2/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet3
  description to R1
@@ -523,112 +515,61 @@ interface GigabitEthernet4
  no mop enabled
  no mop sysid
 !
-!
-router eigrp A
- !
- address-family ipv4 unicast vrf A autonomous-system 10
-  !
-  topology base
-   default-metric 1000000 10 255 1 1500
-   redistribute bgp 123 metric 1000000 10 255 1 1500
-  exit-af-topology
-  network 0.0.0.0
- exit-address-family
- !
- address-family ipv6 unicast vrf A autonomous-system 10
-  !
-  topology base
-   redistribute bgp 123 metric 1000000 1 255 1 1500
-  exit-af-topology
- exit-address-family
-!
-router ospfv3 1
+router ospf 200 vrf A
  router-id 2.2.2.2
- prefix-suppression
- !
- address-family ipv6 unicast
- exit-address-family
+ redistribute bgp 123 subnets
+ network 0.0.0.0 255.255.255.255 area 810
 !
-router ospf 1
- router-id 2.2.2.2
- prefix-suppression
- redistribute isis 1 level-2 subnets
- distance ospf external 116
- mpls ldp sync
- mpls ldp autoconfig
-!
-router isis 1
- net 00.0000.0000.0002.00
+router isis 100
+ net 49.1234.0000.0000.0002.00
  is-type level-2-only
  advertise passive-only
  metric-style wide
- redistribute ospf 1
+ passive-interface Loopback0
+ mpls traffic-eng router-id Loopback0
+ mpls traffic-eng level-2
  mpls ldp sync
- mpls ldp autoconfig level-2
+ mpls ldp autoconfig
 !
 router bgp 123
- template peer-policy IBGP-RRCLIENTS-POLICY
+ template peer-policy policy-rrclients
   route-reflector-client
  exit-peer-policy
  !
- template peer-session IBGP-RRCLIENTS
+ template peer-session session-rrclients
   remote-as 123
   update-source Loopback0
  exit-peer-session
  !
+ bgp router-id 2.2.2.2
  bgp log-neighbor-changes
  no bgp default ipv4-unicast
- neighbor 1.1.1.1 inherit peer-session IBGP-RRCLIENTS
- neighbor 3.3.3.3 inherit peer-session IBGP-RRCLIENTS
- neighbor 11.11.11.11 inherit peer-session IBGP-RRCLIENTS
- neighbor 12.12.12.12 inherit peer-session IBGP-RRCLIENTS
- neighbor 13.13.13.13 inherit peer-session IBGP-RRCLIENTS
- neighbor 14.14.14.14 remote-as 24
- neighbor 14.14.14.14 ebgp-multihop 10
- neighbor 14.14.14.14 update-source Loopback0
+ neighbor 1.1.1.1 inherit peer-session session-rrclients
+ neighbor 3.3.3.3 inherit peer-session session-rrclients
+ neighbor 11.11.11.11 inherit peer-session session-rrclients
+ neighbor 12.12.12.12 inherit peer-session session-rrclients
+ neighbor 13.13.13.13 inherit peer-session session-rrclients
  !
  address-family vpnv4
   neighbor 1.1.1.1 activate
   neighbor 1.1.1.1 send-community extended
-  neighbor 1.1.1.1 inherit peer-policy IBGP-RRCLIENTS-POLICY
+  neighbor 1.1.1.1 inherit peer-policy policy-rrclients
   neighbor 3.3.3.3 activate
   neighbor 3.3.3.3 send-community extended
-  neighbor 3.3.3.3 inherit peer-policy IBGP-RRCLIENTS-POLICY
+  neighbor 3.3.3.3 inherit peer-policy policy-rrclients
   neighbor 11.11.11.11 activate
   neighbor 11.11.11.11 send-community extended
-  neighbor 11.11.11.11 inherit peer-policy IBGP-RRCLIENTS-POLICY
+  neighbor 11.11.11.11 inherit peer-policy policy-rrclients
   neighbor 12.12.12.12 activate
   neighbor 12.12.12.12 send-community extended
-  neighbor 12.12.12.12 inherit peer-policy IBGP-RRCLIENTS-POLICY
+  neighbor 12.12.12.12 inherit peer-policy policy-rrclients
   neighbor 13.13.13.13 activate
   neighbor 13.13.13.13 send-community extended
-  neighbor 13.13.13.13 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 14.14.14.14 activate
-  neighbor 14.14.14.14 send-community extended
- exit-address-family
- !
- address-family vpnv6
-  neighbor 1.1.1.1 activate
-  neighbor 1.1.1.1 send-community extended
-  neighbor 1.1.1.1 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 3.3.3.3 activate
-  neighbor 3.3.3.3 send-community extended
-  neighbor 3.3.3.3 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 11.11.11.11 activate
-  neighbor 11.11.11.11 send-community extended
-  neighbor 11.11.11.11 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 12.12.12.12 activate
-  neighbor 12.12.12.12 send-community extended
-  neighbor 12.12.12.12 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 13.13.13.13 activate
-  neighbor 13.13.13.13 send-community extended
-  neighbor 13.13.13.13 inherit peer-policy IBGP-RRCLIENTS-POLICY
-  neighbor 14.14.14.14 activate
-  neighbor 14.14.14.14 send-community extended
+  neighbor 13.13.13.13 inherit peer-policy policy-rrclients
  exit-address-family
  !
  address-family ipv4 vrf A
-  redistribute eigrp 10
+  redistribute ospf 200
  exit-address-family
 !
 
@@ -640,6 +581,7 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim vrf A rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -647,7 +589,6 @@ ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 !
-mpls ldp router-id Loopback0
 !
 !
 control-plane
@@ -679,9 +620,6 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10002</entry>
-            <entry key="static_ip" type="String">172.16.11.102</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
@@ -689,8 +627,10 @@ end</entry>
     </node>
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 16:08:59 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10003</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 04:21:10 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -705,15 +645,16 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition B
- rd 3.3.3.3:2
- route-target export 2:2
- route-target import 2:2
+vrf definition A
+ rd 3.3.3.3:1
+ vpn id 1:1
+ route-target export 1:1
+ route-target import 1:1
  !
  address-family ipv4
- exit-address-family
- !
- address-family ipv6
+  mdt default mpls mldp 12.12.12.12
+  mdt data mpls mldp 100
+  mdt data threshold 10
  exit-address-family
 !
 vrf definition Mgmt-intf
@@ -724,7 +665,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$sb74$hRTB1CDEY5m7mDqn2daTN1
 !
 no aaa new-model
 !
@@ -739,6 +679,8 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
+ip multicast-routing vrf A distributed
 !
 !
 !
@@ -756,6 +698,9 @@ subscriber templating
 ! 
 ! 
 !
+mpls traffic-eng tunnels
+mpls ldp label
+ allocate global host-routes
 !
 !
 multilink bundle-name authenticated
@@ -764,14 +709,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-2006321212
+crypto pki trustpoint TP-self-signed-2117998416
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-2006321212
+ subject-name cn=IOS-Self-Signed-Certificate-2117998416
  revocation-check none
- rsakeypair TP-self-signed-2006321212
+ rsakeypair TP-self-signed-2117998416
 !
 !
-crypto pki certificate chain TP-self-signed-2006321212
+crypto pki certificate chain TP-self-signed-2117998416
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -781,7 +726,7 @@ crypto pki certificate chain TP-self-signed-2006321212
 !
 !
 !
-license udi pid CSR1000V sn 9SMUMIEFQOX
+license udi pid CSR1000V sn 9ZSLPCUNBEO
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -789,7 +734,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$/ZwO$0ugJOEtinXPu.FKuYQeV3/
+username cisco privilege 15 secret 5 $1$Bz6N$PwZGsOhVgbDT69MtsqGG0.
 !
 redundancy
 !
@@ -819,18 +764,12 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 3.3.3.3 255.255.255.255
- ip ospf 1 area 0
  ipv6 address 2001::3/128
- ospfv3 1 ipv6 area 0
-!
-interface Loopback33
- vrf forwarding B
- ip address 33.33.33.33 255.255.255.255
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.103 255.255.255.0
+ ip address 172.16.1.146 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -841,57 +780,56 @@ interface GigabitEthernet2
  negotiation auto
  no mop enabled
  no mop sysid
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.23
  encapsulation dot1Q 23
  ip address 10.2.3.3 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
+ shutdown
  ipv6 address 2001:10:2:3::3/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.37
  encapsulation dot1Q 37
- vrf forwarding B
+ vrf forwarding A
  ip address 10.3.7.3 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf 2 area 2
- ipv6 address 2001:10:3:7::3/64
 !
 interface GigabitEthernet2.312
  encapsulation dot1Q 312
  ip address 10.3.12.3 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
  ipv6 address 2001:10:3:12::3/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
 interface GigabitEthernet2.313
  encapsulation dot1Q 313
  ip address 10.3.13.3 255.255.255.0
- ip ospf network point-to-point
- ip ospf 1 area 0
+ ip router isis 100
  ipv6 address 2001:10:3:13::3/64
- ospfv3 network point-to-point
- ospfv3 1 ipv6 area 0
+ mpls traffic-eng tunnels
+ isis network point-to-point 
+ ip rsvp bandwidth
 !
-router ospfv3 1
+router ospf 200 vrf A
  router-id 3.3.3.3
- prefix-suppression
- !
- address-family ipv6 unicast
- exit-address-family
+ redistribute bgp 123 subnets
+ network 0.0.0.0 255.255.255.255 area 79
 !
-router ospf 2 vrf B
- domain-id 1.2.3.4
- area 2 sham-link 33.33.33.33 11.11.11.11
- redistribute bgp 123 subnets route-map BGP_TO_OSPF
-!
-router ospf 1
- router-id 3.3.3.3
- prefix-suppression
+router isis 100
+ net 49.1234.0000.0000.0003.00
+ is-type level-2-only
+ advertise passive-only
+ metric-style wide
+ passive-interface Loopback0
+ mpls traffic-eng router-id Loopback0
+ mpls traffic-eng level-2
  mpls ldp sync
  mpls ldp autoconfig
 !
@@ -911,21 +849,8 @@ router bgp 123
   neighbor 12.12.12.12 send-community extended
  exit-address-family
  !
- address-family vpnv6
-  neighbor 2.2.2.2 activate
-  neighbor 2.2.2.2 send-community extended
-  neighbor 12.12.12.12 activate
-  neighbor 12.12.12.12 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf B
-  network 33.33.33.33 mask 255.255.255.255
-  redistribute ospf 2
-  maximum-paths eibgp 16
- exit-address-family
- !
- address-family ipv6 vrf B
-  maximum-paths eibgp 16
+ address-family ipv4 vrf A
+  redistribute ospf 200
  exit-address-family
 !
 
@@ -937,22 +862,14 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim vrf A rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
 ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
-ip prefix-list SHAMLINK seq 5 permit 11.11.11.11/32
-ip prefix-list SHAMLINK seq 10 permit 33.33.33.33/32
 !
-!
-route-map BGP_TO_OSPF deny 10
- match ip address prefix-list SHAMLINK
-!
-route-map BGP_TO_OSPF permit 20
-!
-mpls ldp router-id Loopback0
 !
 !
 control-plane
@@ -984,16 +901,15 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10003</entry>
-            <entry key="static_ip" type="String">172.16.11.103</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 15:18:32 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10004</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 03:56:51 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1016,7 +932,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$LNbj$yvLCeXBNKiM6eJDSXOqpe.
 !
 no aaa new-model
 !
@@ -1031,6 +946,7 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
 !
 !
 !
@@ -1056,14 +972,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-1771010985
+crypto pki trustpoint TP-self-signed-4111861741
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-1771010985
+ subject-name cn=IOS-Self-Signed-Certificate-4111861741
  revocation-check none
- rsakeypair TP-self-signed-1771010985
+ rsakeypair TP-self-signed-4111861741
 !
 !
-crypto pki certificate chain TP-self-signed-1771010985
+crypto pki certificate chain TP-self-signed-4111861741
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -1073,7 +989,7 @@ crypto pki certificate chain TP-self-signed-1771010985
 !
 !
 !
-license udi pid CSR1000V sn 9DECKCC7WKD
+license udi pid CSR1000V sn 9AAKSY61AR9
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1081,7 +997,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$OWCQ$o8HKyqi9GbzQYMbAOBAjL1
+username cisco privilege 15 secret 5 $1$0qC9$EMKBP50w67SOPtl8VMSNA1
 !
 redundancy
 !
@@ -1111,12 +1027,13 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 4.4.4.4 255.255.255.255
+ ip ospf 200 area 456
  ipv6 address 2001::4/128
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.104 255.255.255.0
+ ip address 172.16.1.147 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -1131,17 +1048,22 @@ interface GigabitEthernet2
 interface GigabitEthernet2.45
  encapsulation dot1Q 45
  ip address 10.4.5.4 255.255.255.0
+ ip ospf network point-to-point
  ipv6 address 2001:10:4:5::4/64
 !
 interface GigabitEthernet2.46
  encapsulation dot1Q 46
  ip address 10.4.6.4 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ shutdown
  ipv6 address 2001:10:4:6::4/64
 !
 interface GigabitEthernet2.411
  encapsulation dot1Q 411
  ip address 10.4.11.4 255.255.255.0
  ip ospf network point-to-point
+ shutdown
  ipv6 address 2001:10:4:11::1/64
 !
 interface GigabitEthernet3
@@ -1151,8 +1073,9 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router ospf 1
- network 0.0.0.0 255.255.255.255 area 1
+router ospf 200
+ router-id 4.4.4.4
+ network 0.0.0.0 255.255.255.255 area 456
 !
 
 threat-visibility
@@ -1201,17 +1124,16 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10004</entry>
-            <entry key="static_ip" type="String">172.16.11.104</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 15:49:42 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10005</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 02:23:31 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1234,7 +1156,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$g/G4$fpjNtzIr.NZtBnONxoWnG/
 !
 no aaa new-model
 !
@@ -1249,6 +1170,7 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
 !
 !
 !
@@ -1274,14 +1196,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-3620483847
+crypto pki trustpoint TP-self-signed-3628875103
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-3620483847
+ subject-name cn=IOS-Self-Signed-Certificate-3628875103
  revocation-check none
- rsakeypair TP-self-signed-3620483847
+ rsakeypair TP-self-signed-3628875103
 !
 !
-crypto pki certificate chain TP-self-signed-3620483847
+crypto pki certificate chain TP-self-signed-3628875103
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -1291,7 +1213,7 @@ crypto pki certificate chain TP-self-signed-3620483847
 !
 !
 !
-license udi pid CSR1000V sn 9KLDG61Z0XU
+license udi pid CSR1000V sn 9UZ3C8X3LJV
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1299,7 +1221,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$MoZg$fPfTKRAl4Pq.ywIu/8oDN0
+username cisco privilege 15 secret 5 $1$r2Zg$DQSreDAYrYbcBGkqj7ay80
 !
 redundancy
 !
@@ -1329,12 +1251,14 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 5.5.5.5 255.255.255.255
+ ip pim sparse-mode
+ ip ospf 200 area 456
  ipv6 address 2001::5/128
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.105 255.255.255.0
+ ip address 172.16.1.148 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -1349,26 +1273,26 @@ interface GigabitEthernet2
 interface GigabitEthernet2.15
  encapsulation dot1Q 15
  ip address 10.1.5.5 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
+ ip ospf 200 area 456
  ipv6 address 2001:10:1:5::5/64
 !
 interface GigabitEthernet2.45
  encapsulation dot1Q 45
  ip address 10.4.5.5 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
+ ip ospf 200 area 456
  ipv6 address 2001:10:4:5::5/64
 !
 interface GigabitEthernet2.56
  encapsulation dot1Q 56
  ip address 10.5.6.5 255.255.255.0
- ipv6 address 2001:10:5:6::5/64
-!
-interface GigabitEthernet2.57
- encapsulation dot1Q 57
- ip address 57.0.0.5 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf hello-interval 1
- ip ospf 1 area 2
- ip ospf cost 65535
+ ip ospf 200 area 456
+ ipv6 address 2001:10:5:6::5/64
 !
 interface GigabitEthernet3
  description to R8
@@ -1377,8 +1301,9 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router ospf 1
- network 0.0.0.0 255.255.255.255 area 1
+router ospf 200
+ router-id 5.5.5.5
+ network 0.0.0.0 255.255.255.255 area 456
 !
 
 threat-visibility
@@ -1389,6 +1314,7 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -1427,17 +1353,16 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10005</entry>
-            <entry key="static_ip" type="String">172.16.11.105</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 15:18:42 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10006</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 02:08:05 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1460,7 +1385,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$RPvV$41vpo8OosLSU3JBb0MhK7/
 !
 no aaa new-model
 !
@@ -1500,14 +1424,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-3092102125
+crypto pki trustpoint TP-self-signed-1939842425
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-3092102125
+ subject-name cn=IOS-Self-Signed-Certificate-1939842425
  revocation-check none
- rsakeypair TP-self-signed-3092102125
+ rsakeypair TP-self-signed-1939842425
 !
 !
-crypto pki certificate chain TP-self-signed-3092102125
+crypto pki certificate chain TP-self-signed-1939842425
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -1517,7 +1441,7 @@ crypto pki certificate chain TP-self-signed-3092102125
 !
 !
 !
-license udi pid CSR1000V sn 9O2GS2KYK6Q
+license udi pid CSR1000V sn 9979TTXHB0U
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1525,7 +1449,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$EpZH$aRHFo.huVb1NOovPOa5gq.
+username cisco privilege 15 secret 5 $1$CreX$Uy/TcubOyb5tqWwINzAG81
 !
 redundancy
 !
@@ -1555,12 +1479,13 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 6.6.6.6 255.255.255.255
+ ip ospf 200 area 456
  ipv6 address 2001::6/128
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.106 255.255.255.0
+ ip address 172.16.1.149 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -1575,15 +1500,20 @@ interface GigabitEthernet2
 interface GigabitEthernet2.46
  encapsulation dot1Q 46
  ip address 10.4.6.6 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 200 area 456
  ipv6 address 2001:10:4:6::6/64
 !
 interface GigabitEthernet2.56
  encapsulation dot1Q 56
  ip address 10.5.6.6 255.255.255.0
+ ip ospf network point-to-point
+ ip ospf 200 area 456
  ipv6 address 2001:10:5:6::6/64
 !
-router ospf 1
- network 0.0.0.0 255.255.255.255 area 1
+router ospf 200
+ router-id 6.6.6.6
+ network 0.0.0.0 255.255.255.255 area 456
 !
 
 threat-visibility
@@ -1632,16 +1562,15 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10006</entry>
-            <entry key="static_ip" type="String">172.16.11.106</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 15:46:34 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10007</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 02:20:24 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1664,7 +1593,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$f7C8$XwagchXBnTduHbY43881T/
 !
 no aaa new-model
 !
@@ -1679,6 +1607,7 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
 !
 !
 !
@@ -1704,14 +1633,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-2377750414
+crypto pki trustpoint TP-self-signed-4229762405
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-2377750414
+ subject-name cn=IOS-Self-Signed-Certificate-4229762405
  revocation-check none
- rsakeypair TP-self-signed-2377750414
+ rsakeypair TP-self-signed-4229762405
 !
 !
-crypto pki certificate chain TP-self-signed-2377750414
+crypto pki certificate chain TP-self-signed-4229762405
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -1721,7 +1650,7 @@ crypto pki certificate chain TP-self-signed-2377750414
 !
 !
 !
-license udi pid CSR1000V sn 9PNZ7309RG9
+license udi pid CSR1000V sn 9ZF2ACBSC8G
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1729,7 +1658,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$ldDZ$ogj6fZHiFHxmR4u/ddEuV.
+username cisco privilege 15 secret 5 $1$.NF6$xdfzegVXNN7B/iqUBEfwv0
 !
 redundancy
 !
@@ -1759,16 +1688,12 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 7.7.7.7 255.255.255.255
- ip ospf 1 area 2
  ipv6 address 2001::7/128
-!
-interface Loopback77
- ip address 77.77.77.77 255.255.255.255
 !
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.107 255.255.255.0
+ ip address 172.16.1.150 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -1783,22 +1708,21 @@ interface GigabitEthernet2
 interface GigabitEthernet2.37
  encapsulation dot1Q 37
  ip address 10.3.7.7 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf 1 area 2
  ipv6 address 2001:10:3:7::7/64
 !
-interface GigabitEthernet2.57
- encapsulation dot1Q 57
- ip address 57.0.0.7 255.255.255.0
+interface GigabitEthernet2.79
+ encapsulation dot1Q 79
+ ip address 10.7.9.7 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf hello-interval 1
- ip ospf 1 area 2
 !
 interface GigabitEthernet2.713
  encapsulation dot1Q 713
  ip address 10.7.13.7 255.255.255.0
+ ip pim sparse-mode
  ip ospf network point-to-point
- ip ospf 1 area 2
  ipv6 address 2001:10:7:13::7/64
 !
 interface GigabitEthernet3
@@ -1808,9 +1732,9 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router ospf 1
+router ospf 200
  router-id 7.7.7.7
- redistribute connected subnets
+ network 0.0.0.0 255.255.255.255 area 79
 !
 
 threat-visibility
@@ -1821,6 +1745,7 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -1859,17 +1784,16 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10007</entry>
-            <entry key="static_ip" type="String">172.16.11.107</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 16:52:47 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10008</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 03:53:28 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -1892,7 +1816,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$uL6Y$52jyEe49hLGx2zJAOYWxe/
 !
 no aaa new-model
 !
@@ -1932,14 +1855,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-1707919579
+crypto pki trustpoint TP-self-signed-473304224
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-1707919579
+ subject-name cn=IOS-Self-Signed-Certificate-473304224
  revocation-check none
- rsakeypair TP-self-signed-1707919579
+ rsakeypair TP-self-signed-473304224
 !
 !
-crypto pki certificate chain TP-self-signed-1707919579
+crypto pki certificate chain TP-self-signed-473304224
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -1949,7 +1872,7 @@ crypto pki certificate chain TP-self-signed-1707919579
 !
 !
 !
-license udi pid CSR1000V sn 9R6VNMNPB75
+license udi pid CSR1000V sn 9WKQ6QXB9IC
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1957,7 +1880,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$ZI1c$Hi5m45tghNJq0XD81ZUTC0
+username cisco privilege 15 secret 5 $1$6kM2$oXuBE3QBl07VREwIjRo2I.
 !
 redundancy
 !
@@ -1992,7 +1915,7 @@ interface Loopback0
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.108 255.255.255.0
+ ip address 172.16.1.151 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -2007,7 +1930,14 @@ interface GigabitEthernet2
 interface GigabitEthernet2.89
  encapsulation dot1Q 89
  ip address 10.8.9.8 255.255.255.0
+ shutdown
  ipv6 address 2001:10:8:9::8/64
+!
+interface GigabitEthernet2.810
+ encapsulation dot1Q 810
+ ip address 10.8.10.8 255.255.255.0
+ ip igmp join-group 239.4.4.4
+ ip ospf network point-to-point
 !
 interface GigabitEthernet2.811
  encapsulation dot1Q 811
@@ -2022,24 +1952,8 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router bgp 8
- bgp router-id 8.8.8.8
- bgp log-neighbor-changes
- no bgp default ipv4-unicast
- neighbor 10.8.9.9 remote-as 9
- neighbor 10.8.11.11 remote-as 123
- neighbor 2001:10:8:11::11 remote-as 123
- !
- address-family ipv4
-  redistribute connected
-  neighbor 10.8.9.9 activate
-  neighbor 10.8.11.11 activate
- exit-address-family
- !
- address-family ipv6
-  redistribute connected
-  neighbor 2001:10:8:11::11 activate
- exit-address-family
+router ospf 200
+ network 0.0.0.0 255.255.255.255 area 810
 !
 
 threat-visibility
@@ -2050,6 +1964,7 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip route 0.0.0.0 0.0.0.0 10.8.10.10
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -2088,17 +2003,16 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10008</entry>
-            <entry key="static_ip" type="String">172.16.11.108</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 16:50:51 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10009</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 04:05:18 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2113,17 +2027,6 @@ boot-start-marker
 boot-end-marker
 !
 !
-vrf definition A
- rd 9.9.9.9:9
- route-target export 1:1
- route-target import 1:1
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
 vrf definition Mgmt-intf
  !
  address-family ipv4
@@ -2132,7 +2035,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$rWWF$wAjsS5cYJAm0zqSkBY01i.
 !
 no aaa new-model
 !
@@ -2172,14 +2074,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-2097999007
+crypto pki trustpoint TP-self-signed-1674858934
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-2097999007
+ subject-name cn=IOS-Self-Signed-Certificate-1674858934
  revocation-check none
- rsakeypair TP-self-signed-2097999007
+ rsakeypair TP-self-signed-1674858934
 !
 !
-crypto pki certificate chain TP-self-signed-2097999007
+crypto pki certificate chain TP-self-signed-1674858934
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -2189,7 +2091,7 @@ crypto pki certificate chain TP-self-signed-2097999007
 !
 !
 !
-license udi pid CSR1000V sn 99W1OOMYEV9
+license udi pid CSR1000V sn 95F8CFQSQEA
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2197,7 +2099,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$XcaB$t1nUithRLN.bdTVCD3aTG.
+username cisco privilege 15 secret 5 $1$H9ma$us.AZFYZlIGnqg0Rilq0Q1
 !
 redundancy
 !
@@ -2232,7 +2134,7 @@ interface Loopback0
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.109 255.255.255.0
+ ip address 172.16.1.152 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -2244,9 +2146,14 @@ interface GigabitEthernet2
  no mop enabled
  no mop sysid
 !
+interface GigabitEthernet2.79
+ encapsulation dot1Q 79
+ ip address 10.7.9.9 255.255.255.0
+ ip igmp join-group 239.6.6.6
+ ip ospf network point-to-point
+!
 interface GigabitEthernet2.89
  encapsulation dot1Q 89
- vrf forwarding A
  ip address 10.8.9.9 255.255.255.0
  ipv6 address 2001:10:8:9::9/64
 !
@@ -2254,7 +2161,6 @@ interface GigabitEthernet2.914
  encapsulation dot1Q 914
  ip address 10.9.14.9 255.255.255.0
  ipv6 address 2001:10:9:14::9/64
- mpls bgp forwarding
 !
 interface GigabitEthernet3
  description to R2
@@ -2263,25 +2169,9 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router bgp 9
- bgp log-neighbor-changes
- no bgp default ipv4-unicast
- neighbor 10.9.14.14 remote-as 24
- !
- address-family vpnv4
-  neighbor 10.9.14.14 activate
-  neighbor 10.9.14.14 send-community extended
- exit-address-family
- !
- address-family vpnv6
-  neighbor 10.9.14.14 activate
-  neighbor 10.9.14.14 send-community extended
- exit-address-family
- !
- address-family ipv4 vrf A
-  neighbor 10.8.9.8 remote-as 8
-  neighbor 10.8.9.8 activate
- exit-address-family
+router ospf 200
+ router-id 9.9.9.9
+ network 0.0.0.0 255.255.255.255 area 79
 !
 
 threat-visibility
@@ -2330,17 +2220,16 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10009</entry>
-            <entry key="static_ip" type="String">172.16.11.109</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
         <extensions>
-            <entry key="config" type="string">!
-! Last configuration change at 15:18:08 UTC Wed Aug 23 2017
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10010</entry>
+            <entry key="config" type="String">!
+! Last configuration change at 03:53:56 UTC Sun Jan 7 2018
 !
 version 16.5
 service timestamps debug datetime msec
@@ -2363,7 +2252,6 @@ vrf definition Mgmt-intf
  address-family ipv6
  exit-address-family
 !
-enable secret 5 $1$hWc7$HSvDJMRM4ll8RUQq/NiaV.
 !
 no aaa new-model
 !
@@ -2378,6 +2266,7 @@ no aaa new-model
 
 no ip domain lookup
 ip domain name virl.info
+ip multicast-routing distributed
 !
 !
 !
@@ -2403,14 +2292,14 @@ multilink bundle-name authenticated
 !
 !
 !
-crypto pki trustpoint TP-self-signed-2194490462
+crypto pki trustpoint TP-self-signed-2069235916
  enrollment selfsigned
- subject-name cn=IOS-Self-Signed-Certificate-2194490462
+ subject-name cn=IOS-Self-Signed-Certificate-2069235916
  revocation-check none
- rsakeypair TP-self-signed-2194490462
+ rsakeypair TP-self-signed-2069235916
 !
 !
-crypto pki certificate chain TP-self-signed-2194490462
+crypto pki certificate chain TP-self-signed-2069235916
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
 !
 !
@@ -2420,7 +2309,7 @@ crypto pki certificate chain TP-self-signed-2194490462
 !
 !
 !
-license udi pid CSR1000V sn 9DBW9PYZ9V1
+license udi pid CSR1000V sn 9WDJOAY7WJT
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2428,7 +2317,7 @@ diagnostic bootup level minimal
 spanning-tree extend system-id
 !
 !
-username cisco privilege 15 secret 5 $1$oa8S$zNSff1WPWVymZl8f.fFXt0
+username cisco privilege 15 secret 5 $1$yapk$jJyjR0EHssgs.RowvvwNx1
 !
 redundancy
 !
@@ -2463,7 +2352,7 @@ interface Loopback0
 interface GigabitEthernet1
  description OOB Management
  vrf forwarding Mgmt-intf
- ip address 172.16.11.110 255.255.255.0
+ ip address 172.16.1.144 255.255.255.0
  negotiation auto
  no mop enabled
  no mop sysid
@@ -2478,23 +2367,18 @@ interface GigabitEthernet2
 interface GigabitEthernet2.210
  encapsulation dot1Q 210
  ip address 10.2.10.10 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
  ipv6 address 2001:10:2:10::10/64
 !
+interface GigabitEthernet2.810
+ encapsulation dot1Q 810
+ ip address 10.8.10.10 255.255.255.0
+ ip pim sparse-mode
+ ip ospf network point-to-point
 !
-router eigrp A
- !
- address-family ipv4 unicast autonomous-system 10
-  !
-  topology base
-  exit-af-topology
-  network 0.0.0.0
- exit-address-family
- !
- address-family ipv6 unicast autonomous-system 10
-  !
-  topology base
-  exit-af-topology
- exit-address-family
+router ospf 200
+ network 0.0.0.0 255.255.255.255 area 810
 !
 
 threat-visibility
@@ -2505,6 +2389,7 @@ ip forward-protocol nd
 ip http server
 ip http authentication local
 ip http secure-server
+ip pim rp-address 5.5.5.5
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -2543,15 +2428,15 @@ line vty 0 4
 !
 !
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10010</entry>
-            <entry key="static_ip" type="String">172.16.11.110</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="636,240" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10011</entry>
+            <entry key="static_ip" type="String">172.16.11.111</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R11
@@ -2624,15 +2509,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10011</entry>
-            <entry key="static_ip" type="String">172.16.11.111</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R12" type="SIMPLE" subtype="CSR1000v" location="696,240" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10012</entry>
+            <entry key="static_ip" type="String">172.16.11.112</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R12
@@ -2705,15 +2590,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10012</entry>
-            <entry key="static_ip" type="String">172.16.11.112</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R13" type="SIMPLE" subtype="CSR1000v" location="768,240" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10013</entry>
+            <entry key="static_ip" type="String">172.16.11.113</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R13
@@ -2786,15 +2671,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10013</entry>
-            <entry key="static_ip" type="String">172.16.11.113</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R14" type="SIMPLE" subtype="CSR1000v" location="828,240" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10014</entry>
+            <entry key="static_ip" type="String">172.16.11.114</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R14
@@ -2867,15 +2752,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10014</entry>
-            <entry key="static_ip" type="String">172.16.11.114</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R15" type="SIMPLE" subtype="CSR1000v" location="888,240" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10015</entry>
+            <entry key="static_ip" type="String">172.16.11.115</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R15
@@ -2948,15 +2833,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10015</entry>
-            <entry key="static_ip" type="String">172.16.11.115</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R16" type="SIMPLE" subtype="CSR1000v" location="634,400" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10016</entry>
+            <entry key="static_ip" type="String">172.16.11.116</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R16
@@ -3029,15 +2914,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10016</entry>
-            <entry key="static_ip" type="String">172.16.11.116</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R17" type="SIMPLE" subtype="CSR1000v" location="706,400" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10017</entry>
+            <entry key="static_ip" type="String">172.16.11.117</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R17
@@ -3110,15 +2995,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10017</entry>
-            <entry key="static_ip" type="String">172.16.11.117</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R18" type="SIMPLE" subtype="CSR1000v" location="766,400" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10018</entry>
+            <entry key="static_ip" type="String">172.16.11.118</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R18
@@ -3191,15 +3076,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10018</entry>
-            <entry key="static_ip" type="String">172.16.11.118</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R19" type="SIMPLE" subtype="CSR1000v" location="826,400" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10019</entry>
+            <entry key="static_ip" type="String">172.16.11.119</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R19
@@ -3272,15 +3157,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10019</entry>
-            <entry key="static_ip" type="String">172.16.11.119</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="886,400" excludeFromLaunch="true">
         <extensions>
-            <entry key="config" type="string">! IOS Config generated on 2016-04-21 17:05
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10020</entry>
+            <entry key="static_ip" type="String">172.16.11.120</entry>
+            <entry key="config" type="String">! IOS Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 !
 hostname R20
@@ -3353,16 +3238,15 @@ interface GigabitEthernet2
 !
 end
 </entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10020</entry>
-            <entry key="static_ip" type="String">172.16.11.120</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Aug 23 16:53:03 2017 by cisco
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10021</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sun Jan  7 03:56:10 2018 by admin
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3380,29 +3264,6 @@ vrf A
   !
   export route-target
    1:1
-  !
- !
- address-family ipv6 unicast
-  import route-target
-   1:1
-  !
- !
-!
-vrf B
- address-family ipv4 unicast
-  import route-target
-   2:2
-  !
-  export route-target
-   2:2
-  !
- !
- address-family ipv6 unicast
-  import route-target
-   2:2
-  !
-  export route-target
-   2:2
   !
  !
 !
@@ -3441,10 +3302,11 @@ interface MgmtEth0/0/CPU0/0
  description OOB Management
  ! Configured on launch
  vrf Mgmt-intf
- ipv4 address 172.16.11.121 255.255.255.0
+ ipv4 address 172.16.1.153 255.255.255.0
 !
 interface GigabitEthernet0/0/0/0
  description to Unmanaged_Switch_1
+ shutdown
 !
 interface GigabitEthernet0/0/0/0.111
  ipv4 address 10.1.11.11 255.255.255.0
@@ -3457,16 +3319,13 @@ interface GigabitEthernet0/0/0/0.211
  encapsulation dot1q 211
 !
 interface GigabitEthernet0/0/0/0.411
- vrf B
+ vrf A
  ipv4 address 10.4.11.11 255.255.255.0
- ipv6 address 2001:10:4:11::11/64
  encapsulation dot1q 411
 !
 interface GigabitEthernet0/0/0/0.811
- vrf A
  ipv4 address 10.8.11.11 255.255.255.0
  ipv6 address 2001:10:8:11::11/64
- shutdown
  encapsulation dot1q 811
 !
 interface GigabitEthernet0/0/0/0.1112
@@ -3477,27 +3336,19 @@ interface GigabitEthernet0/0/0/0.1112
 interface GigabitEthernet0/0/0/1
  description to XR2
 !
-route-policy PASS
-  pass
-end-policy
-!
-router isis 1
+router isis 100
  is-type level-2-only
- net 00.0000.0000.0011.00
+ net 49.1234.0000.0000.0011.00
  address-family ipv4 unicast
   metric-style wide
   advertise passive-only
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
   mpls ldp auto-config
- !
- address-family ipv6 unicast
-  metric-style wide
-  single-topology
  !
  interface Loopback0
   passive
   address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
   !
  !
  interface GigabitEthernet0/0/0/0.111
@@ -3505,15 +3356,11 @@ router isis 1
   address-family ipv4 unicast
    mpls ldp sync
   !
-  address-family ipv6 unicast
-  !
  !
  interface GigabitEthernet0/0/0/0.211
   point-to-point
   address-family ipv4 unicast
    mpls ldp sync
-  !
-  address-family ipv6 unicast
   !
  !
  interface GigabitEthernet0/0/0/0.1112
@@ -3521,18 +3368,16 @@ router isis 1
   address-family ipv4 unicast
    mpls ldp sync
   !
-  address-family ipv6 unicast
-  !
  !
 !
-router ospf 2
- router-id 11.11.11.11
- vrf B
-  domain-id type 0005 value 000000020200
-  network point-to-point
+router ospf 200
+ vrf A
+  router-id 11.11.11.11
+  domain-id type 0005 value 000000C80200
   redistribute bgp 123
   address-family ipv4 unicast
-  area 1
+  area 456
+   network point-to-point
    interface GigabitEthernet0/0/0/0.411
    !
   !
@@ -3540,23 +3385,12 @@ router ospf 2
 !
 router bgp 123
  bgp router-id 11.11.11.11
- address-family ipv4 unicast
-  network 2.2.2.2/32
-  network 12.12.12.12/32
- !
  address-family vpnv4 unicast
- !
- address-family ipv6 unicast
-  maximum-paths eibgp 16
- !
- address-family vpnv6 unicast
  !
  neighbor 2.2.2.2
   remote-as 123
   update-source Loopback0
   address-family vpnv4 unicast
-  !
-  address-family vpnv6 unicast
   !
  !
  neighbor 12.12.12.12
@@ -3564,54 +3398,56 @@ router bgp 123
   update-source Loopback0
   address-family vpnv4 unicast
   !
-  address-family vpnv6 unicast
-  !
  !
  vrf A
   rd 11.11.11.11:1
   address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
-  !
-  neighbor 10.8.11.8
-   remote-as 8
-   address-family ipv4 unicast
-    route-policy PASS in
-    route-policy PASS out
-   !
-   address-family ipv6 unicast
-    route-policy PASS in
-    route-policy PASS out
-   !
-  !
- !
- vrf B
-  rd 11.11.11.11:2
-  address-family ipv4 unicast
-   maximum-paths eibgp 16
-   redistribute ospf 2
-  !
-  address-family ipv6 unicast
-   maximum-paths eibgp 16
+   redistribute ospf 200
   !
  !
 !
+rsvp
+ interface GigabitEthernet0/0/0/0.111
+ !
+ interface GigabitEthernet0/0/0/0.211
+ !
+ interface GigabitEthernet0/0/0/0.1112
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/0.111
+ !
+ interface GigabitEthernet0/0/0/0.211
+ !
+ interface GigabitEthernet0/0/0/0.1112
+ !
+!
 mpls ldp
+ mldp
+  address-family ipv4
+  !
+ !
+ address-family ipv4
+  label
+   local
+    allocate for host-routes
+   !
+  !
+ !
 !
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10021</entry>
-            <entry key="static_ip" type="String">172.16.11.121</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
     <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Aug 23 15:19:21 2017 by CVAC
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10022</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sun Jan  7 02:03:49 2018 by admin
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3657,7 +3493,7 @@ interface MgmtEth0/0/CPU0/0
  description OOB Management
  ! Configured on launch
  vrf Mgmt-intf
- ipv4 address 172.16.11.122 255.255.255.0
+ ipv4 address 172.16.1.154 255.255.255.0
 !
 interface GigabitEthernet0/0/0/0
  description to Unmanaged_Switch_1
@@ -3690,29 +3526,19 @@ interface GigabitEthernet0/0/0/0.1213
 interface GigabitEthernet0/0/0/1
  description to XR1
 !
-route-policy set-isis-metric
-  set isis-metric 200
-  pass
-end-policy
-!
-router isis 1
+router isis 100
  is-type level-2-only
- net 00.0000.0000.0012.00
+ net 49.1234.0000.0000.0012.00
  address-family ipv4 unicast
   metric-style wide
   advertise passive-only
-  redistribute ospf 1 level-2
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
   mpls ldp auto-config
- !
- address-family ipv6 unicast
-  metric-style wide
-  single-topology
  !
  interface Loopback0
   passive
   address-family ipv4 unicast
-  !
-  address-family ipv6 unicast
   !
  !
  interface GigabitEthernet0/0/0/0.112
@@ -3720,15 +3546,17 @@ router isis 1
   address-family ipv4 unicast
    mpls ldp sync
   !
-  address-family ipv6 unicast
-  !
  !
  interface GigabitEthernet0/0/0/0.212
   point-to-point
   address-family ipv4 unicast
    mpls ldp sync
   !
-  address-family ipv6 unicast
+ !
+ interface GigabitEthernet0/0/0/0.312
+  point-to-point
+  address-family ipv4 unicast
+   mpls ldp sync
   !
  !
  interface GigabitEthernet0/0/0/0.1112
@@ -3736,43 +3564,11 @@ router isis 1
   address-family ipv4 unicast
    mpls ldp sync
   !
-  address-family ipv6 unicast
-  !
  !
-!
-router ospf 1
- log adjacency changes
- router-id 12.12.12.12
- mpls ldp sync
- prefix-suppression
- distance ospf external 116
- redistribute isis 1 level-2
- address-family ipv4 unicast
- area 0
-  network point-to-point
-  mpls ldp auto-config
-  interface Loopback0
-  !
-  interface GigabitEthernet0/0/0/0.212
-  !
-  interface GigabitEthernet0/0/0/0.312
-  !
-  interface GigabitEthernet0/0/0/0.1213
-  !
- !
-!
-router ospfv3 1
- prefix-suppression
- router-id 12.12.12.12
- area 0
-  network point-to-point
-  interface Loopback0
-  !
-  interface GigabitEthernet0/0/0/0.212
-  !
-  interface GigabitEthernet0/0/0/0.312
-  !
-  interface GigabitEthernet0/0/0/0.1213
+ interface GigabitEthernet0/0/0/0.1213
+  point-to-point
+  address-family ipv4 unicast
+   mpls ldp sync
   !
  !
 !
@@ -3780,15 +3576,10 @@ router bgp 123
  bgp router-id 12.12.12.12
  address-family vpnv4 unicast
  !
- address-family vpnv6 unicast
- !
  neighbor 1.1.1.1
   remote-as 123
   update-source Loopback0
   address-family vpnv4 unicast
-   route-reflector-client
-  !
-  address-family vpnv6 unicast
    route-reflector-client
   !
  !
@@ -3798,17 +3589,11 @@ router bgp 123
   address-family vpnv4 unicast
    route-reflector-client
   !
-  address-family vpnv6 unicast
-   route-reflector-client
-  !
  !
  neighbor 3.3.3.3
   remote-as 123
   update-source Loopback0
   address-family vpnv4 unicast
-   route-reflector-client
-  !
-  address-family vpnv6 unicast
    route-reflector-client
   !
  !
@@ -3818,9 +3603,6 @@ router bgp 123
   address-family vpnv4 unicast
    route-reflector-client
   !
-  address-family vpnv6 unicast
-   route-reflector-client
-  !
  !
  neighbor 13.13.13.13
   remote-as 123
@@ -3828,22 +3610,37 @@ router bgp 123
   address-family vpnv4 unicast
    route-reflector-client
   !
-  address-family vpnv6 unicast
-   route-reflector-client
-  !
  !
- neighbor 14.14.14.14
-  remote-as 24
-  ebgp-multihop 10
-  update-source Loopback0
-  address-family vpnv4 unicast
-  !
-  address-family vpnv6 unicast
-  !
+!
+rsvp
+ interface GigabitEthernet0/0/0/0.112
+ !
+ interface GigabitEthernet0/0/0/0.212
+ !
+ interface GigabitEthernet0/0/0/0.312
+ !
+ interface GigabitEthernet0/0/0/0.1112
+ !
+ interface GigabitEthernet0/0/0/0.1213
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/0.112
+ !
+ interface GigabitEthernet0/0/0/0.212
+ !
+ interface GigabitEthernet0/0/0/0.312
+ !
+ interface GigabitEthernet0/0/0/0.1112
+ !
+ interface GigabitEthernet0/0/0/0.1213
  !
 !
 mpls ldp
- router-id 12.12.12.12
+ mldp
+  address-family ipv4
+  !
+ !
  address-family ipv4
   label
    local
@@ -3855,17 +3652,16 @@ mpls ldp
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10022</entry>
-            <entry key="static_ip" type="String">172.16.11.122</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
     <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Aug 23 15:19:25 2017 by CVAC
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10023</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sun Jan  7 03:56:23 2018 by admin
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3876,21 +3672,13 @@ telnet vrf default ipv4 server max-servers 10
 telnet vrf Mgmt-intf ipv4 server max-servers 10
 domain name virl.info
 domain lookup disable
-vrf B
+vrf A
  address-family ipv4 unicast
   import route-target
-   2:2
+   1:1
   !
   export route-target
-   2:2
-  !
- !
- address-family ipv6 unicast
-  import route-target
-   2:2
-  !
-  export route-target
-   2:2
+   1:1
   !
  !
 !
@@ -3929,10 +3717,11 @@ interface MgmtEth0/0/CPU0/0
  description OOB Management
  ! Configured on launch
  vrf Mgmt-intf
- ipv4 address 172.16.11.123 255.255.255.0
+ ipv4 address 172.16.1.155 255.255.255.0
 !
 interface GigabitEthernet0/0/0/0
  description to Unmanaged_Switch_1
+ shutdown
 !
 interface GigabitEthernet0/0/0/0.213
  ipv4 address 10.2.13.13 255.255.255.0
@@ -3945,9 +3734,8 @@ interface GigabitEthernet0/0/0/0.313
  encapsulation dot1q 313
 !
 interface GigabitEthernet0/0/0/0.713
- vrf B
+ vrf A
  ipv4 address 10.7.13.13 255.255.255.0
- ipv6 address 2001:10:7:13::13/64
  encapsulation dot1q 713
 !
 interface GigabitEthernet0/0/0/0.1213
@@ -3960,80 +3748,61 @@ interface GigabitEthernet0/0/0/0.1314
  ipv6 address 2001:10:13:14::13/64
  encapsulation dot1q 1314
 !
-route-policy PASS
-  pass
-end-policy
-!
-router ospf 1
- log adjacency changes
- router-id 13.13.13.13
- mpls ldp sync
- prefix-suppression
- redistribute bgp 123
+router isis 100
+ is-type level-2-only
+ net 49.1234.0000.0000.0013.00
  address-family ipv4 unicast
- area 0
-  network point-to-point
+  metric-style wide
+  advertise passive-only
+  mpls traffic-eng level-2-only
+  mpls traffic-eng router-id Loopback0
   mpls ldp auto-config
-  interface Loopback0
+ !
+ interface Loopback0
+  passive
+  address-family ipv4 unicast
   !
-  interface GigabitEthernet0/0/0/0.213
+ !
+ interface GigabitEthernet0/0/0/0.213
+  point-to-point
+  address-family ipv4 unicast
+   mpls ldp sync
   !
-  interface GigabitEthernet0/0/0/0.313
+ !
+ interface GigabitEthernet0/0/0/0.313
+  point-to-point
+  address-family ipv4 unicast
+   mpls ldp sync
   !
-  interface GigabitEthernet0/0/0/0.1213
+ !
+ interface GigabitEthernet0/0/0/0.1213
+  point-to-point
+  address-family ipv4 unicast
+   mpls ldp sync
   !
  !
 !
-router ospf 2
- router-id 13.13.13.13
- vrf B
-  domain-id type 0005 value 000000020200
+router ospf 200
+ vrf A
+  router-id 13.13.13.13
+  domain-id type 0005 value 000000C80200
   redistribute bgp 123
   address-family ipv4 unicast
-  area 2
+  area 79
+   network point-to-point
    interface GigabitEthernet0/0/0/0.713
-    network point-to-point
    !
   !
  !
 !
-router ospfv3 1
- prefix-suppression
- router-id 13.13.13.13
- area 0
-  network point-to-point
-  interface Loopback0
-  !
-  interface GigabitEthernet0/0/0/0.213
-  !
-  interface GigabitEthernet0/0/0/0.313
-  !
-  interface GigabitEthernet0/0/0/0.1213
-  !
- !
-!
 router bgp 123
- address-family ipv4 unicast
-  network 2.2.2.2/32
-  network 12.12.12.12/32
- !
+ bgp router-id 13.13.13.13
  address-family vpnv4 unicast
- !
- address-family vpnv6 unicast
  !
  neighbor 2.2.2.2
   remote-as 123
   update-source Loopback0
   address-family vpnv4 unicast
-  !
-  address-family vpnv6 unicast
-  !
- !
- neighbor 10.13.14.14
-  remote-as 24
-  address-family ipv4 unicast
-   route-policy PASS in
-   route-policy PASS out
   !
  !
  neighbor 12.12.12.12
@@ -4041,35 +3810,55 @@ router bgp 123
   update-source Loopback0
   address-family vpnv4 unicast
   !
-  address-family vpnv6 unicast
-  !
  !
- vrf B
-  rd 13.13.13.13:2
+ vrf A
+  rd 13.13.13.13:1
   address-family ipv4 unicast
-   maximum-paths eibgp 16
-   redistribute ospf 2
-  !
-  address-family ipv6 unicast
-   maximum-paths eibgp 16
+   redistribute ospf 200
   !
  !
 !
+rsvp
+ interface GigabitEthernet0/0/0/0.213
+ !
+ interface GigabitEthernet0/0/0/0.313
+ !
+ interface GigabitEthernet0/0/0/0.1213
+ !
+!
+mpls traffic-eng
+ interface GigabitEthernet0/0/0/0.213
+ !
+ interface GigabitEthernet0/0/0/0.313
+ !
+ interface GigabitEthernet0/0/0/0.1213
+ !
+!
 mpls ldp
+ mldp
+  address-family ipv4
+  !
+ !
+ address-family ipv4
+  label
+   local
+    allocate for host-routes
+   !
+  !
+ !
 !
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10023</entry>
-            <entry key="static_ip" type="String">172.16.11.123</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
     </node>
     <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
         <extensions>
-            <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Aug 23 16:45:02 2017 by cisco
+            <entry key="AutoNetkit.mgmt_ip" type="string"></entry>
+            <entry key="static_serial_port_0" type="Integer">10024</entry>
+            <entry key="config" type="String">!! IOS XR Configuration 6.1.3
+!! Last configuration change at Sun Jan  7 03:48:34 2018 by admin
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -4080,16 +3869,6 @@ telnet vrf default ipv4 server max-servers 10
 telnet vrf Mgmt-intf ipv4 server max-servers 10
 domain name virl.info
 domain lookup disable
-vrf XYZ
- address-family ipv4 unicast
-  import route-target
-   1:1
-  !
-  export route-target
-   1:1
-  !
- !
-!
 vrf Mgmt-intf
  address-family ipv4 unicast
  !
@@ -4125,7 +3904,7 @@ interface MgmtEth0/0/CPU0/0
  description OOB Management
  ! Configured on launch
  vrf Mgmt-intf
- ipv4 address 172.16.11.124 255.255.255.0
+ ipv4 address 172.16.1.156 255.255.255.0
 !
 interface GigabitEthernet0/0/0/0
  description to Unmanaged_Switch_1
@@ -4140,73 +3919,9 @@ interface GigabitEthernet0/0/0/0.1314
  ipv6 address 2001:10:13:14::14/64
  encapsulation dot1q 1314
 !
-route-policy PASS
-  pass
-end-policy
-!
-router bgp 24
- bgp router-id 14.14.14.14
- address-family ipv4 unicast
-  network 14.14.14.14/32
- !
- address-family vpnv4 unicast
- !
- address-family vpnv6 unicast
- !
- neighbor 2.2.2.2
-  remote-as 123
-  ebgp-multihop 10
-  update-source Loopback0
-  address-family vpnv4 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
-  address-family vpnv6 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
- !
- neighbor 10.9.14.9
-  remote-as 9
-  address-family vpnv4 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
-  address-family vpnv6 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
- !
- neighbor 10.13.14.13
-  remote-as 123
-  address-family ipv4 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
- !
- neighbor 12.12.12.12
-  remote-as 123
-  ebgp-multihop 10
-  update-source Loopback0
-  address-family vpnv4 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
-  address-family vpnv6 unicast
-   route-policy PASS in
-   route-policy PASS out
-  !
- !
- vrf XYZ
-  rd 123:456
- !
-!
 ssh server v2
 ssh server vrf Mgmt-intf
 end</entry>
-            <entry key="AutoNetkit.mgmt_ip" type="string"/>
-            <entry key="static_serial_port_0" type="Integer">10024</entry>
-            <entry key="static_ip" type="String">172.16.11.124</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
     </node>
@@ -4239,272 +3954,6 @@ end</entry>
         <interface id="12" name="link13"/>
         <interface id="13" name="link14"/>
         <interface id="14" name="link15"/>
-    </node>
-    <node name="Access-Server" type="SIMPLE" subtype="IOSv" location="173,170">
-        <extensions>
-            <entry key="AutoNetkit.mgmt_ip" type="String"/>
-            <entry key="static_serial_port_0" type="Integer">10000</entry>
-            <entry key="config" type="String">!
-! Last configuration change at 22:51:41 UTC Mon Jun 6 2016
-!
-! For VIRL HOST
-!
-! sudo iptables -t nat -A PREROUTING -i bond0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.11.10:23
-!
-! FILL IN THESE VARIABLES FOR THE USER
-!
-! username $username privilege 1 password 0 $password
-! username $username autocommand menu main_menu
-!
-username ccie privilege 1 password 0 spv4
-username ccie autocommand menu main_menu
-username admin privilege 1 password 0 spv4
-
-version 15.6
-service timestamps debug datetime msec
-service timestamps log datetime msec
-no service password-encryption
-!
-hostname Access-Server
-!
-boot-start-marker
-boot-end-marker
-!
-!
-vrf definition Mgmt-intf
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
-enable password cisco
-!
-no aaa new-model
-ethernet lmi ce
-!
-!
-!
-mmi polling-interval 60
-no mmi auto-configure
-no mmi pvc
-mmi snmp-timeout 180
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-!
-no ip domain lookup
-ip domain name virl.info
-ip cef
-ipv6 unicast-routing
-ipv6 cef
-!
-multilink bundle-name authenticated
-!
-!
-!
-!
-!
-privilege exec level 0 telnet
-privilege exec level 0 menu
-privilege exec level 0 exit
-privilege exec level 0 clear
-privilege exec level 0 clear line
-!
-no menu main_menu
-menu main_menu title $
-+------------------------------------------+
-|            SPv4 Bootcamp Menu            |
-+------------------------------------------+
-$
-menu main_menu prompt $Enter Selection: $
-menu main_menu text 1. Connect to R1
-menu main_menu command 1. telnet 172.16.11.101 /vrf Mgmt-intf
-menu main_menu text 2. Connect to R2
-menu main_menu command 2. telnet 172.16.11.102 /vrf Mgmt-intf
-menu main_menu text 3. Connect to R3
-menu main_menu command 3. telnet 172.16.11.103 /vrf Mgmt-intf
-menu main_menu text 4. Connect to R4
-menu main_menu command 4. telnet 172.16.11.104 /vrf Mgmt-intf
-menu main_menu text 5. Connect to R5
-menu main_menu command 5. telnet 172.16.11.105 /vrf Mgmt-intf
-menu main_menu text 6. Connect to R6
-menu main_menu command 6. telnet 172.16.11.106 /vrf Mgmt-intf
-menu main_menu text 7. Connect to R7
-menu main_menu command 7. telnet 172.16.11.107 /vrf Mgmt-intf
-menu main_menu text 8. Connect to R8
-menu main_menu command 8. telnet 172.16.11.108 /vrf Mgmt-intf
-menu main_menu text 9. Connect to R9
-menu main_menu command 9. telnet 172.16.11.109 /vrf Mgmt-intf
-menu main_menu text 10. Connect to R10
-menu main_menu command 10. telnet 172.16.11.110 /vrf Mgmt-intf
-menu main_menu text 11. Connect to R11
-menu main_menu command 11. telnet 172.16.11.111 /vrf Mgmt-intf
-menu main_menu text 12. Connect to R12
-menu main_menu command 12. telnet 172.16.11.112 /vrf Mgmt-intf
-menu main_menu text 13. Connect to R13
-menu main_menu command 13. telnet 172.16.11.113 /vrf Mgmt-intf
-menu main_menu text 14. Connect to R14
-menu main_menu command 14. telnet 172.16.11.114 /vrf Mgmt-intf
-menu main_menu text 15. Connect to R15
-menu main_menu command 15. telnet 172.16.11.115 /vrf Mgmt-intf
-menu main_menu text 16. Connect to R16
-menu main_menu command 16. telnet 172.16.11.116 /vrf Mgmt-intf
-menu main_menu text 17. Connect to R17
-menu main_menu command 17. telnet 172.16.11.117 /vrf Mgmt-intf
-menu main_menu text 18. Connect to R18
-menu main_menu command 18. telnet 172.16.11.118 /vrf Mgmt-intf
-menu main_menu text 19. Connect to R19
-menu main_menu command 19. telnet 172.16.11.119 /vrf Mgmt-intf
-menu main_menu text 20. Connect to R20
-menu main_menu command 20. telnet 172.16.11.120 /vrf Mgmt-intf
-menu main_menu text 21. Connect to XR1
-menu main_menu command 21. telnet 172.16.11.121 /vrf Mgmt-intf
-menu main_menu text 22. Connect to XR2
-menu main_menu command 22. telnet 172.16.11.122 /vrf Mgmt-intf
-menu main_menu text 23. Connect to XR3
-menu main_menu command 23. telnet 172.16.11.123 /vrf Mgmt-intf
-menu main_menu text 24. Connect to XR4
-menu main_menu command 24. telnet 172.16.11.124 /vrf Mgmt-intf
-menu main_menu text 25. Connect to XR1 Console
-menu main_menu command 25. telnet 172.16.11.100 10021 /vrf Mgmt-intf
-menu main_menu text 26. Connect to XR2 Console
-menu main_menu command 26. telnet 172.16.11.100 10022 /vrf Mgmt-intf
-menu main_menu text 27. Connect to XR3 Console
-menu main_menu command 27. telnet 172.16.11.100 10023 /vrf Mgmt-intf
-menu main_menu text 28. Connect to XR4 Console
-menu main_menu command 28. telnet 172.16.11.100 10024 /vrf Mgmt-intf
-menu main_menu text C. Console Menu
-menu main_menu command C. menu console_menu 
-menu main_menu text Q. Quit
-menu main_menu command Q. Exit
-menu main_menu clear-screen
-
-
-
-no menu console_menu
-menu console_menu title $
-+------------------------------------------+
-|      SPv4 Bootcamp Console Menu          |
-+------------------------------------------+
-$
-menu console_menu prompt $Enter Selection: $
-menu console_menu text 1. Connect to R1
-menu console_menu command 1. telnet 172.16.11.100 10001 /vrf Mgmt-intf
-menu console_menu text 2. Connect to R2
-menu console_menu command 2. telnet 172.16.11.100 10002 /vrf Mgmt-intf
-menu console_menu text 3. Connect to R3
-menu console_menu command 3. telnet 172.16.11.100 10003 /vrf Mgmt-intf
-menu console_menu text 4. Connect to R4
-menu console_menu command 4. telnet 172.16.11.100 10004 /vrf Mgmt-intf
-menu console_menu text 5. Connect to R5
-menu console_menu command 5. telnet 172.16.11.100 10005 /vrf Mgmt-intf
-menu console_menu text 6. Connect to R6
-menu console_menu command 6. telnet 172.16.11.100 10006 /vrf Mgmt-intf
-menu console_menu text 7. Connect to R7
-menu console_menu command 7. telnet 172.16.11.100 10007 /vrf Mgmt-intf
-menu console_menu text 8. Connect to R8
-menu console_menu command 8. telnet 172.16.11.100 10008 /vrf Mgmt-intf
-menu console_menu text 9. Connect to R9
-menu console_menu command 9. telnet 172.16.11.100 10009 /vrf Mgmt-intf
-menu console_menu text 10. Connect to R10
-menu console_menu command 10. telnet 172.16.11.100 10010 /vrf Mgmt-intf
-menu console_menu text 11. Connect to R11
-menu console_menu command 11. telnet 172.16.11.100 10011 /vrf Mgmt-intf
-menu console_menu text 12. Connect to R12
-menu console_menu command 12. telnet 172.16.11.100 10012 /vrf Mgmt-intf
-menu console_menu text 13. Connect to R13
-menu console_menu command 13. telnet 172.16.11.100 10013 /vrf Mgmt-intf
-menu console_menu text 14. Connect to R14
-menu console_menu command 14. telnet 172.16.11.100 10014 /vrf Mgmt-intf
-menu console_menu text 15. Connect to R15
-menu console_menu command 15. telnet 172.16.11.100 10015 /vrf Mgmt-intf
-menu console_menu text 16. Connect to R16
-menu console_menu command 16. telnet 172.16.11.100 10016 /vrf Mgmt-intf
-menu console_menu text 17. Connect to R17
-menu console_menu command 17. telnet 172.16.11.100 10017 /vrf Mgmt-intf
-menu console_menu text 18. Connect to R18
-menu console_menu command 18. telnet 172.16.11.100 10018 /vrf Mgmt-intf
-menu console_menu text 19. Connect to R19
-menu console_menu command 19. telnet 172.16.11.100 10019 /vrf Mgmt-intf
-menu console_menu text 20. Connect to R20
-menu console_menu command 20. telnet 172.16.11.100 10020 /vrf Mgmt-intf
-menu console_menu text 21. Connect to XR1
-menu console_menu command 21. telnet 172.16.11.100 10021 /vrf Mgmt-intf
-menu console_menu text 22. Connect to XR2
-menu console_menu command 22. telnet 172.16.11.100 10022 /vrf Mgmt-intf
-menu console_menu text 23. Connect to XR3
-menu console_menu command 23. telnet 172.16.11.100 10023 /vrf Mgmt-intf
-menu console_menu text 24. Connect to XR4
-menu console_menu command 24. telnet 172.16.11.100 10024 /vrf Mgmt-intf
-menu console_menu text Q. Quit
-menu console_menu command Q. Exit
-menu console_menu clear-screen
-!
-redundancy
-!
-interface GigabitEthernet0/0
- description OOB Management
- vrf forwarding Mgmt-intf
- ip address 172.16.11.10 255.255.255.0
- duplex full
- speed auto
- media-type rj45
- no cdp enable
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.11.254
-ip ssh server algorithm authentication password
-!
-kron occurrence KRONJOB in 1 recurring system-startup
- policy-list KRONPOLICY
-!
-kron policy-list KRONPOLICY
- cli event manager run CLI_AFTER_BOOT
- cli event manager run CLI_AFTER_BOOT
- cli event manager run CLI_AFTER_BOOT
-!
-!
-!
-!
-control-plane
-!
-!
-line con 0
- password cisco
-line aux 0
-line vty 0
- exec-timeout 720 0
- password cisco
- login local
- length 0
- transport input telnet ssh
-line vty 1 100
- exec-timeout 720 0
- password cisco
- login local
- transport input telnet ssh
-!
-no scheduler allocate
-event manager applet CLI_AFTER_BOOT
- event none
- action 1.0 cli command "enable"
- action 2.0 cli command "configure terminal"
- action 3.0 cli command "no banner motd"
- action 4.0 cli command "no banner login"
- action 5.0 cli command "no banner incoming"
- action 6.0 cli command "no banner exec"
-!
-end</entry>
-            <entry key="static_ip" type="String">172.16.11.10</entry>
-        </extensions>
-        <interface id="0" name="GigabitEthernet0/1"/>
     </node>
     <annotations/>
     <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[26]/virl:interface[1]"/>
