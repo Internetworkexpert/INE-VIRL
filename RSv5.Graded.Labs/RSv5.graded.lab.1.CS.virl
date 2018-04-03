@@ -4812,8 +4812,8 @@ end</entry>
 !
 !
 enable secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username admin privilege 15 secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username netwalker242 privilege 15 password 1 Ccie4me
+username admin privilege 15 password 0 cisco
+username netwalker242 privilege 15 password 0 Ccie4me
 username mlws242 privilege 1 password 0 Ccie4me
 username mlws242 autocommand menu main_menu
 
