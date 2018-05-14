@@ -5693,7 +5693,7 @@ ip forward-protocol nd
 !
 no ip http server
 no ip http secure-server
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.250
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
