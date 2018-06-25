@@ -6459,8 +6459,8 @@ end</entry>
 ! FILL IN THESE VARIABLES FOR THE USER
 !
 !
-enable secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
-username admin privilege 15 secret 5 $1$DRTn$u6774L2fmv2tr2VfCH.Bl1
+enable secret cisco
+username admin privilege 15 password 0 ccie
 username ccie privilege 1 password 0 bootcamp
 username ccie autocommand menu ts_menu
 
@@ -6677,7 +6677,7 @@ interface GigabitEthernet0/0
  speed auto
  media-type rj45
  no cdp enable
-ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.250
 ip ssh server algorithm authentication password
 !
 kron occurrence KRONJOB in 1 recurring system-startup
