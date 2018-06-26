@@ -6636,29 +6636,13 @@ kron policy-list KRONPOLICY
 ipv6 ioam timestamp
 !
 !
-menu main_menu title ^
-+--------------------------------------+
-|           RSv5 Graded Lab 1          |
-|              Main Menu               |
-+--------------------------------------+
-^
-menu main_menu prompt ^Enter The Topology You Are Working On: ^
-menu main_menu text 1. Troubleshooting
-menu main_menu command 1. menu ts_menu
-menu main_menu text 2. Configuration
-menu main_menu command 2. menu cfg_menu
-menu main_menu text Q. Quit to Access Server
-menu main_menu command Q. menu-exit
-menu main_menu text X. Exit
-menu main_menu command X. Exit
-menu main_menu clear-screen
 !
-menu ts_menu title ^
+menu ts_menu title %
 +------------------------------------------+
 |     RSv5 Bootcamp Assessment Lab         |
 +------------------------------------------+
-^
-menu ts_menu prompt ^Enter Selection: ^
+%
+menu ts_menu prompt %Enter Selection: %
 menu ts_menu text 1. Connect to R1
 menu ts_menu command 1. telnet 172.16.1.101 /vrf Mgmt-intf
 menu ts_menu text 2. Connect to R2
@@ -6722,77 +6706,6 @@ menu ts_menu command 30. telnet 172.16.1.130 /vrf Mgmt-intf
 menu ts_menu text Q. Quit
 menu ts_menu command Q. Exit
 menu ts_menu clear-screen
-!
-menu cfg_menu title ^
-+--------------------------------------+
-|           RSv5 Graded Lab 1          |
-|      Configuration Section Menu      |
-+--------------------------------------+
-^
-menu cfg_menu prompt ^Enter Selection: ^
-menu cfg_menu text 1. Connect to CFG-R1
-menu cfg_menu command 1. telnet 172.16.1.201 /vrf Mgmt-intf
-menu cfg_menu text 2. Connect to CFG-R2
-menu cfg_menu command 2. telnet 172.16.1.202 /vrf Mgmt-intf
-menu cfg_menu text 3. Connect to CFG-R3
-menu cfg_menu command 3. telnet 172.16.1.203 /vrf Mgmt-intf
-menu cfg_menu text 4. Connect to CFG-R4
-menu cfg_menu command 4. telnet 172.16.1.204 /vrf Mgmt-intf
-menu cfg_menu text 5. Connect to CFG-R5
-menu cfg_menu command 5. telnet 172.16.1.205 /vrf Mgmt-intf
-menu cfg_menu text 6. Connect to CFG-R6
-menu cfg_menu command 6. telnet 172.16.1.206 /vrf Mgmt-intf
-menu cfg_menu text 7. Connect to CFG-R7
-menu cfg_menu command 7. telnet 172.16.1.207 /vrf Mgmt-intf
-menu cfg_menu text 8. Connect to CFG-R8
-menu cfg_menu command 8. telnet 172.16.1.208 /vrf Mgmt-intf
-menu cfg_menu text 9. Connect to CFG-R9
-menu cfg_menu command 9. telnet 172.16.1.209 /vrf Mgmt-intf
-menu cfg_menu text 10. Connect to CFG-R10
-menu cfg_menu command 10. telnet 172.16.1.210 /vrf Mgmt-intf
-menu cfg_menu text 11. Connect to CFG-R11
-menu cfg_menu command 11. telnet 172.16.1.211 /vrf Mgmt-intf
-menu cfg_menu text 12. Connect to CFG-R12
-menu cfg_menu command 12. telnet 172.16.1.212 /vrf Mgmt-intf
-menu cfg_menu text 13. Connect to CFG-R13
-menu cfg_menu command 13. telnet 172.16.1.213 /vrf Mgmt-intf
-menu cfg_menu text 14. Connect to CFG-R14
-menu cfg_menu command 14. telnet 172.16.1.214 /vrf Mgmt-intf
-menu cfg_menu text 15. Connect to CFG-R15
-menu cfg_menu command 15. telnet 172.16.1.215 /vrf Mgmt-intf
-menu cfg_menu text 16. Connect to CFG-R16
-menu cfg_menu command 16. telnet 172.16.1.216 /vrf Mgmt-intf
-menu cfg_menu text 17. Connect to CFG-R17
-menu cfg_menu command 17. telnet 172.16.1.217 /vrf Mgmt-intf
-menu cfg_menu text 18. Connect to CFG-R18
-menu cfg_menu command 18. telnet 172.16.1.218 /vrf Mgmt-intf
-menu cfg_menu text 19. Connect to CFG-R19
-menu cfg_menu command 19. telnet 172.16.1.219 /vrf Mgmt-intf
-menu cfg_menu text 20. Connect to CFG-R20
-menu cfg_menu command 20. telnet 172.16.1.220 /vrf Mgmt-intf
-menu cfg_menu text 21. Connect to CFG-R21
-menu cfg_menu command 21. telnet 172.16.1.221 /vrf Mgmt-intf
-menu cfg_menu text 22. Connect to CFG-R22
-menu cfg_menu command 22. telnet 172.16.1.222 /vrf Mgmt-intf
-menu cfg_menu text 23. Connect to CFG-R23
-menu cfg_menu command 23. telnet 172.16.1.223 /vrf Mgmt-intf
-menu cfg_menu text 24. Connect to CFG-R24
-menu cfg_menu command 24. telnet 172.16.1.224 /vrf Mgmt-intf
-menu cfg_menu text 25. Connect to CFG-R25
-menu cfg_menu command 25. telnet 172.16.1.225 /vrf Mgmt-intf
-menu cfg_menu text 26. Connect to CFG-SW1
-menu cfg_menu command 26. telnet 172.16.1.226 /vrf Mgmt-intf
-menu cfg_menu text 27. Connect to CFG-SW2
-menu cfg_menu command 27. telnet 172.16.1.227 /vrf Mgmt-intf
-menu cfg_menu text 28. Connect to CFG-SW3
-menu cfg_menu command 28. telnet 172.16.1.228 /vrf Mgmt-intf
-menu cfg_menu text 29. Connect to CFG-SW4
-menu cfg_menu command 29. telnet 172.16.1.229 /vrf Mgmt-intf
-menu cfg_menu text 30. Connect to CFG-SW5
-menu cfg_menu command 30. telnet 172.16.1.230 /vrf Mgmt-intf
-menu cfg_menu text Q. Quit
-menu cfg_menu command Q. Exit
-menu cfg_menu clear-screen
 !
 !
 control-plane
