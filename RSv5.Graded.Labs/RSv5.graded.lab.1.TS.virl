@@ -36,6 +36,8 @@ username admin privilege 15 secret cisco
 username netwalker242 privilege 15 password 1 Ccie4me
 username mlws242 privilege 1 password 0 Ccie4me
 username mlws242 autocommand menu main_menu
+username ccie privilege 1 password 0 bootcamp
+username ccie autocommand menu main_menu
 
 !
 version 15.6
