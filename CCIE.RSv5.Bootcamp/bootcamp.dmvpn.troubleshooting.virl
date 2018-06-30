@@ -12,7 +12,7 @@
             <entry key="static_serial_port_0" type="Integer">11001</entry>
             <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="config" type="String">!
-! Last configuration change at 23:56:14 UTC Thu Nov 17 2016
+! Last configuration change at 23:55:38 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -36,7 +36,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -83,10 +82,10 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.1.1.1 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -100,37 +99,49 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R2
  ip address 184.17.12.0 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/2
  description to R3
  ip address 184.17.12.2 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/3
  description to R4
  ip address 184.17.12.4 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/4
  description to R5
  ip address 184.17.12.6 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
 !
 interface GigabitEthernet0/5
  description to R6
  ip address 184.17.12.8 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
+!
+router ospf 1
 !
 ip forward-protocol nd
 !
@@ -138,7 +149,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.250
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -148,6 +161,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -180,7 +194,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -194,7 +210,7 @@ end</entry>
             <entry key="static_serial_port_0" type="Integer">11002</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="config" type="String">!
-! Last configuration change at 00:01:32 UTC Fri Nov 18 2016
+! Last configuration change at 23:56:41 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -207,6 +223,31 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition BRANCH-SITE-1
+ rd 10.2.2.2:172
+ route-target export 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.3.3.3:172
+ route-target import 10.5.5.5:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP-C
+ rd 10.2.2.2:1282
+ route-target export 10.2.2.2:1282
+ route-target export 18417:1000
+ route-target import 18417:1000
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
  !
  address-family ipv4
@@ -218,7 +259,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -265,7 +305,6 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.2.2.2 255.255.255.255
@@ -291,6 +330,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R12
+ vrf forwarding ISP-C
  ip address 12.18.255.3 255.255.255.254
  duplex full
  speed auto
@@ -299,18 +339,72 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R15
+ vrf forwarding BRANCH-SITE-1
  ip address 184.17.13.1 255.255.255.252
+ ip ospf 15 area 15
  duplex full
  speed auto
  media-type rj45
  ipv6 address 2001:184:17:13::1/126
+ ospfv3 15 ipv6 area 15
 !
 router ospfv3 15
  !
  address-family ipv6 unicast
  exit-address-family
+ !
+ address-family ipv6 unicast vrf BRANCH-SITE-1
+  redistribute bgp 18417 metric 20
+ exit-address-family
+!
+router ospf 15 vrf BRANCH-SITE-1
+ redistribute bgp 18417 subnets
 !
 router ospf 1
+!
+router bgp 18417
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf BRANCH-SITE-1
+  redistribute ospf 15
+ exit-address-family
+ !
+ address-family ipv6 vrf BRANCH-SITE-1
+  redistribute ospf 15 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf ISP-C
+  redistribute connected
+  neighbor 12.18.255.2 remote-as 786514
+  neighbor 12.18.255.2 ttl-security hops 1
+  neighbor 12.18.255.2 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf ISP-C
+  redistribute connected
+  neighbor 2001:12:18:255::2 remote-as 786514
+  neighbor 2001:12:18:255::2 ttl-security hops 1
+  neighbor 2001:12:18:255::2 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -318,7 +412,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -328,6 +424,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -360,7 +457,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -372,7 +471,7 @@ end</entry>
             <entry key="static_serial_port_0" type="Integer">11003</entry>
             <entry key="AutoNetkit.mgmt_ip" type="string"/>
             <entry key="config" type="String">!
-! Last configuration change at 00:00:49 UTC Fri Nov 18 2016
+! Last configuration change at 00:11:07 UTC Thu Jun 28 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -385,7 +484,44 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition HQ-SITE-1
+ rd 10.3.3.3:172
+ route-target export 10.3.3.3:172
+ route-target import 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.5.5.5:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition ISP-C
+ rd 10.3.3.3:1282
+ route-target export 10.3.3.3:1282
+ route-target export 18417:1000
+ route-target import 18417:1000
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition REMOTE-SITE-2
+ rd 18417:8593
+ route-target export 10.3.3.3:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -396,7 +532,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -443,7 +578,6 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.3.3.3 255.255.255.255
@@ -469,7 +603,9 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R14
+ vrf forwarding REMOTE-SITE-2
  ip address 184.17.13.25 255.255.255.252
+ ip access-group 111 out
  duplex full
  speed auto
  media-type rj45
@@ -477,6 +613,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R12
+ vrf forwarding ISP-C
  ip address 12.18.255.1 255.255.255.254
  duplex full
  speed auto
@@ -485,18 +622,89 @@ interface GigabitEthernet0/3
 !
 interface GigabitEthernet0/4
  description to R18
+ vrf forwarding HQ-SITE-1
  ip address 184.17.13.9 255.255.255.252
+ ip ospf 3 area 0
  duplex full
  speed auto
  media-type rj45
  ipv6 address 2001:184:17:13::9/127
+ ospfv3 3 ipv6 area 0
 !
 router ospfv3 3
  !
  address-family ipv6 unicast
  exit-address-family
+ !
+ address-family ipv6 unicast vrf HQ-SITE-1
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 3 vrf HQ-SITE-1
+ redistribute bgp 18417 subnets
 !
 router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf HQ-SITE-1
+  redistribute ospf 3
+ exit-address-family
+ !
+ address-family ipv6 vrf HQ-SITE-1
+  redistribute ospf 3 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf ISP-C
+  redistribute connected
+  neighbor 12.18.255.0 remote-as 12.82
+  neighbor 12.18.255.0 ttl-security hops 1
+  neighbor 12.18.255.0 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf ISP-C
+  redistribute connected
+  neighbor 2001:12:18:255:: remote-as 12.82
+  neighbor 2001:12:18:255:: ttl-security hops 1
+  neighbor 2001:12:18:255:: activate
+ exit-address-family
+ !
+ address-family ipv4 vrf REMOTE-SITE-2
+  redistribute connected
+  neighbor 184.17.13.26 remote-as 8593.2
+  neighbor 184.17.13.26 activate
+  neighbor 184.17.13.26 default-originate
+  neighbor 184.17.13.26 route-map V4-DEFAULT-ONLY out
+ exit-address-family
+ !
+ address-family ipv6 vrf REMOTE-SITE-2
+  redistribute connected
+  neighbor 2001:184:17:13::26 remote-as 8593.2
+  neighbor 2001:184:17:13::26 activate
+  neighbor 2001:184:17:13::26 default-originate
+  neighbor 2001:184:17:13::26 route-map V6-DEFAULT-ONLY out
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -504,7 +712,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 ip prefix-list V4-DEFAULT seq 5 permit 0.0.0.0/0
@@ -516,6 +726,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 ipv6 prefix-list V6-DEFAULT seq 5 permit ::/0
@@ -526,6 +737,8 @@ route-map V6-DEFAULT-ONLY permit 20
  match ipv6 address prefix-list V6-DEFAULT
 !
 !
+access-list 111 deny   udp host 12.18.255.7 host 184.17.13.26
+access-list 111 permit ip any any
 !
 control-plane
 !
@@ -556,7 +769,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -569,7 +784,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.104</entry>
             <entry key="static_serial_port_0" type="Integer">11004</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:59:53 UTC Thu Nov 17 2016
+! Last configuration change at 23:57:46 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -582,7 +797,36 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition BRANCH-SITE-2
+ rd 10.4.4.4:172
+ !
+ address-family ipv4
+  route-target export 10.4.4.4:172
+  route-target import 10.2.2.2:172
+  route-target import 10.3.3.3:172
+  route-target import 10.5.5.5:172
+ exit-address-family
+ !
+ address-family ipv6
+  route-target export 10.4.4.4:172
+  route-target import 10.2.2.2:172
+  route-target import 10.3.3.3:172
+  route-target import 10.5.5.5:172
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition PRIMARY-DC
+ rd 10.4.4.4:8593
+ route-target export 10.4.4.4:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -593,7 +837,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -640,7 +883,6 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.4.4.4 255.255.255.255
@@ -666,25 +908,80 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R16
+ vrf forwarding BRANCH-SITE-2
  ip address 184.17.13.5 255.255.255.252
+ ip ospf 16 area 16
  duplex full
  speed auto
  media-type rj45
  ipv6 address 2001:184:17:13::5/126
+ ospfv3 16 ipv6 area 16
 !
 interface GigabitEthernet0/3
  description to R24
+ vrf forwarding PRIMARY-DC
  ip address 184.17.13.17 255.255.255.252
  duplex full
  speed auto
  media-type rj45
+ ipv6 address 2001:184:17:13::17/64
 !
 router ospfv3 16
  !
  address-family ipv6 unicast
  exit-address-family
+ !
+ address-family ipv6 unicast vrf BRANCH-SITE-2
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 16 vrf BRANCH-SITE-2
+ redistribute bgp 18417 subnets
 !
 router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf BRANCH-SITE-2
+  redistribute ospf 16
+ exit-address-family
+ !
+ address-family ipv6 vrf BRANCH-SITE-2
+  redistribute ospf 16 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 184.17.13.18 remote-as 8593.1
+  neighbor 184.17.13.18 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 2001:184:17:13::18 remote-as 8593.1
+  neighbor 2001:184:17:13::18 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -692,7 +989,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -702,6 +1001,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -734,7 +1034,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -746,7 +1048,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.105</entry>
             <entry key="static_serial_port_0" type="Integer">11005</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:58:57 UTC Thu Nov 17 2016
+! Last configuration change at 23:57:52 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -759,7 +1061,32 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition HQ-SITE-1
+ rd 10.5.5.5:172
+ route-target export 10.5.5.5:172
+ route-target import 10.2.2.2:172
+ route-target import 10.4.4.4:172
+ route-target import 10.3.3.3:172
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition PRIMARY-DC
+ rd 10.5.5.5:8593
+ route-target export 10.5.5.5:8593
+ route-target export 18417:1000
+ route-target import 18417:1000
  !
  address-family ipv4
  exit-address-family
@@ -770,7 +1097,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -817,7 +1143,6 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.5.5.5 255.255.255.255
@@ -843,6 +1168,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  description to R25
+ vrf forwarding PRIMARY-DC
  ip address 184.17.13.21 255.255.255.252
  duplex full
  speed auto
@@ -851,18 +1177,71 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  description to R19
+ vrf forwarding HQ-SITE-1
  ip address 184.17.13.13 255.255.255.252
+ ip ospf 3 area 0
  duplex full
  speed auto
  media-type rj45
  ipv6 address 2001:184:17:13::D/127
+ ospfv3 3 ipv6 area 0
 !
 router ospfv3 3
  !
  address-family ipv6 unicast
  exit-address-family
+ !
+ address-family ipv6 unicast vrf HQ-SITE-1
+  redistribute bgp 18417
+ exit-address-family
+!
+router ospf 3 vrf HQ-SITE-1
+ redistribute bgp 18417 subnets
 !
 router ospf 1
+!
+router bgp 18417
+ bgp asnotation dot
+ bgp log-neighbor-changes
+ no bgp default ipv4-unicast
+ neighbor 10.6.6.6 remote-as 18417
+ neighbor 10.6.6.6 password 18417beegeepeep4ss
+ neighbor 10.6.6.6 update-source Loopback0
+ !
+ address-family ipv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 next-hop-self
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.6.6.6 activate
+  neighbor 10.6.6.6 send-community extended
+ exit-address-family
+ !
+ address-family ipv4 vrf HQ-SITE-1
+  redistribute ospf 3
+ exit-address-family
+ !
+ address-family ipv6 vrf HQ-SITE-1
+  redistribute ospf 3 include-connected
+ exit-address-family
+ !
+ address-family ipv4 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 184.17.13.22 remote-as 8593.1
+  neighbor 184.17.13.22 activate
+ exit-address-family
+ !
+ address-family ipv6 vrf PRIMARY-DC
+  redistribute connected
+  neighbor 2001:184:17:113::22 remote-as 8593.1
+  neighbor 2001:184:17:113::22 activate
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -870,7 +1249,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -880,6 +1261,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -912,7 +1294,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -924,7 +1308,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.106</entry>
             <entry key="static_serial_port_0" type="Integer">11006</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:56:23 UTC Thu Nov 17 2016
+! Last configuration change at 23:57:59 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -948,7 +1332,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -995,10 +1378,10 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.6.6.6 255.255.255.255
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1012,9 +1395,76 @@ interface GigabitEthernet0/0
 interface GigabitEthernet0/1
  description to R1
  ip address 184.17.12.9 255.255.255.254
+ ip ospf 1 area 0
  duplex full
  speed auto
  media-type rj45
+ mpls ip
+!
+router ospf 1
+!
+router bgp 18417
+ template peer-policy AS18417_IPV4
+  route-reflector-client
+ exit-peer-policy
+ !
+ template peer-policy AS18417_VPNV4
+  route-reflector-client
+ exit-peer-policy
+ !
+ template peer-session AS18417
+  remote-as 18417
+  password 18417beegeepeep4ss
+  update-source Loopback0
+ exit-peer-session
+ !
+ bgp log-neighbor-changes
+ neighbor 10.2.2.2 inherit peer-session AS18417
+ neighbor 10.3.3.3 inherit peer-session AS18417
+ neighbor 10.4.4.4 inherit peer-session AS18417
+ neighbor 10.5.5.5 inherit peer-session AS18417
+ !
+ address-family ipv4
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 inherit peer-policy AS18417_IPV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 inherit peer-policy AS18417_IPV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_IPV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 inherit peer-policy AS18417_IPV4
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 send-community extended
+  neighbor 10.2.2.2 inherit peer-policy AS18417_VPNV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 send-community extended
+  neighbor 10.3.3.3 inherit peer-policy AS18417_VPNV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_VPNV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 send-community extended
+  neighbor 10.5.5.5 inherit peer-policy AS18417_VPNV4
+ exit-address-family
+ !
+ address-family vpnv6
+  neighbor 10.2.2.2 activate
+  neighbor 10.2.2.2 send-community extended
+  neighbor 10.2.2.2 inherit peer-policy AS18417_VPNV4
+  neighbor 10.3.3.3 activate
+  neighbor 10.3.3.3 send-community extended
+  neighbor 10.3.3.3 inherit peer-policy AS18417_VPNV4
+  neighbor 10.4.4.4 activate
+  neighbor 10.4.4.4 send-community extended
+  neighbor 10.4.4.4 inherit peer-policy AS18417_VPNV4
+  neighbor 10.5.5.5 activate
+  neighbor 10.5.5.5 send-community extended
+  neighbor 10.5.5.5 inherit peer-policy AS18417_VPNV4
+ exit-address-family
 !
 ip forward-protocol nd
 !
@@ -1022,7 +1472,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1032,6 +1484,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -1064,7 +1517,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -1074,7 +1529,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.107</entry>
             <entry key="static_serial_port_0" type="Integer">11007</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:49:02 UTC Thu Nov 17 2016
+! Last configuration change at 23:58:07 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1098,7 +1553,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -1134,7 +1588,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -1243,7 +1696,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1252,6 +1707,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map TO-ISP-C permit 10
  set ipv6 next-hop 2001:12:18:255::5
@@ -1290,7 +1746,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1301,7 +1759,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.108</entry>
             <entry key="static_serial_port_0" type="Integer">11008</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:49:10 UTC Thu Nov 17 2016
+! Last configuration change at 23:58:16 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1325,7 +1783,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -1361,7 +1818,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -1475,7 +1931,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1484,6 +1942,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map IPV6-NEXT-HOP permit 10
  set ipv6 next-hop 2001:10:8:8:8::8
@@ -1519,7 +1978,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1531,7 +1992,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.109</entry>
             <entry key="static_serial_port_0" type="Integer">11009</entry>
             <entry key="config" type="String">!
-! Last configuration change at 23:49:12 UTC Thu Nov 17 2016
+! Last configuration change at 23:58:18 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1555,7 +2016,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -1591,7 +2051,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -1700,7 +2159,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1709,6 +2170,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map IPV6-NEXT-HOP permit 10
  set ipv6 next-hop 2001:10:9:9:9::9
@@ -1744,7 +2206,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1755,7 +2219,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.110</entry>
             <entry key="static_serial_port_0" type="Integer">11010</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:56:56 UTC Mon Nov 14 2016
+! Last configuration change at 23:55:38 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1779,7 +2243,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -1826,13 +2289,12 @@ redundancy
 !
 !
 !
-!
 interface Loopback0
  description Loopback
  ip address 10.10.10.10 255.255.255.255
  ipv6 address 2001:10:10:10:10::10/128
- ospfv3 1 ipv6 area 0
  ospfv3 1 ipv4 area 0
+ ospfv3 1 ipv6 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1850,8 +2312,8 @@ interface GigabitEthernet0/1
  speed auto
  media-type rj45
  ipv6 address 2001:29:11:1::5/127
- ospfv3 1 ipv4 area 0
  ospfv3 1 ipv6 area 0
+ ospfv3 1 ipv4 area 0
 !
 interface GigabitEthernet0/2
  description to R11
@@ -1924,7 +2386,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -1933,6 +2397,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map TO-ISP-B permit 10
  set ipv6 next-hop 2001:167:22:2::1
@@ -1971,7 +2436,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -1982,7 +2449,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.111</entry>
             <entry key="static_serial_port_0" type="Integer">11011</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:57:05 UTC Mon Nov 14 2016
+! Last configuration change at 23:55:46 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2006,7 +2473,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -2042,7 +2508,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -2141,7 +2606,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 ip prefix-list V4-DEFAULT seq 5 permit 0.0.0.0/0
@@ -2152,6 +2619,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 ipv6 prefix-list V6-DEFAULT seq 5 permit ::/0
@@ -2198,7 +2666,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2211,7 +2681,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.112</entry>
             <entry key="static_serial_port_0" type="Integer">11012</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:03:04 UTC Mon Nov 14 2016
+! Last configuration change at 23:55:59 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2235,7 +2705,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -2271,7 +2740,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -2388,7 +2856,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 !
 ip prefix-list 12 seq 5 permit 12.18.255.0/24 le 32
@@ -2401,6 +2871,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 ipv6 prefix-list 12 seq 5 permit 2001:12:18:255::/125 le 128
@@ -2449,7 +2920,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2463,7 +2936,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.113</entry>
             <entry key="static_serial_port_0" type="Integer">11013</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:15:08 UTC Mon Nov 14 2016
+! Last configuration change at 00:13:20 UTC Thu Jun 28 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2487,7 +2960,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -2529,7 +3001,7 @@ redundancy
 !
 !
 crypto isakmp policy 10
- encr 3des
+ encr aes
  hash md5
  authentication pre-share
  group 5
@@ -2665,7 +3137,9 @@ no ip http secure-server
 ip route 10.24.24.24 255.255.255.255 12.18.255.6
 ip route 10.25.25.25 255.255.255.255 12.18.255.6
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -2676,6 +3150,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map CONNECTED permit 10
  match interface GigabitEthernet0/1.13
@@ -2711,7 +3186,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -2721,7 +3198,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.114</entry>
             <entry key="static_serial_port_0" type="Integer">11014</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:17:38 UTC Mon Nov 14 2016
+! Last configuration change at 00:11:24 UTC Thu Jun 28 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2745,7 +3222,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -2794,7 +3270,7 @@ crypto isakmp policy 10
 crypto isakmp key dmvpnpass address 0.0.0.0        
 !
 !
-crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 256 esp-sha512-hmac 
+crypto ipsec transform-set ESP-AES-256-SHA-512 esp-aes 192 esp-sha512-hmac 
  mode transport
 !
 crypto ipsec profile DMVPN_PROFILE
@@ -2837,7 +3313,7 @@ interface Tunnel101
  tunnel protection ipsec profile DMVPN_PROFILE shared
 !
 interface Tunnel102
- ip address 10.1.102.14 255.255.255.0
+ ip address 10.1.102.21 255.255.255.0
  no ip redirects
  ip mtu 1400
  ip pim sparse-mode
@@ -2924,7 +3400,9 @@ no ip http secure-server
 ip route 10.24.24.24 255.255.255.255 184.17.13.25
 ip route 10.25.25.25 255.255.255.255 184.17.13.25
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -2935,6 +3413,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -2967,7 +3446,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -2978,7 +3459,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.115</entry>
             <entry key="static_serial_port_0" type="Integer">11015</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:57:25 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:09 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3002,7 +3483,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3038,7 +3518,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3097,7 +3576,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3108,6 +3589,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -3140,7 +3622,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -3150,7 +3634,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.116</entry>
             <entry key="static_serial_port_0" type="Integer">11016</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:57:32 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:13 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3174,7 +3658,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3210,7 +3693,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3269,7 +3751,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3280,6 +3764,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -3312,7 +3797,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -3322,7 +3809,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.117</entry>
             <entry key="static_serial_port_0" type="Integer">11017</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:57:39 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:22 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3346,7 +3833,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3383,7 +3869,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3441,7 +3926,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3452,6 +3939,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -3484,7 +3972,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -3494,7 +3984,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.118</entry>
             <entry key="static_serial_port_0" type="Integer">11018</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:08:33 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:31 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3518,7 +4008,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3554,7 +4043,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3622,7 +4110,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3633,6 +4123,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -3665,7 +4156,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3676,7 +4169,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.119</entry>
             <entry key="static_serial_port_0" type="Integer">11019</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:09:11 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:35 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3700,7 +4193,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3736,7 +4228,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3804,7 +4295,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3815,6 +4308,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -3847,7 +4341,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -3858,7 +4354,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.120</entry>
             <entry key="static_serial_port_0" type="Integer">11020</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:00 UTC Mon Nov 14 2016
+! Last configuration change at 23:56:45 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -3882,7 +4378,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -3918,7 +4413,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -3983,7 +4477,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -3994,6 +4490,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -4026,7 +4523,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -4036,7 +4535,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.121</entry>
             <entry key="static_serial_port_0" type="Integer">11021</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:13:59 UTC Mon Nov 14 2016
+! Last configuration change at 00:08:59 UTC Thu Jun 28 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4060,7 +4559,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -4141,7 +4639,7 @@ interface Tunnel101
  ipv6 mtu 1400
  ipv6 nhrp authentication NHRPAUTH
  ipv6 nhrp network-id 1
- ipv6 nhrp nhs 2001:10:1:101::24 nbma 10.24.24.24 multicast
+ ipv6 nhrp nhs 2001:10:1:102::25 nbma 10.25.25.25 multicast
  ipv6 nhrp shortcut
  tunnel source GigabitEthernet0/2
  tunnel mode gre multipoint
@@ -4164,7 +4662,7 @@ interface Tunnel102
  ipv6 mtu 1400
  ipv6 nhrp authentication NHRPAUTH
  ipv6 nhrp network-id 1
- ipv6 nhrp nhs 2001:10:1:102::25 nbma 10.25.25.25 multicast
+ ipv6 nhrp nhs 2001:10:1:101::24 nbma 10.24.24.24 multicast
  ipv6 nhrp shortcut
  tunnel source GigabitEthernet0/2
  tunnel mode gre multipoint
@@ -4236,7 +4734,9 @@ no ip http secure-server
 ip route 10.24.24.24 255.255.255.255 167.22.2.2
 ip route 10.25.25.25 255.255.255.255 167.22.2.2
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 ip access-list extended NULL
  deny   igmp host 10.1.3.23 any
@@ -4251,6 +4751,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -4283,7 +4784,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -4294,7 +4797,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.122</entry>
             <entry key="static_serial_port_0" type="Integer">11022</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:14 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:00 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4318,7 +4821,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -4355,7 +4857,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -4413,7 +4914,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -4424,6 +4927,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -4456,7 +4960,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -4466,7 +4972,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.123</entry>
             <entry key="static_serial_port_0" type="Integer">11023</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:19 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:05 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4490,7 +4996,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -4527,7 +5032,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -4585,7 +5089,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -4596,6 +5102,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -4628,7 +5135,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -4638,7 +5147,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.124</entry>
             <entry key="static_serial_port_0" type="Integer">11024</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:26 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:14 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4662,7 +5171,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -4876,7 +5384,9 @@ ip msdp peer 10.25.25.25 connect-source Loopback0
 ip msdp cache-sa-state
 ip msdp default-peer 10.25.25.25
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -4887,6 +5397,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -4919,7 +5430,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -4931,7 +5444,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.125</entry>
             <entry key="static_serial_port_0" type="Integer">11025</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:32 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:19 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4955,7 +5468,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -5170,7 +5682,9 @@ ip msdp peer 10.24.24.24 connect-source Loopback0
 ip msdp cache-sa-state
 ip msdp default-peer 10.24.24.24
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -5181,6 +5695,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 route-map PRIMARY_ISP permit 10
  set local-preference 200
@@ -5216,7 +5731,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -5228,7 +5745,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.126</entry>
             <entry key="static_serial_port_0" type="Integer">11026</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:01:54 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:27 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5252,7 +5769,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -5289,7 +5805,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -5359,7 +5874,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -5370,6 +5887,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -5402,7 +5920,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
     </node>
@@ -5412,7 +5932,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.127</entry>
             <entry key="static_serial_port_0" type="Integer">11027</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:58:45 UTC Mon Nov 14 2016
+! Last configuration change at 23:57:34 UTC Wed Jun 27 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -5436,7 +5956,6 @@ vrf definition Mgmt-intf
 enable password cisco
 !
 no aaa new-model
-ethernet lmi ce
 !
 !
 !
@@ -5473,7 +5992,6 @@ redundancy
 !
 !
 ! 
-!
 !
 !
 !
@@ -5547,7 +6065,9 @@ ip forward-protocol nd
 no ip http server
 no ip http secure-server
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.254
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 !
 kron occurrence KRONJOB in 1 recurring system-startup
  policy-list KRONPOLICY
@@ -5558,6 +6078,7 @@ kron policy-list KRONPOLICY
  cli event manager run CLI_AFTER_BOOT
  cli event manager run CLI_AFTER_BOOT
 !
+ipv6 ioam timestamp
 !
 !
 !
@@ -5590,7 +6111,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -5601,7 +6124,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.128</entry>
             <entry key="static_serial_port_0" type="Integer">11028</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:08:52 UTC Mon Nov 14 2016
+! Last configuration change at 23:53:42 UTC Wed Jun 27 2018
 !
 version 15.2
 service timestamps debug datetime msec
@@ -5670,6 +6193,14 @@ interface Loopback0
  ip address 10.28.28.28 255.255.255.255
  ip ospf 28 area 0
 !
+interface GigabitEthernet0/0
+ description OOB management
+ no switchport
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.128 255.255.255.0
+ negotiation auto
+ no cdp enable
+!
 interface GigabitEthernet0/1
  description to R18
  switchport access vlan 18
@@ -5693,14 +6224,6 @@ interface GigabitEthernet0/3
  media-type rj45
  duplex full
  no negotiation auto
-!
-interface GigabitEthernet0/0
- description OOB management
- no switchport
- vrf forwarding Mgmt-intf
- ip address 172.16.1.128 255.255.255.0
- negotiation auto
- no cdp enable
 !
 interface Vlan18
  ip address 172.16.18.254 255.255.255.0
@@ -5763,7 +6286,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -5775,7 +6300,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.129</entry>
             <entry key="static_serial_port_0" type="Integer">11029</entry>
             <entry key="config" type="String">!
-! Last configuration change at 12:59:32 UTC Mon Nov 14 2016
+! Last configuration change at 23:53:27 UTC Wed Jun 27 2018
 !
 version 15.2
 service timestamps debug datetime msec
@@ -5843,6 +6368,14 @@ interface Loopback0
  description Loopback
  no ip address
 !
+interface GigabitEthernet0/0
+ description OOB management
+ no switchport
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.129 255.255.255.0
+ negotiation auto
+ no cdp enable
+!
 interface GigabitEthernet0/1
  description to R21
  switchport access vlan 1013
@@ -5866,14 +6399,6 @@ interface GigabitEthernet0/3
  media-type rj45
  duplex full
  no negotiation auto
-!
-interface GigabitEthernet0/0
- description OOB management
- no switchport
- vrf forwarding Mgmt-intf
- ip address 172.16.1.129 255.255.255.0
- negotiation auto
- no cdp enable
 !
 ip forward-protocol nd
 !
@@ -5923,7 +6448,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
@@ -5935,7 +6462,7 @@ end</entry>
             <entry key="static_ip" type="String">172.16.1.130</entry>
             <entry key="static_serial_port_0" type="Integer">11030</entry>
             <entry key="config" type="String">!
-! Last configuration change at 13:02:26 UTC Mon Nov 14 2016
+! Last configuration change at 23:53:34 UTC Wed Jun 27 2018
 !
 version 15.2
 service timestamps debug datetime msec
@@ -6003,6 +6530,14 @@ interface Loopback0
  description Loopback
  no ip address
 !
+interface GigabitEthernet0/0
+ description OOB management
+ no switchport
+ vrf forwarding Mgmt-intf
+ ip address 172.16.1.130 255.255.255.0
+ negotiation auto
+ no cdp enable
+!
 interface GigabitEthernet0/1
  description to R24
  switchport access vlan 2
@@ -6035,14 +6570,6 @@ interface GigabitEthernet0/3
  negotiation auto
  spanning-tree portfast edge trunk
  spanning-tree link-type point-to-point
-!
-interface GigabitEthernet0/0
- description OOB management
- no switchport
- vrf forwarding Mgmt-intf
- ip address 172.16.1.130 255.255.255.0
- negotiation auto
- no cdp enable
 !
 interface GigabitEthernet1/0
  description to R27
@@ -6116,7 +6643,9 @@ event manager applet CLI_AFTER_BOOT
  action 5.0 cli command "no banner incoming"
  action 6.0 cli command "no banner exec"
 !
-end</entry>
+end
+
+</entry>
         </extensions>
         <interface id="0" name="GigabitEthernet0/1"/>
         <interface id="1" name="GigabitEthernet0/2"/>
