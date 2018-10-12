@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 18:46:58 UTC Wed Oct 10 2018
+! Last configuration change at 20:11:47 UTC Thu Oct 11 2018
 !
 version 16.6
 no service timestamps debug uptime
@@ -51,6 +51,7 @@ vrf definition PROFILE-1
  route-target import 1:1
  !
  address-family ipv4
+  mdt default mpls mldp 2.2.2.2
  exit-address-family
  !
  address-family ipv6
@@ -267,6 +268,8 @@ vrf definition PROFILE-3
  route-target import 1:3
  !
  address-family ipv4
+  mdt auto-discovery pim
+  mdt default 232.0.0.3
  exit-address-family
  !
  address-family ipv6
@@ -362,14 +365,6 @@ ip domain name virl.info
 ip multicast-routing distributed
 ip multicast-routing vrf PROFILE-0 distributed
 ip multicast-routing vrf PROFILE-1 distributed
-ip multicast-routing vrf PROFILE-2 distributed
-ip multicast-routing vrf PROFILE-3 distributed
-ip multicast-routing vrf PROFILE-4 distributed
-ip multicast-routing vrf PROFILE-5 distributed
-ip multicast-routing vrf PROFILE-6 distributed
-ip multicast-routing vrf PROFILE-7 distributed
-ip multicast-routing vrf PROFILE-8 distributed
-ip multicast-routing vrf PROFILE-9 distributed
 ip multicast-routing vrf PROFILE-10 distributed
 ip multicast-routing vrf PROFILE-11 distributed
 ip multicast-routing vrf PROFILE-12 distributed
@@ -380,12 +375,21 @@ ip multicast-routing vrf PROFILE-16 distributed
 ip multicast-routing vrf PROFILE-17 distributed
 ip multicast-routing vrf PROFILE-18 distributed
 ip multicast-routing vrf PROFILE-19 distributed
+ip multicast-routing vrf PROFILE-2 distributed
 ip multicast-routing vrf PROFILE-20 distributed
 ip multicast-routing vrf PROFILE-21 distributed
 ip multicast-routing vrf PROFILE-22 distributed
 ip multicast-routing vrf PROFILE-23 distributed
 ip multicast-routing vrf PROFILE-24 distributed
 ip multicast-routing vrf PROFILE-25 distributed
+ip multicast-routing vrf PROFILE-3 distributed
+ip multicast-routing vrf PROFILE-4 distributed
+ip multicast-routing vrf PROFILE-5 distributed
+ip multicast-routing vrf PROFILE-6 distributed
+ip multicast-routing vrf PROFILE-7 distributed
+ip multicast-routing vrf PROFILE-8 distributed
+ip multicast-routing vrf PROFILE-9 distributed
+ip multicast vrf PROFILE-6 mpls mldp
 !
 !
 !
@@ -406,6 +410,7 @@ ipv6 unicast-routing
 mpls ldp session protection duration 300
 mpls ldp label
  allocate global host-routes
+mpls mldp logging notifications
 !
 !
 multilink bundle-name authenticated
@@ -432,7 +437,7 @@ crypto pki certificate chain TP-self-signed-1801537289
 !
 !
 !
-license udi pid CSR1000V sn 9A48KYGCOQ4
+license udi pid CSR1000V sn 9JA42BJWRDK
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -520,7 +525,7 @@ interface GigabitEthernet2.150
  ip address 10.15.0.1 255.255.255.0
  ip pim sparse-mode
  ip ospf 100 area 1
- ipv6 address 2001:10:15:0::1/64
+ ipv6 address 2001:10:15::1/64
  ospfv3 100 ipv6 area 1
 !
 interface GigabitEthernet2.151
@@ -1254,6 +1259,7 @@ ip http server
 ip http authentication local
 ip http secure-server
 ip pim ssm default
+ip pim vrf PROFILE-6 mpls source Loopback0
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -1299,7 +1305,7 @@ end
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 18:32:55 UTC Wed Oct 10 2018
+! Last configuration change at 19:22:39 UTC Thu Oct 11 2018
 !
 version 16.6
 no service timestamps debug uptime
@@ -1395,7 +1401,7 @@ crypto pki certificate chain TP-self-signed-814582563
 !
 !
 !
-license udi pid CSR1000V sn 9V607M7CQ62
+license udi pid CSR1000V sn 96Q7CVF1CTA
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1738,7 +1744,7 @@ end
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:19:28 UTC Wed Oct 10 2018
+! Last configuration change at 20:12:32 UTC Thu Oct 11 2018
 !
 version 16.6
 no service timestamps debug uptime
@@ -1753,6 +1759,14 @@ boot-start-marker
 boot-end-marker
 !
 !
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
 vrf definition PROFILE-0
  rd 1:0
  route-target export 1:0
@@ -1765,14 +1779,6 @@ vrf definition PROFILE-0
  address-family ipv6
  exit-address-family
 !
-vrf definition Mgmt-intf
- !
- address-family ipv4
- exit-address-family
- !
- address-family ipv6
- exit-address-family
-!
 vrf definition PROFILE-1
  rd 1:1
  vpn id 1:1
@@ -1780,6 +1786,7 @@ vrf definition PROFILE-1
  route-target import 1:1
  !
  address-family ipv4
+  mdt default mpls mldp 2.2.2.2
  exit-address-family
  !
  address-family ipv6
@@ -1996,6 +2003,8 @@ vrf definition PROFILE-3
  route-target import 1:3
  !
  address-family ipv4
+  mdt auto-discovery pim
+  mdt default 232.0.0.3
  exit-address-family
  !
  address-family ipv6
@@ -2091,14 +2100,6 @@ ip domain name virl.info
 ip multicast-routing distributed
 ip multicast-routing vrf PROFILE-0 distributed
 ip multicast-routing vrf PROFILE-1 distributed
-ip multicast-routing vrf PROFILE-2 distributed
-ip multicast-routing vrf PROFILE-3 distributed
-ip multicast-routing vrf PROFILE-4 distributed
-ip multicast-routing vrf PROFILE-5 distributed
-ip multicast-routing vrf PROFILE-6 distributed
-ip multicast-routing vrf PROFILE-7 distributed
-ip multicast-routing vrf PROFILE-8 distributed
-ip multicast-routing vrf PROFILE-9 distributed
 ip multicast-routing vrf PROFILE-10 distributed
 ip multicast-routing vrf PROFILE-11 distributed
 ip multicast-routing vrf PROFILE-12 distributed
@@ -2109,12 +2110,21 @@ ip multicast-routing vrf PROFILE-16 distributed
 ip multicast-routing vrf PROFILE-17 distributed
 ip multicast-routing vrf PROFILE-18 distributed
 ip multicast-routing vrf PROFILE-19 distributed
+ip multicast-routing vrf PROFILE-2 distributed
 ip multicast-routing vrf PROFILE-20 distributed
 ip multicast-routing vrf PROFILE-21 distributed
 ip multicast-routing vrf PROFILE-22 distributed
 ip multicast-routing vrf PROFILE-23 distributed
 ip multicast-routing vrf PROFILE-24 distributed
 ip multicast-routing vrf PROFILE-25 distributed
+ip multicast-routing vrf PROFILE-3 distributed
+ip multicast-routing vrf PROFILE-4 distributed
+ip multicast-routing vrf PROFILE-5 distributed
+ip multicast-routing vrf PROFILE-6 distributed
+ip multicast-routing vrf PROFILE-7 distributed
+ip multicast-routing vrf PROFILE-8 distributed
+ip multicast-routing vrf PROFILE-9 distributed
+ip multicast vrf PROFILE-6 mpls mldp
 !
 !
 !
@@ -2135,6 +2145,7 @@ ipv6 unicast-routing
 mpls ldp session protection duration 300
 mpls ldp label
  allocate global host-routes
+mpls mldp logging notifications
 !
 !
 multilink bundle-name authenticated
@@ -2161,7 +2172,7 @@ crypto pki certificate chain TP-self-signed-4264837838
 !
 !
 !
-license udi pid CSR1000V sn 9NYCBO0XOKS
+license udi pid CSR1000V sn 9MKR2J7O2N0
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2257,7 +2268,7 @@ interface GigabitEthernet2.370
  ip address 10.37.0.3 255.255.255.0
  ip pim sparse-mode
  ip ospf 100 area 1
- ipv6 address 2001:10:37:0::3/64
+ ipv6 address 2001:10:37::3/64
  ospfv3 100 ipv6 area 1
 !
 interface GigabitEthernet2.371
@@ -2977,6 +2988,7 @@ ip http server
 ip http authentication local
 ip http secure-server
 ip pim ssm default
+ip pim vrf PROFILE-6 mpls source Loopback0
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -3021,11 +3033,11 @@ end
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 20:00:06 UTC Wed Oct 10 2018
+! Last configuration change at 20:03:44 UTC Thu Oct 11 2018
 !
 version 16.6
-service timestamps debug datetime msec
-service timestamps log datetime msec
+no service timestamps debug uptime
+no service timestamps log uptime
 platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console serial
@@ -3103,7 +3115,7 @@ crypto pki certificate chain TP-self-signed-2872577817
 !
 !
 !
-license udi pid CSR1000V sn 9Z2LLYL59UX
+license udi pid CSR1000V sn 9Q11XTU9NOP
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3176,11 +3188,23 @@ interface GigabitEthernet2.46
  ipv6 address 2001:10:4:6::4/64
  ospfv3 10 ipv6 area 1
 !
+interface GigabitEthernet2.400
+ encapsulation dot1Q 400
+ ip address 10.40.0.4 255.255.255.0
+ ip pim sparse-mode
+ ip igmp join-group 224.0.47.0
+ ip igmp join-group 224.0.4.0
+ ip ospf 10 area 1
+ shutdown
+ ipv6 address 2001:10:40::4/64
+ ospfv3 10 ipv6 area 1
+!
 interface GigabitEthernet2.401
  encapsulation dot1Q 401
  ip address 10.40.1.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:1::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3189,6 +3213,7 @@ interface GigabitEthernet2.402
  ip address 10.40.2.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:2::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3196,6 +3221,8 @@ interface GigabitEthernet2.403
  encapsulation dot1Q 403
  ip address 10.40.3.4 255.255.255.0
  ip pim sparse-mode
+ ip igmp join-group 224.0.47.3
+ ip igmp join-group 224.0.4.3
  ip ospf 10 area 1
  ipv6 address 2001:10:40:3::1/64
  ospfv3 10 ipv6 area 1
@@ -3205,6 +3232,7 @@ interface GigabitEthernet2.404
  ip address 10.40.4.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:4::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3213,6 +3241,7 @@ interface GigabitEthernet2.405
  ip address 10.40.5.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:5::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3221,6 +3250,7 @@ interface GigabitEthernet2.406
  ip address 10.40.6.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:6::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3229,6 +3259,7 @@ interface GigabitEthernet2.407
  ip address 10.40.7.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:7::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3237,6 +3268,7 @@ interface GigabitEthernet2.408
  ip address 10.40.8.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:8::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3245,17 +3277,8 @@ interface GigabitEthernet2.409
  ip address 10.40.9.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:9::1/64
- ospfv3 10 ipv6 area 1
-!
-interface GigabitEthernet2.411
- encapsulation dot1Q 411
- ip address 10.4.11.4 255.255.255.0
- ip pim sparse-mode
- ip igmp join-group 224.0.47.0
- ip igmp join-group 224.0.4.0
- ip ospf 10 area 1
- ipv6 address 2001:10:4:11::1/64
  ospfv3 10 ipv6 area 1
 !
 interface GigabitEthernet2.4010
@@ -3263,6 +3286,7 @@ interface GigabitEthernet2.4010
  ip address 10.40.10.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:10::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3271,6 +3295,7 @@ interface GigabitEthernet2.4011
  ip address 10.40.11.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:11::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3279,6 +3304,7 @@ interface GigabitEthernet2.4012
  ip address 10.40.12.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:12::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3287,6 +3313,7 @@ interface GigabitEthernet2.4013
  ip address 10.40.13.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:13::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3295,6 +3322,7 @@ interface GigabitEthernet2.4014
  ip address 10.40.14.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:14::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3303,6 +3331,7 @@ interface GigabitEthernet2.4015
  ip address 10.40.15.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:15::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3311,6 +3340,7 @@ interface GigabitEthernet2.4016
  ip address 10.40.16.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:16::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3319,6 +3349,7 @@ interface GigabitEthernet2.4017
  ip address 10.40.17.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:17::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3327,6 +3358,7 @@ interface GigabitEthernet2.4018
  ip address 10.40.18.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:18::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3335,6 +3367,7 @@ interface GigabitEthernet2.4019
  ip address 10.40.19.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:19::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3343,6 +3376,7 @@ interface GigabitEthernet2.4020
  ip address 10.40.20.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:20::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3351,6 +3385,7 @@ interface GigabitEthernet2.4021
  ip address 10.40.21.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:21::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3359,6 +3394,7 @@ interface GigabitEthernet2.4022
  ip address 10.40.22.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:22::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3367,6 +3403,7 @@ interface GigabitEthernet2.4023
  ip address 10.40.23.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:23::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3375,6 +3412,7 @@ interface GigabitEthernet2.4024
  ip address 10.40.24.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:24::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3383,6 +3421,7 @@ interface GigabitEthernet2.4025
  ip address 10.40.25.4 255.255.255.0
  ip pim sparse-mode
  ip ospf 10 area 1
+ shutdown
  ipv6 address 2001:10:40:25::1/64
  ospfv3 10 ipv6 area 1
 !
@@ -3454,7 +3493,7 @@ end
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 18:46:35 UTC Wed Oct 10 2018
+! Last configuration change at 19:22:39 UTC Thu Oct 11 2018
 !
 version 16.6
 no service timestamps debug uptime
@@ -3536,7 +3575,7 @@ crypto pki certificate chain TP-self-signed-1828000671
 !
 !
 !
-license udi pid CSR1000V sn 9NVBC6OV6US
+license udi pid CSR1000V sn 9GRGG8SXEXN
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3593,14 +3632,6 @@ interface GigabitEthernet2
  no mop enabled
  no mop sysid
 !
-interface GigabitEthernet2.15
- encapsulation dot1Q 15
- ip address 10.1.5.5 255.255.255.0
- ip pim sparse-mode
- ip ospf 10 area 1
- ipv6 address 2001:10:1:5::5/64
- ospfv3 10 ipv6 area 1
-!
 interface GigabitEthernet2.45
  encapsulation dot1Q 45
  ip address 10.4.5.5 255.255.255.0
@@ -3614,6 +3645,14 @@ interface GigabitEthernet2.56
  ip pim sparse-mode
  ip ospf 10 area 1
  ipv6 address 2001:10:5:6::5/64
+ ospfv3 10 ipv6 area 1
+!
+interface GigabitEthernet2.150
+ encapsulation dot1Q 150
+ ip address 10.15.0.5 255.255.255.0
+ ip pim sparse-mode
+ ip ospf 10 area 1
+ ipv6 address 2001:10:15::5/64
  ospfv3 10 ipv6 area 1
 !
 interface GigabitEthernet2.151
@@ -3885,11 +3924,11 @@ end
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 18:39:38 UTC Wed Oct 10 2018
+! Last configuration change at 19:22:39 UTC Thu Oct 11 2018
 !
 version 16.6
-service timestamps debug datetime msec
-service timestamps log datetime msec
+no service timestamps debug uptime
+no service timestamps log uptime
 platform qfp utilization monitor load 80
 no platform punt-keepalive disable-kernel-core
 platform console serial
@@ -3967,7 +4006,7 @@ crypto pki certificate chain TP-self-signed-4149206221
 !
 !
 !
-license udi pid CSR1000V sn 92LDHPEB3OG
+license udi pid CSR1000V sn 9FJ7ETC69DG
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4097,7 +4136,7 @@ end
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 19:31:17 UTC Wed Oct 10 2018
+! Last configuration change at 20:11:32 UTC Thu Oct 11 2018
 !
 version 16.6
 no service timestamps debug uptime
@@ -4179,7 +4218,7 @@ crypto pki certificate chain TP-self-signed-517538167
 !
 !
 !
-license udi pid CSR1000V sn 9XJ2A0NBX6P
+license udi pid CSR1000V sn 9RLU6K46VTH
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4236,22 +4275,23 @@ interface GigabitEthernet2
  no mop enabled
  no mop sysid
 !
-interface GigabitEthernet2.37
- encapsulation dot1Q 37
- ip address 10.3.7.7 255.255.255.0
- ip pim dr-priority 0
+interface GigabitEthernet2.370
+ encapsulation dot1Q 370
+ ip address 10.37.0.7 255.255.255.0
  ip pim sparse-mode
- ip access-group 100 in
  ip igmp join-group 224.0.47.0
  ip igmp join-group 224.0.7.0
  ip ospf 200 area 1
- ipv6 address 2001:10:3:7::7/64
+ shutdown
+ ipv6 address 2001:10:37::7/64
  ospfv3 200 ipv6 area 1
 !
 interface GigabitEthernet2.371
  encapsulation dot1Q 371
  ip address 10.37.1.7 255.255.255.0
  ip pim sparse-mode
+ ip igmp join-group 224.0.47.1
+ ip igmp join-group 224.0.7.1
  ip ospf 200 area 1
  shutdown
  ipv6 address 2001:10:37:1::7/64
@@ -4270,6 +4310,8 @@ interface GigabitEthernet2.373
  encapsulation dot1Q 373
  ip address 10.37.3.7 255.255.255.0
  ip pim sparse-mode
+ ip igmp join-group 224.0.47.3
+ ip igmp join-group 224.0.7.3
  ip ospf 200 area 1
  shutdown
  ipv6 address 2001:10:37:3::7/64
@@ -4297,8 +4339,9 @@ interface GigabitEthernet2.376
  encapsulation dot1Q 376
  ip address 10.37.6.7 255.255.255.0
  ip pim sparse-mode
+ ip igmp join-group 224.0.47.6
+ ip igmp join-group 224.0.7.6
  ip ospf 200 area 1
- shutdown
  ipv6 address 2001:10:37:6::7/64
  ospfv3 200 ipv6 area 1
 !
@@ -4488,20 +4531,20 @@ interface GigabitEthernet3
  no mop enabled
  no mop sysid
 !
-router ospfv3 10
- !
- address-family ipv6 unicast
- exit-address-family
-!
 router ospfv3 200
  !
  address-family ipv6 unicast
  exit-address-family
 !
-router ospf 10
+router ospfv3 10
+ !
+ address-family ipv6 unicast
+ exit-address-family
 !
 router ospf 200
  maximum-paths 32
+!
+router ospf 10
 !
 !
 virtual-service csr_mgmt
@@ -4557,7 +4600,7 @@ end
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 17:39:46 UTC Wed Oct 10 2018
+! Last configuration change at 17:57:49 UTC Thu Oct 11 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -4638,7 +4681,7 @@ crypto pki certificate chain TP-self-signed-170153269
 !
 !
 !
-license udi pid CSR1000V sn 9YA6N16AXVB
+license udi pid CSR1000V sn 9DBJ9169MPC
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -4785,7 +4828,7 @@ end
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 17:39:52 UTC Wed Oct 10 2018
+! Last configuration change at 17:57:57 UTC Thu Oct 11 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -4877,7 +4920,7 @@ crypto pki certificate chain TP-self-signed-2501921493
 !
 !
 !
-license udi pid CSR1000V sn 9JPS40WNS93
+license udi pid CSR1000V sn 9GITOVSTOT8
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -5026,7 +5069,7 @@ end
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 17:39:27 UTC Wed Oct 10 2018
+! Last configuration change at 17:57:13 UTC Thu Oct 11 2018
 !
 version 16.6
 service timestamps debug datetime msec
@@ -5107,7 +5150,7 @@ crypto pki certificate chain TP-self-signed-4262901615
 !
 !
 !
-license udi pid CSR1000V sn 95UK6N3R3CO
+license udi pid CSR1000V sn 9H25U5JAR0F
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -6046,11 +6089,12 @@ end
     <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Oct 10 19:59:35 2018 by cisco
+!! Last configuration change at Thu Oct 11 20:05:17 2018 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 hostname XR1
+logging monitor debugging
 service timestamps log datetime msec
 service timestamps debug datetime msec
 telnet vrf default ipv4 server max-servers 10
@@ -6578,7 +6622,7 @@ interface GigabitEthernet0/0/0/0.211
 interface GigabitEthernet0/0/0/0.400
  vrf PROFILE-0
  ipv4 address 10.40.0.11 255.255.255.0
- ipv6 address 2001:10:40:0::11/64
+ ipv6 address 2001:10:40::11/64
  encapsulation dot1q 400
 !
 interface GigabitEthernet0/0/0/0.401
@@ -6751,6 +6795,18 @@ end-policy
 !
 route-policy PREPEND_TO_CE
   prepend as-path 123 3
+end-policy
+!
+route-policy PROFILE-0-RPF
+  set core-tree pim-default
+end-policy
+!
+route-policy PROFILE-1-RPF
+  set core-tree mldp-default
+end-policy
+!
+route-policy PROFILE-3-RPF
+  set core-tree pim-default
 end-policy
 !
 router isis 1
@@ -7163,12 +7219,20 @@ router bgp 123
  !
  address-family vpnv6 unicast
  !
+ address-family ipv4 mdt
+ !
+ address-family ipv4 mvpn
+ !
  neighbor 2.2.2.2
   remote-as 123
   update-source Loopback0
   address-family vpnv4 unicast
   !
   address-family vpnv6 unicast
+  !
+  address-family ipv4 mdt
+  !
+  address-family ipv4 mvpn
   !
  !
  neighbor 12.12.12.12
@@ -7177,6 +7241,10 @@ router bgp 123
   address-family vpnv4 unicast
   !
   address-family vpnv6 unicast
+  !
+  address-family ipv4 mdt
+  !
+  address-family ipv4 mvpn
   !
  !
  vrf PROFILE-0
@@ -7415,12 +7483,64 @@ router bgp 123
  !
 !
 mpls ldp
+ mldp
+  logging notifications
+  address-family ipv4
+  !
+ !
  session protection duration 600
  address-family ipv4
   label
    local
     allocate for host-routes
    !
+  !
+ !
+!
+multicast-routing
+ address-family ipv4
+  mdt source Loopback0
+  interface all enable
+ !
+ vrf PROFILE-0
+  address-family ipv4
+   mdt source Loopback0
+   interface all enable
+   mdt default ipv4 232.0.0.0
+  !
+ !
+ vrf PROFILE-1
+  address-family ipv4
+   mdt source Loopback0
+   interface all enable
+   mdt default mldp ipv4 2.2.2.2
+  !
+ !
+ vrf PROFILE-3
+  address-family ipv4
+   mdt source Loopback0
+   rate-per-route
+   interface all enable
+   bgp auto-discovery pim
+   !
+   mdt default ipv4 232.0.0.3
+  !
+ !
+!
+router pim
+ vrf PROFILE-0
+  address-family ipv4
+   rpf topology route-policy PROFILE-0-RPF
+  !
+ !
+ vrf PROFILE-1
+  address-family ipv4
+   rpf topology route-policy PROFILE-1-RPF
+  !
+ !
+ vrf PROFILE-3
+  address-family ipv4
+   rpf topology route-policy PROFILE-3-RPF
   !
  !
 !
@@ -7439,11 +7559,12 @@ end
     <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Oct 10 18:31:02 2018 by cisco
+!! Last configuration change at Thu Oct 11 19:22:32 2018 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
 hostname XR2
+logging monitor debugging
 service timestamps log datetime msec
 service timestamps debug datetime msec
 telnet vrf default ipv4 server max-servers 10
@@ -7753,7 +7874,7 @@ end
     <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Oct 10 17:41:27 2018 by CVAC
+!! Last configuration change at Thu Oct 11 17:59:03 2018 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -7764,6 +7885,12 @@ telnet vrf default ipv4 server max-servers 10
 telnet vrf Mgmt-intf ipv4 server max-servers 10
 domain name virl.info
 domain lookup disable
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
 vrf PROFILE-0
  address-family ipv4 unicast
   import route-target
@@ -7780,12 +7907,6 @@ vrf PROFILE-0
   export route-target
    2:2
   !
- !
-!
-vrf Mgmt-intf
- address-family ipv4 unicast
- !
- address-family ipv6 unicast
  !
 !
 line template vty
@@ -7981,7 +8102,7 @@ end
     <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Wed Oct 10 17:41:27 2018 by CVAC
+!! Last configuration change at Thu Oct 11 17:59:06 2018 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -8154,7 +8275,7 @@ end
             <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="config" type="String">!
-! Last configuration change at 20:05:00 UTC Wed Oct 10 2018
+! Last configuration change at 20:13:31 UTC Thu Oct 11 2018
 !
 version 15.6
 service timestamps debug datetime msec
@@ -8320,7 +8441,6 @@ menu main_menu command 24. telnet 172.16.1.124 /vrf Mgmt-intf
 menu main_menu text Q. Quit
 menu main_menu command Q. Exit
 menu main_menu clear-screen
-!
 !
 !
 control-plane
