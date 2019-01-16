@@ -4813,8 +4813,10 @@ router bgp 100
   neighbor 10.0.0.25 send-community extended
   neighbor 10.0.0.19 activate
   neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
   neighbor 10.0.0.22 activate
   neighbor 10.0.0.22 send-community extended
+  neighbor 10.0.0.22 route-reflector-client
  exit-address-family
  !
  address-family vpnv6
@@ -4825,8 +4827,10 @@ router bgp 100
   neighbor 10.0.0.25 send-community extended
   neighbor 10.0.0.19 activate
   neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
   neighbor 10.0.0.22 activate
   neighbor 10.0.0.22 send-community extended
+  neighbor 10.0.0.22 route-reflector-client
  exit-address-family
 !
 ip forward-protocol nd
@@ -5049,9 +5053,10 @@ router bgp 100
   neighbor 10.0.0.24 send-community extended
   neighbor 10.0.0.19 activate
   neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
   neighbor 10.0.0.22 activate
   neighbor 10.0.0.22 send-community extended
-                
+  neighbor 10.0.0.22 route-reflector-client              
  exit-address-family
  !
  address-family vpnv6
@@ -5062,8 +5067,10 @@ router bgp 100
   neighbor 10.0.0.24 send-community extended
   neighbor 10.0.0.19 activate
   neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.19 route-reflector-client
   neighbor 10.0.0.22 activate
   neighbor 10.0.0.22 send-community extended
+  neighbor 10.0.0.22 route-reflector-client
  exit-address-family
 !
 ip forward-protocol nd
