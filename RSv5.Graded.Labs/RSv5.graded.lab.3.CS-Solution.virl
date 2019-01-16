@@ -4797,6 +4797,10 @@ router bgp 100
  neighbor PG_IBGP update-source Loopback0
  neighbor 10.0.0.25 remote-as 100
  neighbor 10.0.0.25 update-source Loopback0
+ neighbor 10.0.0.19 remote-as 100
+ neighbor 10.0.0.19 update-source Loopback0
+ neighbor 10.0.0.22 remote-as 100
+ neighbor 10.0.0.22 update-source Loopback0
  !
  address-family ipv4
  exit-address-family
@@ -4807,6 +4811,10 @@ router bgp 100
   neighbor PG_IBGP route-reflector-client
   neighbor 10.0.0.25 activate
   neighbor 10.0.0.25 send-community extended
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
  exit-address-family
  !
  address-family vpnv6
@@ -4815,6 +4823,10 @@ router bgp 100
   neighbor PG_IBGP route-reflector-client
   neighbor 10.0.0.25 activate
   neighbor 10.0.0.25 send-community extended
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
  exit-address-family
 !
 ip forward-protocol nd
@@ -5021,6 +5033,10 @@ router bgp 100
  neighbor PG_IBGP update-source Loopback0
  neighbor 10.0.0.24 remote-as 100
  neighbor 10.0.0.24 update-source Loopback0
+ neighbor 10.0.0.19 remote-as 100
+ neighbor 10.0.0.19 update-source Loopback0
+ neighbor 10.0.0.22 remote-as 100
+ neighbor 10.0.0.22 update-source Loopback0
  !
  address-family ipv4
  exit-address-family
@@ -5031,6 +5047,11 @@ router bgp 100
   neighbor PG_IBGP route-reflector-client
   neighbor 10.0.0.24 activate
   neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
+                
  exit-address-family
  !
  address-family vpnv6
@@ -5039,6 +5060,10 @@ router bgp 100
   neighbor PG_IBGP route-reflector-client
   neighbor 10.0.0.24 activate
   neighbor 10.0.0.24 send-community extended
+  neighbor 10.0.0.19 activate
+  neighbor 10.0.0.19 send-community extended
+  neighbor 10.0.0.22 activate
+  neighbor 10.0.0.22 send-community extended
  exit-address-family
 !
 ip forward-protocol nd
