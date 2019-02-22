@@ -1,0 +1,1635 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.95" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.95/virl.xsd">
+    <node name="Spine-1" type="SIMPLE" subtype="NX-OSv 9000" location="326,88">
+        <extensions><entry key="config">!Command: show running-config
+!Time: Fri Feb 22 21:50:08 2019
+
+version 7.0(3)I7(1)
+hostname Spine-1
+vdc Spine-1 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource u4route-mem minimum 128 maximum 128
+  limit-resource u6route-mem minimum 96 maximum 96
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature nv overlay
+
+no password strength-check
+username admin password 5 $5$YTN.2ja2$d/HLzZoit2FVpcPdhLUAf270RyMcfCMYQVR4whZZMqD  role network-admin
+ip domain-lookup
+snmp-server user admin network-admin auth md5 0x2713a03f77e50e1900df44b30d2d3f3a priv 0x2713a03f77e50e1900df44b30d2d3f3a localizedkey
+rmon event 1 description FATAL(1) owner PMON@FATAL
+rmon event 2 description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 description ERROR(3) owner PMON@ERROR
+rmon event 4 description WARNING(4) owner PMON@WARNING
+rmon event 5 description INFORMATION(5) owner PMON@INFO
+
+ip pim rp-address 1.1.1.201 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,10
+
+vrf context management
+
+interface Ethernet1/1
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/4
+
+interface Ethernet1/5
+
+interface Ethernet1/6
+
+interface Ethernet1/7
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+
+interface Ethernet1/10
+
+interface Ethernet1/11
+
+interface Ethernet1/12
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+
+interface Ethernet1/30
+
+interface Ethernet1/31
+
+interface Ethernet1/32
+
+interface Ethernet1/33
+
+interface Ethernet1/34
+
+interface Ethernet1/35
+
+interface Ethernet1/36
+
+interface Ethernet1/37
+
+interface Ethernet1/38
+
+interface Ethernet1/39
+
+interface Ethernet1/40
+
+interface Ethernet1/41
+
+interface Ethernet1/42
+
+interface Ethernet1/43
+
+interface Ethernet1/44
+
+interface Ethernet1/45
+
+interface Ethernet1/46
+
+interface Ethernet1/47
+
+interface Ethernet1/48
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface Ethernet1/53
+
+interface Ethernet1/54
+
+interface Ethernet1/55
+
+interface Ethernet1/56
+
+interface Ethernet1/57
+
+interface Ethernet1/58
+
+interface Ethernet1/59
+
+interface Ethernet1/60
+
+interface Ethernet1/61
+
+interface Ethernet1/62
+
+interface Ethernet1/63
+
+interface Ethernet1/64
+
+interface mgmt0
+  vrf member management
+
+interface loopback0
+  ip address 1.1.1.201/32
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+line console
+line vty
+router ospf 1
+router bgp 100
+  address-family ipv4 unicast
+  address-family l2vpn evpn
+  neighbor 1.1.1.101
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+  neighbor 1.1.1.102
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+  neighbor 1.1.1.103
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+
+</entry></extensions><interface id="0" name="Ethernet1/1"/>
+        <interface id="1" name="Ethernet1/2"/>
+        <interface id="2" name="Ethernet1/3"/>
+    </node>
+    <node name="Spine-2" type="SIMPLE" subtype="NX-OSv 9000" location="435,83">
+        <extensions><entry key="config">!Command: show running-config
+!Time: Fri Feb 22 21:50:07 2019
+
+version 7.0(3)I7(1)
+hostname Spine-2
+vdc Spine-2 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource u4route-mem minimum 128 maximum 128
+  limit-resource u6route-mem minimum 96 maximum 96
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature nv overlay
+
+no password strength-check
+username admin password 5 $5$fug4ZbzS$.0k06xP4Y2lruCm3eUYedghI0Y8.aURCO0nF9yqwdI2  role network-admin
+ip domain-lookup
+snmp-server user admin network-admin auth md5 0xcf8e58c549a00ee0dd2ee8abe7c0c3e4 priv 0xcf8e58c549a00ee0dd2ee8abe7c0c3e4 localizedkey
+rmon event 1 description FATAL(1) owner PMON@FATAL
+rmon event 2 description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 description ERROR(3) owner PMON@ERROR
+rmon event 4 description WARNING(4) owner PMON@WARNING
+rmon event 5 description INFORMATION(5) owner PMON@INFO
+
+ip pim rp-address 1.1.1.201 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,10
+
+vrf context management
+
+interface Ethernet1/1
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/4
+
+interface Ethernet1/5
+
+interface Ethernet1/6
+
+interface Ethernet1/7
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+
+interface Ethernet1/10
+
+interface Ethernet1/11
+
+interface Ethernet1/12
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+
+interface Ethernet1/30
+
+interface Ethernet1/31
+
+interface Ethernet1/32
+
+interface Ethernet1/33
+
+interface Ethernet1/34
+
+interface Ethernet1/35
+
+interface Ethernet1/36
+
+interface Ethernet1/37
+
+interface Ethernet1/38
+
+interface Ethernet1/39
+
+interface Ethernet1/40
+
+interface Ethernet1/41
+
+interface Ethernet1/42
+
+interface Ethernet1/43
+
+interface Ethernet1/44
+
+interface Ethernet1/45
+
+interface Ethernet1/46
+
+interface Ethernet1/47
+
+interface Ethernet1/48
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface Ethernet1/53
+
+interface Ethernet1/54
+
+interface Ethernet1/55
+
+interface Ethernet1/56
+
+interface Ethernet1/57
+
+interface Ethernet1/58
+
+interface Ethernet1/59
+
+interface Ethernet1/60
+
+interface Ethernet1/61
+
+interface Ethernet1/62
+
+interface Ethernet1/63
+
+interface Ethernet1/64
+
+interface mgmt0
+  vrf member management
+
+interface loopback0
+  ip address 1.1.1.202/32
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+line console
+line vty
+router ospf 1
+router bgp 100
+  address-family ipv4 unicast
+  address-family l2vpn evpn
+  neighbor 1.1.1.101
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+  neighbor 1.1.1.102
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+  neighbor 1.1.1.103
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+      send-community extended
+      route-reflector-client
+    address-family l2vpn evpn
+      send-community extended
+      route-reflector-client
+
+
+</entry></extensions><interface id="0" name="Ethernet1/1"/>
+        <interface id="1" name="Ethernet1/2"/>
+        <interface id="2" name="Ethernet1/3"/>
+    </node>
+    <node name="Leaf-1" type="SIMPLE" subtype="NX-OSv 9000" location="200,204">
+        <extensions><entry key="config">!Command: show running-config
+!Time: Fri Feb 22 21:50:07 2019
+
+version 7.0(3)I7(1)
+hostname Leaf-1
+vdc Leaf-1 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource u4route-mem minimum 128 maximum 128
+  limit-resource u6route-mem minimum 96 maximum 96
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+feature telnet
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature interface-vlan
+feature vn-segment-vlan-based
+feature nv overlay
+
+no password strength-check
+username admin password 5 $5$02eFGxx9$gKbKkhsOl6MxiCSM.yPlhZoYPGdkHPO34.Jy.vm6eN7  role network-admin
+ip domain-lookup
+snmp-server user admin network-admin auth md5 0x9c436b5046dac1a9a0142145eb751f32 priv 0x9c436b5046dac1a9a0142145eb751f32 localizedkey
+rmon event 1 description FATAL(1) owner PMON@FATAL
+rmon event 2 description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 description ERROR(3) owner PMON@ERROR
+rmon event 4 description WARNING(4) owner PMON@WARNING
+rmon event 5 description INFORMATION(5) owner PMON@INFO
+
+fabric forwarding anycast-gateway-mac 2020.0000.00aa
+ip pim rp-address 1.1.1.201 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,10,2500
+vlan 10
+  vn-segment 30010
+vlan 2500
+  vn-segment 50000
+
+vrf context CUSTOMER1
+  vni 50000
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+vrf context management
+
+interface Vlan1
+
+interface Vlan10
+  no shutdown
+  vrf member CUSTOMER1
+  ip address 10.0.0.254/24 tag 12345
+  fabric forwarding mode anycast-gateway
+
+interface Vlan2500
+  no shutdown
+  vrf member CUSTOMER1
+  no ip redirects
+  ip forward
+  ipv6 forward
+  no ipv6 redirects
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 30010
+    mcast-group 239.1.1.0
+  member vni 50000 associate-vrf
+
+interface Ethernet1/1
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  switchport mode trunk
+
+interface Ethernet1/4
+
+interface Ethernet1/5
+
+interface Ethernet1/6
+
+interface Ethernet1/7
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+
+interface Ethernet1/10
+
+interface Ethernet1/11
+
+interface Ethernet1/12
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+
+interface Ethernet1/30
+
+interface Ethernet1/31
+
+interface Ethernet1/32
+
+interface Ethernet1/33
+
+interface Ethernet1/34
+
+interface Ethernet1/35
+
+interface Ethernet1/36
+
+interface Ethernet1/37
+
+interface Ethernet1/38
+
+interface Ethernet1/39
+
+interface Ethernet1/40
+
+interface Ethernet1/41
+
+interface Ethernet1/42
+
+interface Ethernet1/43
+
+interface Ethernet1/44
+
+interface Ethernet1/45
+
+interface Ethernet1/46
+
+interface Ethernet1/47
+
+interface Ethernet1/48
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface Ethernet1/53
+
+interface Ethernet1/54
+
+interface Ethernet1/55
+
+interface Ethernet1/56
+
+interface Ethernet1/57
+
+interface Ethernet1/58
+
+interface Ethernet1/59
+
+interface Ethernet1/60
+
+interface Ethernet1/61
+
+interface Ethernet1/62
+
+interface Ethernet1/63
+
+interface Ethernet1/64
+
+interface mgmt0
+  vrf member management
+
+interface loopback0
+  ip address 1.1.1.101/32
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  ip igmp join-group 224.1.2.3
+line console
+line vty
+router ospf 1
+router bgp 100
+  address-family l2vpn evpn
+  neighbor 1.1.1.201
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 1.1.1.202
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  vrf CUSTOMER1
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+evpn
+  vni 30010 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+
+</entry></extensions><interface id="0" name="Ethernet1/1"/>
+        <interface id="1" name="Ethernet1/2"/>
+        <interface id="2" name="Ethernet1/3"/>
+    </node>
+    <node name="Leaf-2" type="SIMPLE" subtype="NX-OSv 9000" location="369,206">
+        <extensions><entry key="config">!Command: show running-config
+!Time: Fri Feb 22 21:50:07 2019
+
+version 7.0(3)I7(1)
+hostname Leaf-2
+vdc Leaf-2 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource u4route-mem minimum 128 maximum 128
+  limit-resource u6route-mem minimum 96 maximum 96
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+feature telnet
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature interface-vlan
+feature vn-segment-vlan-based
+feature nv overlay
+
+no password strength-check
+username admin password 5 $5$6NQL.4Rd$XJTrwvjXhmme.dIyolOr46SV3VPHRsMDR8y.wqqRvt9  role network-admin
+ip domain-lookup
+snmp-server user admin network-admin auth md5 0x353b8451083ab5b59fdd65943ba1c6b0 priv 0x353b8451083ab5b59fdd65943ba1c6b0 localizedkey
+rmon event 1 description FATAL(1) owner PMON@FATAL
+rmon event 2 description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 description ERROR(3) owner PMON@ERROR
+rmon event 4 description WARNING(4) owner PMON@WARNING
+rmon event 5 description INFORMATION(5) owner PMON@INFO
+
+fabric forwarding anycast-gateway-mac 2020.0000.00aa
+ip pim rp-address 1.1.1.201 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,10,2500
+vlan 10
+  vn-segment 30010
+vlan 2500
+  vn-segment 50000
+
+vrf context CUSTOMER1
+  vni 50000
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+vrf context management
+
+interface Vlan1
+
+interface Vlan10
+  no shutdown
+  vrf member CUSTOMER1
+  ip address 10.0.0.254/24 tag 12345
+  fabric forwarding mode anycast-gateway
+
+interface Vlan2500
+  no shutdown
+  vrf member CUSTOMER1
+  no ip redirects
+  ip forward
+  ipv6 forward
+  no ipv6 redirects
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 30010
+    mcast-group 239.1.1.0
+  member vni 50000 associate-vrf
+
+interface Ethernet1/1
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  switchport mode trunk
+
+interface Ethernet1/4
+
+interface Ethernet1/5
+
+interface Ethernet1/6
+
+interface Ethernet1/7
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+
+interface Ethernet1/10
+
+interface Ethernet1/11
+
+interface Ethernet1/12
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+
+interface Ethernet1/30
+
+interface Ethernet1/31
+
+interface Ethernet1/32
+
+interface Ethernet1/33
+
+interface Ethernet1/34
+
+interface Ethernet1/35
+
+interface Ethernet1/36
+
+interface Ethernet1/37
+
+interface Ethernet1/38
+
+interface Ethernet1/39
+
+interface Ethernet1/40
+
+interface Ethernet1/41
+
+interface Ethernet1/42
+
+interface Ethernet1/43
+
+interface Ethernet1/44
+
+interface Ethernet1/45
+
+interface Ethernet1/46
+
+interface Ethernet1/47
+
+interface Ethernet1/48
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface Ethernet1/53
+
+interface Ethernet1/54
+
+interface Ethernet1/55
+
+interface Ethernet1/56
+
+interface Ethernet1/57
+
+interface Ethernet1/58
+
+interface Ethernet1/59
+
+interface Ethernet1/60
+
+interface Ethernet1/61
+
+interface Ethernet1/62
+
+interface Ethernet1/63
+
+interface Ethernet1/64
+
+interface mgmt0
+  vrf member management
+
+interface loopback0
+  ip address 1.1.1.102/32
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+line console
+line vty
+router ospf 1
+router bgp 100
+  address-family l2vpn evpn
+  neighbor 1.1.1.201
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 1.1.1.202
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  vrf CUSTOMER1
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+evpn
+  vni 30010 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+
+</entry></extensions><interface id="0" name="Ethernet1/1"/>
+        <interface id="1" name="Ethernet1/2"/>
+        <interface id="2" name="Ethernet1/3"/>
+    </node>
+    <node name="Leaf-3" type="SIMPLE" subtype="NX-OSv 9000" location="550,196">
+        <extensions><entry key="config">!Command: show running-config
+!Time: Fri Feb 22 21:50:08 2019
+
+version 7.0(3)I7(1)
+hostname Leaf-3
+vdc Leaf-3 id 1
+  limit-resource vlan minimum 16 maximum 4094
+  limit-resource vrf minimum 2 maximum 4096
+  limit-resource port-channel minimum 0 maximum 511
+  limit-resource u4route-mem minimum 128 maximum 128
+  limit-resource u6route-mem minimum 96 maximum 96
+  limit-resource m4route-mem minimum 58 maximum 58
+  limit-resource m6route-mem minimum 8 maximum 8
+
+feature telnet
+nv overlay evpn
+feature ospf
+feature bgp
+feature pim
+feature interface-vlan
+feature vn-segment-vlan-based
+feature nv overlay
+
+username admin password 5 $5$z/zCgSjH$NwRNjEZXOI0u48QfwtJvq//P8TSabQ9IcAEoc.Lj6B3  role network-admin
+ip domain-lookup
+snmp-server user admin network-admin auth md5 0x7ab57c1e1f0301c257d26c57a0d68efd priv 0x7ab57c1e1f0301c257d26c57a0d68efd localizedkey
+rmon event 1 description FATAL(1) owner PMON@FATAL
+rmon event 2 description CRITICAL(2) owner PMON@CRITICAL
+rmon event 3 description ERROR(3) owner PMON@ERROR
+rmon event 4 description WARNING(4) owner PMON@WARNING
+rmon event 5 description INFORMATION(5) owner PMON@INFO
+
+fabric forwarding anycast-gateway-mac 2020.0000.00aa
+ip pim rp-address 1.1.1.201 group-list 224.0.0.0/4
+ip pim ssm range 232.0.0.0/8
+vlan 1,10,2500
+vlan 10
+  vn-segment 30010
+vlan 2500
+  vn-segment 50000
+
+vrf context CUSTOMER1
+  vni 50000
+  rd auto
+  address-family ipv4 unicast
+    route-target both auto
+    route-target both auto evpn
+vrf context management
+
+interface Vlan1
+
+interface Vlan10
+  no shutdown
+  vrf member CUSTOMER1
+  ip address 10.0.0.254/24 tag 12345
+  fabric forwarding mode anycast-gateway
+
+interface Vlan2500
+  no shutdown
+  vrf member CUSTOMER1
+  no ip redirects
+  ip forward
+  ipv6 forward
+  no ipv6 redirects
+
+interface nve1
+  no shutdown
+  host-reachability protocol bgp
+  source-interface loopback0
+  member vni 30010
+    mcast-group 239.1.1.0
+  member vni 50000 associate-vrf
+
+interface Ethernet1/1
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/2
+  no switchport
+  medium p2p
+  ip unnumbered loopback0
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+  no shutdown
+
+interface Ethernet1/3
+  switchport mode trunk
+
+interface Ethernet1/4
+
+interface Ethernet1/5
+
+interface Ethernet1/6
+
+interface Ethernet1/7
+
+interface Ethernet1/8
+
+interface Ethernet1/9
+
+interface Ethernet1/10
+
+interface Ethernet1/11
+
+interface Ethernet1/12
+
+interface Ethernet1/13
+
+interface Ethernet1/14
+
+interface Ethernet1/15
+
+interface Ethernet1/16
+
+interface Ethernet1/17
+
+interface Ethernet1/18
+
+interface Ethernet1/19
+
+interface Ethernet1/20
+
+interface Ethernet1/21
+
+interface Ethernet1/22
+
+interface Ethernet1/23
+
+interface Ethernet1/24
+
+interface Ethernet1/25
+
+interface Ethernet1/26
+
+interface Ethernet1/27
+
+interface Ethernet1/28
+
+interface Ethernet1/29
+
+interface Ethernet1/30
+
+interface Ethernet1/31
+
+interface Ethernet1/32
+
+interface Ethernet1/33
+
+interface Ethernet1/34
+
+interface Ethernet1/35
+
+interface Ethernet1/36
+
+interface Ethernet1/37
+
+interface Ethernet1/38
+
+interface Ethernet1/39
+
+interface Ethernet1/40
+
+interface Ethernet1/41
+
+interface Ethernet1/42
+
+interface Ethernet1/43
+
+interface Ethernet1/44
+
+interface Ethernet1/45
+
+interface Ethernet1/46
+
+interface Ethernet1/47
+
+interface Ethernet1/48
+
+interface Ethernet1/49
+
+interface Ethernet1/50
+
+interface Ethernet1/51
+
+interface Ethernet1/52
+
+interface Ethernet1/53
+
+interface Ethernet1/54
+
+interface Ethernet1/55
+
+interface Ethernet1/56
+
+interface Ethernet1/57
+
+interface Ethernet1/58
+
+interface Ethernet1/59
+
+interface Ethernet1/60
+
+interface Ethernet1/61
+
+interface Ethernet1/62
+
+interface Ethernet1/63
+
+interface Ethernet1/64
+
+interface mgmt0
+  vrf member management
+
+interface loopback0
+  ip address 1.1.1.103/32
+  ip router ospf 1 area 0.0.0.0
+  ip pim sparse-mode
+line console
+line vty
+router ospf 1
+router bgp 100
+  address-family l2vpn evpn
+  neighbor 1.1.1.201
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  neighbor 1.1.1.202
+    remote-as 100
+    update-source loopback0
+    address-family ipv4 unicast
+    address-family l2vpn evpn
+      send-community
+      send-community extended
+  vrf CUSTOMER1
+    address-family ipv4 unicast
+      advertise l2vpn evpn
+evpn
+  vni 30010 l2
+    rd auto
+    route-target import auto
+    route-target export auto
+
+
+</entry></extensions><interface id="0" name="Ethernet1/1"/>
+        <interface id="1" name="Ethernet1/2"/>
+        <interface id="2" name="Ethernet1/3"/>
+    </node>
+    <node name="Host-1" type="SIMPLE" subtype="IOSv" location="193,295">
+        <extensions><entry key="config">!
+! Last configuration change at 21:50:09 UTC Fri Feb 22 2019
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Host-1
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+redundancy
+!
+lldp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.0.0.1 255.255.255.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end
+
+</entry></extensions><interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="Host-2" type="SIMPLE" subtype="IOSv" location="369,286">
+        <extensions><entry key="config">!
+! Last configuration change at 21:50:09 UTC Fri Feb 22 2019
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Host-2
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+redundancy
+!
+lldp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.0.0.2 255.255.255.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end
+
+</entry></extensions><interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <node name="Host-3" type="SIMPLE" subtype="IOSv" location="550,286">
+        <extensions><entry key="config">!
+! Last configuration change at 21:50:10 UTC Fri Feb 22 2019
+!
+version 15.6
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Host-3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+!
+!
+!
+mmi polling-interval 60
+no mmi auto-configure
+no mmi pvc
+mmi snmp-timeout 180
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip cef
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+redundancy
+!
+lldp run
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface GigabitEthernet0/0
+ no ip address
+ shutdown
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ media-type rj45
+!
+interface GigabitEthernet0/1.10
+ encapsulation dot1Q 10
+ ip address 10.0.0.3 255.255.255.0
+!
+ip forward-protocol nd
+!
+!
+no ip http server
+no ip http secure-server
+ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+ip ssh client algorithm encryption aes128-ctr aes192-ctr aes256-ctr
+!
+ipv6 ioam timestamp
+!
+!
+!
+control-plane
+!
+banner exec `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner incoming `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+banner login `
+**************************************************************************
+* IOSv is strictly limited to use for evaluation, demonstration and IOS  *
+* education. IOSv is provided as-is and is not supported by Cisco's      *
+* Technical Advisory Center. Any use or disclosure, in whole or in part, *
+* of the IOSv Software or Documentation to any third party for any       *
+* purposes is expressly prohibited except as otherwise authorized by     *
+* Cisco in writing.                                                      *
+**************************************************************************`
+!
+line con 0
+line aux 0
+line vty 0 4
+ login
+ transport input none
+!
+no scheduler allocate
+!
+end
+
+</entry></extensions><interface id="0" name="GigabitEthernet0/1"/>
+    </node>
+    <annotations/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[1]" src="/virl:topology/virl:node[3]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[2]" src="/virl:topology/virl:node[4]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[1]/virl:interface[3]" src="/virl:topology/virl:node[5]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[2]/virl:interface[3]" src="/virl:topology/virl:node[5]/virl:interface[2]"/>
+    <connection dst="/virl:topology/virl:node[3]/virl:interface[3]" src="/virl:topology/virl:node[6]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[4]/virl:interface[3]" src="/virl:topology/virl:node[7]/virl:interface[1]"/>
+    <connection dst="/virl:topology/virl:node[5]/virl:interface[3]" src="/virl:topology/virl:node[8]/virl:interface[1]"/>
+</topology>
