@@ -3506,7 +3506,6 @@ router ospf 1
  area 0
   network point-to-point
   interface Loopback0
-   prefix-sid index 11
   !
   interface GigabitEthernet0/0/0/0.111
   !

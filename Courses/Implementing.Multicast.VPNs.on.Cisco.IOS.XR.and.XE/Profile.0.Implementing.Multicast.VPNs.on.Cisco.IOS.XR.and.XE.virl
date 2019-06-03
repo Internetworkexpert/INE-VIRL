@@ -3470,6 +3470,7 @@ router ospf 1
  mpls ldp auto-config
  area 0
   network point-to-point
+  interface loopback0
   !
   interface GigabitEthernet0/0/0/0.111
   !
