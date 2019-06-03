@@ -3467,12 +3467,9 @@ route-policy PREPEND_TO_CE
 end-policy
 !
 router ospf 1
- segment-routing mpls
+ mpls ldp auto-config
  area 0
   network point-to-point
-  segment-routing mpls
-  interface Loopback0
-   prefix-sid index 11
   !
   interface GigabitEthernet0/0/0/0.111
   !
