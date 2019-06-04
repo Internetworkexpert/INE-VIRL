@@ -9,7 +9,7 @@
     <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 15:30:14 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:31 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -30,6 +30,9 @@ vrf definition B
  route-target import 2:2
  !
  address-family ipv4
+  mdt auto-discovery pim
+  mdt default 232.1.1.1
+  mdt overlay use-bgp
  exit-address-family
  !
  address-family ipv6
@@ -60,7 +63,6 @@ no ip domain lookup
 ip domain name virl.info
 ip multicast-routing distributed
 ip multicast-routing vrf B distributed
-ip multicast vrf B mpls mldp
 !
 !
 !
@@ -89,6 +91,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-952843697
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-952843697
+ revocation-check none
+ rsakeypair TP-self-signed-952843697
+!
 crypto pki trustpoint TP-self-signed-1801537289
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-1801537289
@@ -96,8 +104,9 @@ crypto pki trustpoint TP-self-signed-1801537289
  rsakeypair TP-self-signed-1801537289
 !
 !
-crypto pki certificate chain TP-self-signed-1801537289
+crypto pki certificate chain TP-self-signed-952843697
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-1801537289
 !
 !
 !
@@ -107,7 +116,7 @@ crypto pki certificate chain TP-self-signed-1801537289
 !
 !
 !
-license udi pid CSR1000V sn 9WTWNJJQY5E
+license udi pid CSR1000V sn 9Z31A33D4D1
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -271,7 +280,6 @@ ip http server
 ip http authentication local
 ip http secure-server
 ip pim ssm default
-ip pim vrf B mpls source Loopback0
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -317,7 +325,7 @@ end
     <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,204">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:48:40 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:22 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -395,6 +403,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-4206319290
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-4206319290
+ revocation-check none
+ rsakeypair TP-self-signed-4206319290
+!
 crypto pki trustpoint TP-self-signed-814582563
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-814582563
@@ -402,8 +416,9 @@ crypto pki trustpoint TP-self-signed-814582563
  rsakeypair TP-self-signed-814582563
 !
 !
-crypto pki certificate chain TP-self-signed-814582563
+crypto pki certificate chain TP-self-signed-4206319290
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-814582563
 !
 !
 !
@@ -413,7 +428,7 @@ crypto pki certificate chain TP-self-signed-814582563
 !
 !
 !
-license udi pid CSR1000V sn 9IJPZRRA545
+license udi pid CSR1000V sn 9K29AG4E9IW
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -747,7 +762,7 @@ end
     <node name="R3" type="SIMPLE" subtype="CSR1000v" location="240,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 15:30:14 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:15 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -768,6 +783,9 @@ vrf definition B
  route-target import 2:2
  !
  address-family ipv4
+  mdt auto-discovery pim
+  mdt default 232.1.1.1
+  mdt overlay use-bgp
  exit-address-family
  !
  address-family ipv6
@@ -798,7 +816,6 @@ no ip domain lookup
 ip domain name virl.info
 ip multicast-routing distributed
 ip multicast-routing vrf B distributed
-ip multicast vrf B mpls mldp
 !
 !
 !
@@ -827,6 +844,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-3352390209
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3352390209
+ revocation-check none
+ rsakeypair TP-self-signed-3352390209
+!
 crypto pki trustpoint TP-self-signed-4264837838
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-4264837838
@@ -834,8 +857,9 @@ crypto pki trustpoint TP-self-signed-4264837838
  rsakeypair TP-self-signed-4264837838
 !
 !
-crypto pki certificate chain TP-self-signed-4264837838
+crypto pki certificate chain TP-self-signed-3352390209
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-4264837838
 !
 !
 !
@@ -845,7 +869,7 @@ crypto pki certificate chain TP-self-signed-4264837838
 !
 !
 !
-license udi pid CSR1000V sn 93Z8L5WR6ZI
+license udi pid CSR1000V sn 9SFLUNTZIG5
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1012,7 +1036,6 @@ ip http server
 ip http authentication local
 ip http secure-server
 ip pim ssm default
-ip pim vrf B mpls source Loopback0
 !
 ip ssh server algorithm encryption aes128-ctr aes192-ctr aes256-ctr
 ip ssh server algorithm authentication password
@@ -1057,7 +1080,7 @@ end
     <node name="R4" type="SIMPLE" subtype="CSR1000v" location="312,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 15:29:07 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:21 UTC Tue Jun 4 2019
 !
 version 16.6
 no service timestamps debug uptime
@@ -1121,6 +1144,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-1835808585
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1835808585
+ revocation-check none
+ rsakeypair TP-self-signed-1835808585
+!
 crypto pki trustpoint TP-self-signed-2872577817
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-2872577817
@@ -1128,8 +1157,9 @@ crypto pki trustpoint TP-self-signed-2872577817
  rsakeypair TP-self-signed-2872577817
 !
 !
-crypto pki certificate chain TP-self-signed-2872577817
+crypto pki certificate chain TP-self-signed-1835808585
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-2872577817
 !
 !
 !
@@ -1139,7 +1169,7 @@ crypto pki certificate chain TP-self-signed-2872577817
 !
 !
 !
-license udi pid CSR1000V sn 9JJPRVJJRDX
+license udi pid CSR1000V sn 9XIW6EM51DV
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1278,7 +1308,7 @@ end
     <node name="R5" type="SIMPLE" subtype="CSR1000v" location="324,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:49:03 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:23 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1342,6 +1372,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-3798086655
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-3798086655
+ revocation-check none
+ rsakeypair TP-self-signed-3798086655
+!
 crypto pki trustpoint TP-self-signed-1828000671
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-1828000671
@@ -1349,8 +1385,9 @@ crypto pki trustpoint TP-self-signed-1828000671
  rsakeypair TP-self-signed-1828000671
 !
 !
-crypto pki certificate chain TP-self-signed-1828000671
+crypto pki certificate chain TP-self-signed-3798086655
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-1828000671
 !
 !
 !
@@ -1360,7 +1397,7 @@ crypto pki certificate chain TP-self-signed-1828000671
 !
 !
 !
-license udi pid CSR1000V sn 9E6YQ6FDGV9
+license udi pid CSR1000V sn 9UEPTAVT5N2
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1501,7 +1538,7 @@ end
     <node name="R6" type="SIMPLE" subtype="CSR1000v" location="492,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:49:05 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:23 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1565,6 +1602,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-2564792144
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2564792144
+ revocation-check none
+ rsakeypair TP-self-signed-2564792144
+!
 crypto pki trustpoint TP-self-signed-4149206221
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-4149206221
@@ -1572,8 +1615,9 @@ crypto pki trustpoint TP-self-signed-4149206221
  rsakeypair TP-self-signed-4149206221
 !
 !
-crypto pki certificate chain TP-self-signed-4149206221
+crypto pki certificate chain TP-self-signed-2564792144
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-4149206221
 !
 !
 !
@@ -1583,7 +1627,7 @@ crypto pki certificate chain TP-self-signed-4149206221
 !
 !
 !
-license udi pid CSR1000V sn 98ONKZF97JN
+license udi pid CSR1000V sn 9URVV0M7N56
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1707,7 +1751,7 @@ end
     <node name="R7" type="SIMPLE" subtype="CSR1000v" location="396,468">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:49:13 UTC Mon Jun 3 2019
+! Last configuration change at 14:40:54 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -1771,6 +1815,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-273701490
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-273701490
+ revocation-check none
+ rsakeypair TP-self-signed-273701490
+!
 crypto pki trustpoint TP-self-signed-517538167
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-517538167
@@ -1778,8 +1828,9 @@ crypto pki trustpoint TP-self-signed-517538167
  rsakeypair TP-self-signed-517538167
 !
 !
-crypto pki certificate chain TP-self-signed-517538167
+crypto pki certificate chain TP-self-signed-273701490
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-517538167
 !
 !
 !
@@ -1789,7 +1840,7 @@ crypto pki certificate chain TP-self-signed-517538167
 !
 !
 !
-license udi pid CSR1000V sn 96ELXYPU11R
+license udi pid CSR1000V sn 93WEA44CMHH
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -1920,7 +1971,7 @@ end
     <node name="R8" type="SIMPLE" subtype="CSR1000v" location="408,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 15:30:14 UTC Mon Jun 3 2019
+! Last configuration change at 14:40:05 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2002,7 +2053,7 @@ crypto pki certificate chain TP-self-signed-170153269
 !
 !
 !
-license udi pid CSR1000V sn 9PVDM14Z52P
+license udi pid CSR1000V sn 9OJEDUI5ZFH
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2040,7 +2091,6 @@ interface Loopback0
  description Loopback
  ip address 8.8.8.8 255.255.255.255
  ip pim sparse-mode
- ip igmp join-group 228.8.8.88
  ip ospf 1 area 1
  ipv6 address 2001::8/128
 !
@@ -2129,7 +2179,7 @@ end
     <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,336">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:52:01 UTC Mon Jun 3 2019
+! Last configuration change at 14:40:10 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2222,7 +2272,7 @@ crypto pki certificate chain TP-self-signed-2501921493
 !
 !
 !
-license udi pid CSR1000V sn 9HMWQYA0YAG
+license udi pid CSR1000V sn 9WR6LJVT7D7
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -2352,7 +2402,7 @@ end
     <node name="R10" type="SIMPLE" subtype="CSR1000v" location="576,72">
         <extensions>
             <entry key="config" type="string">!
-! Last configuration change at 14:48:39 UTC Mon Jun 3 2019
+! Last configuration change at 14:39:15 UTC Tue Jun 4 2019
 !
 version 16.6
 service timestamps debug datetime msec
@@ -2415,6 +2465,12 @@ multilink bundle-name authenticated
 !
 !
 !
+crypto pki trustpoint TP-self-signed-2672175514
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-2672175514
+ revocation-check none
+ rsakeypair TP-self-signed-2672175514
+!
 crypto pki trustpoint TP-self-signed-4262901615
  enrollment selfsigned
  subject-name cn=IOS-Self-Signed-Certificate-4262901615
@@ -2422,8 +2478,9 @@ crypto pki trustpoint TP-self-signed-4262901615
  rsakeypair TP-self-signed-4262901615
 !
 !
-crypto pki certificate chain TP-self-signed-4262901615
+crypto pki certificate chain TP-self-signed-2672175514
  certificate self-signed 01 nvram:IOS-Self-Sig#1.cer
+crypto pki certificate chain TP-self-signed-4262901615
 !
 !
 !
@@ -2433,7 +2490,7 @@ crypto pki certificate chain TP-self-signed-4262901615
 !
 !
 !
-license udi pid CSR1000V sn 9B4KSYQK7G4
+license udi pid CSR1000V sn 9UE4AIGQCCO
 license accept end user agreement
 license boot level ax
 diagnostic bootup level minimal
@@ -3372,7 +3429,7 @@ end
     <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="576,168">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Mon Jun  3 15:27:28 2019 by cisco
+!! Last configuration change at Tue Jun  4 14:52:07 2019 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3495,10 +3552,6 @@ end-policy
 !
 route-policy rpf-for-one
   set core-tree pim-default
-end-policy
-!
-route-policy rpf-vrf-one
-  set core-tree mldp-inband
 end-policy
 !
 route-policy PREPEND_TO_CE
@@ -3624,7 +3677,10 @@ multicast-routing
   address-family ipv4
    mdt source Loopback0
    interface all enable
-   mdt mldp in-band-signaling ipv4
+   bgp auto-discovery p2mp-te
+   !
+   mdt default ipv4 232.1.1.1
+   mdt data 232.100.100.0/24
   !
  !
 !
@@ -3632,6 +3688,8 @@ router pim
  vrf B
   address-family ipv4
    rpf topology route-policy rpf-for-one
+   mdt c-multicast-routing bgp
+   !
   !
  !
 !
@@ -3650,7 +3708,7 @@ end
     <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="576,264">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Mon Jun  3 14:46:27 2019 by CVAC
+!! Last configuration change at Tue Jun  4 14:37:30 2019 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3951,7 +4009,7 @@ end
     <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="480,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Mon Jun  3 15:27:21 2019 by cisco
+!! Last configuration change at Tue Jun  4 14:55:06 2019 by cisco
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -3963,7 +4021,6 @@ telnet vrf Mgmt-intf ipv4 server max-servers 10
 domain name virl.info
 domain lookup disable
 vrf B
- vpn id 1:1
  address-family ipv4 unicast
   import route-target
    2:2
@@ -4061,10 +4118,6 @@ end-policy
 !
 route-policy rpf-for-one
   set core-tree pim-default
-end-policy
-!
-route-policy rpf-vrf-one
-  set core-tree mldp-inband
 end-policy
 !
 router static
@@ -4198,7 +4251,10 @@ multicast-routing
   address-family ipv4
    mdt source Loopback0
    interface all enable
-   mdt mldp in-band-signaling ipv4
+   bgp auto-discovery p2mp-te
+   !
+   mdt default ipv4 232.1.1.1
+   mdt data 232.100.100.0/24
   !
  !
 !
@@ -4206,6 +4262,8 @@ router pim
  vrf B
   address-family ipv4
    rpf topology route-policy rpf-for-one
+   mdt c-multicast-routing bgp
+   !
   !
  !
 !
@@ -4223,7 +4281,7 @@ end
     <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="564,468">
         <extensions>
             <entry key="config" type="string">!! IOS XR Configuration 6.1.3
-!! Last configuration change at Mon Jun  3 14:46:26 2019 by CVAC
+!! Last configuration change at Tue Jun  4 14:37:24 2019 by CVAC
 !
 !  IOS-XR Config generated on 2016-04-21 17:05
 ! by autonetkit_0.21.4
@@ -4396,7 +4454,7 @@ end
             <entry key="AutoNetkit.mgmt_ip" type="String"/>
             <entry key="static_serial_port_0" type="Integer">10000</entry>
             <entry key="config" type="String">!
-! Last configuration change at 15:31:36 UTC Mon Jun 3 2019
+! Last configuration change at 14:56:47 UTC Tue Jun 4 2019
 !
 version 15.6
 service timestamps debug datetime msec
@@ -4505,7 +4563,7 @@ kron policy-list KRONPOLICY
 ipv6 ioam timestamp
 !
 !
-menu main_menu title ^CC
+menu main_menu title ^CCC
 +------------------------------------------+
 |            SPv4 Bootcamp Menu            |
 +------------------------------------------+
@@ -4640,7 +4698,7 @@ line con 0
  password cisco
 line aux 0
 line vty 0
- exec^C
+ exe^C
 !
 !
 control-plane
