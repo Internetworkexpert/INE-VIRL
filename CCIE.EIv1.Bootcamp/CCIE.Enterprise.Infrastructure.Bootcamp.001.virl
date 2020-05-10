@@ -3361,6 +3361,10 @@ vrf definition X
 !
 enable password cisco
 !
+!
+! sudo iptables -t nat -A PREROUTING -i eth0 -s 0.0.0.0/0 -p tcp --dport 23 -j DNAT --to-destination 172.16.1.220:23
+!
+!
 username ccie password 0 bootcamp
 username ccie autocommand menu main_menu
 no aaa new-model
@@ -3409,6 +3413,8 @@ interface GigabitEthernet0/0
  vrf forwarding Mgmt-intf
  ip address 172.16.1.220 255.255.255.0
  negotiation auto
+!
+ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.250
 !
 interface GigabitEthernet0/1
 !
@@ -3524,10 +3530,10 @@ line con 0
  password cisco
  logging synchronous
 line aux 0
-line vty 0 4
+line vty 0 1000
  exec-timeout 720 0
  password cisco
- login
+ login local
  transport input telnet ssh
 !
 !
