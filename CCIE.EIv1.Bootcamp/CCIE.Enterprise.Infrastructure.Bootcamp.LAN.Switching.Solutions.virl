@@ -2752,6 +2752,7 @@ no ipv6 cef
 !
 !
 !
+vtp mode transparent
 vlan 13,30,40
 !
 spanning-tree mode mst
@@ -2966,6 +2967,8 @@ no ipv6 cef
 !
 !
 !
+vtp mode transparent
+
 vlan 13,30,40
 !
 spanning-tree mode mst
@@ -3178,6 +3181,8 @@ no ipv6 cef
 !
 !
 !
+vtp mode transparent
+
 vlan 13,30,40
 !
 spanning-tree mode mst
@@ -3393,6 +3398,8 @@ no ipv6 cef
 !
 !
 !
+vtp mode transparent
+
 vlan 13,30,40
 !
 spanning-tree mode mst
@@ -3650,11 +3657,20 @@ interface GigabitEthernet0/0
 !
 ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 172.16.1.250
 !
+vtp mode transparent
+vlan 79,89
 interface GigabitEthernet0/1
+ switchport access vlan 79
+ spanning-tree portfast edge
 !
 interface GigabitEthernet0/2
+ switchport access vlan 89
+ spanning-tree portfast edge
 !
 interface GigabitEthernet0/3
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ spanning-tree portfast edge trunk
 !
 interface Vlan79
  vrf forwarding X
