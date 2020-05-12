@@ -10,7 +10,7 @@
         <extensions>
             <entry key="static_ip" type="String">172.16.1.201</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:04 UTC Mon May 11 2020
+! Last configuration change at 20:09:53 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -83,7 +83,7 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.1 255.255.255.255
- ipv6 address 2001::1/128
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -120,6 +120,9 @@ interface GigabitEthernet0/4
  speed auto
  media-type rj45
  ipv6 address 2001:10:1:5::1/64
+!
+router ospf 1
+ network 10.0.0.0 0.255.255.255 area 0
 !
 ip forward-protocol nd
 !
@@ -190,7 +193,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.202</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:43 UTC Mon May 11 2020
+! Last configuration change at 19:46:07 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -263,7 +266,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.2 255.255.255.255
- ipv6 address 2001::2/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -282,6 +284,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 165.1.26.2 255.255.255.0
+ ip ospf 1 area 2
  duplex auto
  speed auto
  media-type rj45
@@ -293,6 +296,11 @@ interface GigabitEthernet0/3
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:210::2/64
+!
+router ospf 1
+ network 10.0.0.0 0.255.255.255 area 0
+ network 165.1.0.0 0.0.255.255 area 0
+ network 192.168.255.0 0.0.0.255 area 0
 !
 ip forward-protocol nd
 !
@@ -362,7 +370,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.203</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:47 UTC Mon May 11 2020
+! Last configuration change at 19:45:30 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -435,7 +443,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.3 255.255.255.255
- ipv6 address 2001::3/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -458,6 +465,11 @@ interface GigabitEthernet0/2
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:37::3/64
+!
+router ospf 1
+ network 10.0.0.0 0.255.255.255 area 0
+ network 165.1.0.0 0.0.255.255 area 0
+ network 192.168.255.0 0.0.0.255 area 0
 !
 ip forward-protocol nd
 !
@@ -526,7 +538,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.204</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:52 UTC Mon May 11 2020
+! Last configuration change at 19:45:32 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -599,7 +611,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.4 255.255.255.255
- ipv6 address 2001::4/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -622,6 +633,11 @@ interface GigabitEthernet0/2
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:134::4/64
+!
+router ospf 1
+ network 10.0.0.0 0.255.255.255 area 0
+ network 165.1.0.0 0.0.255.255 area 0
+ network 192.168.255.0 0.0.0.255 area 0
 !
 ip forward-protocol nd
 !
@@ -690,7 +706,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.205</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:53:02 UTC Mon May 11 2020
+! Last configuration change at 19:45:34 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -763,7 +779,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.5 255.255.255.255
- ipv6 address 2001::5/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -786,6 +801,11 @@ interface GigabitEthernet0/2
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:58::5/64
+!
+router ospf 1
+ network 10.0.0.0 0.255.255.255 area 0
+ network 165.1.0.0 0.0.255.255 area 0
+ network 192.168.255.0 0.0.0.255 area 0
 !
 ip forward-protocol nd
 !
@@ -854,7 +874,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.206</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:53:07 UTC Mon May 11 2020
+! Last configuration change at 20:09:41 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -927,7 +947,6 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.6 255.255.255.255
- ipv6 address 2001::6/128
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -939,6 +958,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.26.6 255.255.255.0
+ ip ospf 1 area 2
  duplex auto
  speed auto
  media-type rj45
@@ -954,6 +974,10 @@ router eigrp CCIE
   network 165.1.0.0
   network 192.168.255.0
  exit-address-family
+!
+router ospf 1
+ summary-address 192.168.255.6 255.255.255.254
+ redistribute connected metric-type 1 subnets
 !
 ip forward-protocol nd
 !
@@ -1021,7 +1045,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.207</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:53:14 UTC Mon May 11 2020
+! Last configuration change at 20:10:58 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1106,7 +1130,7 @@ crypto ipsec profile ENCRYPTION
 interface Loopback0
  description Loopback
  ip address 192.168.255.7 255.255.255.255
- ipv6 address 2001::7/128
+ ip ospf 1 area 0
 !
 interface Loopback1
  ip address 192.168.111.7 255.255.255.255
@@ -1134,6 +1158,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.79.7 255.255.255.0
+ ip ospf 1 area 3
  duplex auto
  speed auto
  media-type rj45
@@ -1141,10 +1166,14 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 165.1.37.7 255.255.255.0
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:37::7/64
+!
+router ospf 1
+ area 0 range 192.168.255.0 255.255.255.254
 !
 ip forward-protocol nd
 !
@@ -1213,7 +1242,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.208</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:53:21 UTC Mon May 11 2020
+! Last configuration change at 19:47:56 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1265,6 +1294,11 @@ multilink bundle-name authenticated
 !
 !
 !
+key chain OSPF
+ key 1
+  key-string CISCOSHA
+  cryptographic-algorithm hmac-sha-1
+!
 !
 username cisco privilege 15 secret 5 $1$SMy7$.5fw1448bihvfbqcYt7t41
 !
@@ -1298,7 +1332,7 @@ crypto ipsec profile ENCRYPTION
 interface Loopback0
  description Loopback
  ip address 192.168.255.8 255.255.255.255
- ipv6 address 2001::8/128
+ ip ospf 1 area 0
 !
 interface Loopback1
  ip address 192.168.111.8 255.255.255.255
@@ -1326,6 +1360,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.89.8 255.255.255.0
+ ip ospf 1 area 3
  duplex auto
  speed auto
  media-type rj45
@@ -1333,6 +1368,7 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 165.1.58.8 255.255.255.0
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
@@ -1340,10 +1376,15 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  ip address 165.1.148.8 255.255.255.0
+ ip ospf authentication key-chain OSPF
+ ip ospf 1 area 14
  duplex auto
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:148::8/64
+!
+router ospf 1
+ area 14 virtual-link 192.168.255.14
 !
 ip forward-protocol nd
 !
@@ -1416,7 +1457,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.209</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:53:22 UTC Mon May 11 2020
+! Last configuration change at 20:11:06 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1489,7 +1530,7 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.9 255.255.255.255
- ipv6 address 2001::9/128
+ ip ospf 1 area 3
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -1501,6 +1542,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  no ip address
+ ip ospf 1 area 3
  duplex auto
  speed auto
  media-type rj45
@@ -1508,12 +1550,16 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/1.79
  encapsulation dot1Q 79
  ip address 165.1.79.9 255.255.255.0
+ ip ospf 1 area 3
  ipv6 address 2001:165:1:79::9/64
 !
 interface GigabitEthernet0/1.89
  encapsulation dot1Q 89
  ip address 165.1.89.9 255.255.255.0
+ ip ospf 1 area 3
  ipv6 address 2001:165:1:89::9/64
+!
+router ospf 1
 !
 ip forward-protocol nd
 !
@@ -1581,7 +1627,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.210</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:09 UTC Mon May 11 2020
+! Last configuration change at 19:47:45 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1666,6 +1712,7 @@ crypto ipsec profile ENCRYPTION
 interface Loopback0
  description Loopback
  ip address 192.168.255.10 255.255.255.255
+ ip ospf 1 area 0
  ipv6 address 2001::10/128
 !
 interface Loopback1
@@ -1695,6 +1742,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.10.10 255.255.255.0
+ ip ospf 1 area 1
  duplex auto
  speed auto
  media-type rj45
@@ -1703,6 +1751,7 @@ interface GigabitEthernet0/1
 interface GigabitEthernet0/2
  ip address 165.1.210.10 255.255.255.0
  ip summary-address eigrp 10 192.168.255.8 255.255.255.248
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
@@ -1711,10 +1760,14 @@ interface GigabitEthernet0/2
 interface GigabitEthernet0/3
  ip address 165.1.103.10 255.255.255.0
  ip summary-address eigrp 10 192.168.255.8 255.255.255.248 leak-map LEAK_R11
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:103::10/64
+!
+router ospf 1
+ area 1 stub
 !
 ip forward-protocol nd
 !
@@ -1784,7 +1837,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.211</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:12 UTC Mon May 11 2020
+! Last configuration change at 20:06:52 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -1903,6 +1956,10 @@ interface GigabitEthernet0/1
  media-type rj45
  ipv6 address 2001:165:1:11::11/64
 !
+router ospf 1
+ area 1 stub
+ network 0.0.0.0 255.255.255.255 area 1
+!
 ip forward-protocol nd
 !
 !
@@ -1969,7 +2026,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.212</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:17 UTC Mon May 11 2020
+! Last configuration change at 20:06:54 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2099,6 +2156,10 @@ router eigrp 65535
  network 192.168.111.0
  distance eigrp 89 170
 !
+router ospf 1
+ area 1 stub
+ network 0.0.0.0 255.255.255.255 area 1
+!
 ip forward-protocol nd
 !
 !
@@ -2165,7 +2226,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.213</entry>
             <entry key="config" type="string">!
-! Last configuration change at 16:52:35 UTC Mon May 11 2020
+! Last configuration change at 20:08:48 UTC Mon May 11 2020
 !
 version 15.6
 service timestamps debug datetime msec
@@ -2250,7 +2311,7 @@ crypto ipsec profile ENCRYPTION
 interface Loopback0
  description Loopback
  ip address 192.168.255.13 255.255.255.255
- ipv6 address 2001::13/128
+ ip ospf 1 area 0
 !
 interface Loopback1
  ip address 192.168.111.13 255.255.255.255
@@ -2279,6 +2340,7 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.134.13 255.255.255.0
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
@@ -2286,6 +2348,9 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 165.1.143.13 255.255.255.0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CISCO
+ ip ospf 1 area 14
  duplex auto
  speed auto
  media-type rj45
@@ -2293,6 +2358,7 @@ interface GigabitEthernet0/2
 !
 interface GigabitEthernet0/3
  ip address 165.1.103.13 255.255.255.0
+ ip ospf 1 area 0
  duplex auto
  speed auto
  media-type rj45
@@ -2300,10 +2366,15 @@ interface GigabitEthernet0/3
 !
 interface GigabitEthernet0/4
  ip address 165.1.13.13 255.255.255.0
+ ip ospf 1 area 4
  duplex auto
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:13::13/64
+!
+router ospf 1
+ area 4 nssa no-summary
+ area 14 virtual-link 192.168.255.14
 !
 ip forward-protocol nd
 !
@@ -2426,6 +2497,11 @@ multilink bundle-name authenticated
 !
 !
 !
+key chain OSPF
+ key 1
+  key-string CISCOSHA
+  cryptographic-algorithm hmac-sha-1
+!
 !
 username cisco privilege 15 secret 5 $1$kfsF$kkQEK/buo6TCtqkyGulqf1
 !
@@ -2447,7 +2523,7 @@ redundancy
 interface Loopback0
  description Loopback
  ip address 192.168.255.14 255.255.255.255
- ipv6 address 2001::14/128
+ ip ospf 1 area 0
 !
 interface GigabitEthernet0/0
  description OOB Management
@@ -2459,6 +2535,9 @@ interface GigabitEthernet0/0
 !
 interface GigabitEthernet0/1
  ip address 165.1.143.14 255.255.255.0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 CISCO
+ ip ospf 1 area 14
  duplex auto
  speed auto
  media-type rj45
@@ -2466,10 +2545,16 @@ interface GigabitEthernet0/1
 !
 interface GigabitEthernet0/2
  ip address 165.1.148.14 255.255.255.0
+ ip ospf authentication key-chain OSPF
+ ip ospf 1 area 14
  duplex auto
  speed auto
  media-type rj45
  ipv6 address 2001:165:1:148::14/64
+!
+router ospf 1
+ area 14 virtual-link 192.168.255.13
+ area 14 virtual-link 192.168.255.8
 !
 ip forward-protocol nd
 !
@@ -2539,7 +2624,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.215</entry>
             <entry key="config" type="string">!
-! Last configuration change at 18:03:43 UTC Mon May 11 2020
+! Last configuration change at 19:49:35 UTC Mon May 11 2020
 !
 version 15.2
 service timestamps debug datetime msec
@@ -2649,6 +2734,10 @@ interface Vlan12
  ip address 165.1.12.21 255.255.255.0
  ipv6 address 2001:165:1:12::21/64
 !
+router ospf 1
+ area 1 stub
+ network 0.0.0.0 255.255.255.255 area 1
+!
 ip forward-protocol nd
 !
 no ip http server
@@ -2713,7 +2802,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.216</entry>
             <entry key="config" type="string">!
-! Last configuration change at 18:07:31 UTC Mon May 11 2020
+! Last configuration change at 20:08:24 UTC Mon May 11 2020
 !
 version 15.2
 service timestamps debug datetime msec
@@ -2752,8 +2841,6 @@ no ipv6 cef
 !
 !
 !
-vlan 13,30,40
-!
 spanning-tree mode mst
 spanning-tree extend system-id
 !
@@ -2782,7 +2869,6 @@ vlan internal allocation policy ascending
 interface Loopback0
  description Loopback
  ip address 192.168.255.22 255.255.255.255
- ipv6 address 2001::22/128
 !
 interface Port-channel1
  switchport trunk allowed vlan 30,40
@@ -2859,6 +2945,11 @@ interface Vlan40
  ip address 165.1.40.22 255.255.255.0
  ipv6 address 2001:165:1:40::22/64
 !
+router ospf 1
+ area 4 nssa
+ network 165.1.0.0 0.0.255.255 area 4
+ network 192.168.255.0 0.0.0.255 area 4
+!
 ip forward-protocol nd
 !
 no ip http server
@@ -2927,7 +3018,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.217</entry>
             <entry key="config" type="string">!
-! Last configuration change at 18:14:31 UTC Mon May 11 2020
+! Last configuration change at 20:08:28 UTC Mon May 11 2020
 !
 version 15.2
 service timestamps debug datetime msec
@@ -2965,8 +3056,6 @@ ip cef
 no ipv6 cef
 !
 !
-!
-vlan 13,30,40
 !
 spanning-tree mode mst
 spanning-tree extend system-id
@@ -3008,7 +3097,6 @@ track 3 list boolean or
 interface Loopback0
  description Loopback
  ip address 192.168.255.23 255.255.255.255
- ipv6 address 2001::23/128
 !
 interface GigabitEthernet0/0
  description OOB management
@@ -3071,6 +3159,11 @@ interface Vlan40
  ip address 165.1.40.23 255.255.255.0
  ipv6 address 2001:165:1:40::23/64
  vrrp 1 ip 165.1.40.254
+!
+router ospf 1
+ area 4 nssa
+ network 165.1.0.0 0.0.255.255 area 4
+ network 192.168.255.0 0.0.0.255 area 4
 !
 ip forward-protocol nd
 !
@@ -3139,7 +3232,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.218</entry>
             <entry key="config" type="string">!
-! Last configuration change at 18:12:28 UTC Mon May 11 2020
+! Last configuration change at 20:08:29 UTC Mon May 11 2020
 !
 version 15.2
 service timestamps debug datetime msec
@@ -3177,8 +3270,6 @@ ip cef
 no ipv6 cef
 !
 !
-!
-vlan 13,30,40
 !
 spanning-tree mode mst
 spanning-tree extend system-id
@@ -3221,7 +3312,6 @@ track 3 list boolean or
 interface Loopback0
  description Loopback
  ip address 192.168.255.24 255.255.255.255
- ipv6 address 2001::24/128
 !
 interface GigabitEthernet0/0
  description OOB management
@@ -3286,6 +3376,11 @@ interface Vlan40
  vrrp 1 ip 165.1.40.254
  vrrp 1 priority 254
  vrrp 1 track 3 decrement 254
+!
+router ospf 1
+ area 4 nssa
+ network 165.1.0.0 0.0.255.255 area 4
+ network 192.168.255.0 0.0.0.255 area 4
 !
 ip forward-protocol nd
 !
@@ -3354,7 +3449,7 @@ end
         <extensions>
             <entry key="static_ip" type="String">172.16.1.219</entry>
             <entry key="config" type="string">!
-! Last configuration change at 18:13:40 UTC Mon May 11 2020
+! Last configuration change at 20:08:31 UTC Mon May 11 2020
 !
 version 15.2
 service timestamps debug datetime msec
@@ -3393,8 +3488,6 @@ no ipv6 cef
 !
 !
 !
-vlan 13,30,40
-!
 spanning-tree mode mst
 spanning-tree extend system-id
 !
@@ -3423,7 +3516,6 @@ vlan internal allocation policy ascending
 interface Loopback0
  description Loopback
  ip address 192.168.255.25 255.255.255.255
- ipv6 address 2001::25/128
 !
 interface Port-channel1
  switchport trunk allowed vlan 30,40
@@ -3492,6 +3584,11 @@ interface Vlan30
 interface Vlan40
  ip address 165.1.40.25 255.255.255.0
  ipv6 address 2001:165:1:40::25/64
+!
+router ospf 1
+ area 4 nssa
+ redistribute connected subnets
+ network 165.1.0.0 0.0.255.255 area 4
 !
 ip forward-protocol nd
 !
@@ -3636,10 +3733,8 @@ vlan internal allocation policy ascending
 !
 !
 interface Loopback0
- vrf forwarding X
  description Loopback
  ip address 192.168.255.26 255.255.255.255
- ipv6 address 2001::26/128
 !
 interface GigabitEthernet0/0
  description OOB management
