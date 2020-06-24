@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
-    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72"><extensions><entry key="config" type="String">hostname R1
+    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R1
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -9,6 +17,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 1.1.1.1 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no shut
@@ -40,7 +56,15 @@ end
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180"><extensions><entry key="config" type="String">hostname R2
+    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R2
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -49,6 +73,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 2.2.2.2 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -121,7 +153,15 @@ end
         <interface id="1" name="GigabitEthernet3"/>
         <interface id="2" name="GigabitEthernet4"/>
     </node>
-    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359"><extensions><entry key="config" type="String">hostname R3
+    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R3
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -130,6 +170,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 3.3.3.3 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -171,8 +219,16 @@ end
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468"><extensions><entry key="config" type="String">hostname R4
+    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R4
 !
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -181,6 +237,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 4.4.4.4 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -227,7 +291,15 @@ end
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="336,65"><extensions><entry key="config" type="String">hostname R5
+    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="336,65"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R5
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -236,6 +308,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 5.5.5.5 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -280,7 +360,15 @@ end
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="496,75"><extensions><entry key="config" type="String">hostname R6
+    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="496,75"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R6
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -289,6 +377,14 @@ ip cef distributed
 !
 interface Loopback0
  ip address 6.6.6.6 255.255.255.255
+!
+interface GigabitEthernet1
+ description OOB Management
+ vrf forwarding Mgmt-intf
+ ! Configured on launch
+ no ip address
+ cdp enable
+ no shutdown
 !
 interface GigabitEthernet2
  no ip address
@@ -334,7 +430,15 @@ end
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="config" type="String">hostname R7
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R7
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -366,7 +470,15 @@ end
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="config" type="String">hostname R8
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname R8
+!
+vrf definition Mgmt-intf
+!
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
 !
 no service timestamp
 enable password cisco
@@ -434,7 +546,27 @@ end
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="757,415" excludeFromLaunch="true">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143"><extensions><entry key="config" type="String">hostname XR1
+    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname XR1
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
 cdp
 line console
  exec-timeout 0 0
@@ -451,6 +583,14 @@ vrf VPN_A
 !
 interface Loopback0
  ipv4 address 19.19.19.19 255.255.255.255
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  cdp
+  no shutdown
 !
 interface GigabitEthernet0/0/0/0
  cdp
@@ -514,13 +654,41 @@ end
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
-    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199"><extensions><entry key="config" type="String">hostname XR2
+    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">hostname XR2
+telnet vrf default ipv4 server max-servers 10
+telnet vrf Mgmt-intf ipv4 server max-servers 10
+vrf Mgmt-intf
+ address-family ipv4 unicast
+ !
+ address-family ipv6 unicast
+ !
+!
+ssh server v2
+ssh server vrf Mgmt-intf
+control-plane
+ management-plane
+  inband
+   interface all
+    allow all
+   !
+  !
+ !
+!
+!
 cdp
 line console
  exec-timeout 0 0
 !
 interface Loopback0
  ipv4 address 20.20.20.20 255.255.255.255
+!
+interface mgmteth0/0/CPU0/0
+  description OOB Management
+  ! Configured on launch
+  vrf Mgmt-intf
+  no ipv4 address
+  cdp
+  no shutdown
 !
 interface GigabitEthernet0/0/0/0
  cdp

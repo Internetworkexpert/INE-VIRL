@@ -1,48 +1,48 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <topology xmlns="http://www.cisco.com/VIRL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="0.9" xsi:schemaLocation="http://www.cisco.com/VIRL https://raw.github.com/CiscoVIRL/schema/v0.9/virl.xsd">
-    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72"><extensions><entry key="config" type="String">ÿþ
+    <node name="R1" type="SIMPLE" subtype="CSR1000v" location="240,72"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180"><extensions><entry key="config" type="String">ÿþ!</entry></extensions>
+    <node name="R2" type="SIMPLE" subtype="CSR1000v" location="240,180"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ!</entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
         <interface id="2" name="GigabitEthernet4"/>
     </node>
-    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359"><extensions><entry key="config" type="String">ÿþ
+    <node name="R3" type="SIMPLE" subtype="CSR1000v" location="231,359"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468"><extensions><entry key="config" type="String">ÿþ
-</entry></extensions>
-        <interface id="0" name="GigabitEthernet2"/>
-        <interface id="1" name="GigabitEthernet3"/>
-    </node>
-    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="336,65"><extensions><entry key="config" type="String">ÿþ
+    <node name="R4" type="SIMPLE" subtype="CSR1000v" location="230,468"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="496,75"><extensions><entry key="config" type="String">ÿþ
-</entry></extensions>
-        <interface id="0" name="GigabitEthernet2"/>
-    </node>
-    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="config" type="String">ÿþ
+    <node name="R5" type="SIMPLE" subtype="CSR1000v" location="336,65"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="config" type="String">ÿþ!</entry></extensions>
+    <node name="R6" type="SIMPLE" subtype="CSR1000v" location="496,75"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
+</entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
-        <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,278"><extensions><entry key="config" type="String">ÿþ
+    <node name="R7" type="SIMPLE" subtype="CSR1000v" location="340,461"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
 </entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
         <interface id="1" name="GigabitEthernet3"/>
     </node>
-    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="570,79"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="R8" type="SIMPLE" subtype="CSR1000v" location="422,66"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ!</entry></extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R9" type="SIMPLE" subtype="CSR1000v" location="240,278"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ
+</entry></extensions>
+        <interface id="0" name="GigabitEthernet2"/>
+        <interface id="1" name="GigabitEthernet3"/>
+    </node>
+    <node name="R10" type="SIMPLE" subtype="CSR1000v" location="570,79"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþh</entry></extensions>
         <interface id="0" name="GigabitEthernet2"/>
     </node>
     <node name="R11" type="SIMPLE" subtype="CSR1000v" location="587,254" excludeFromLaunch="true">
@@ -75,18 +75,18 @@
     <node name="R20" type="SIMPLE" subtype="CSR1000v" location="757,415" excludeFromLaunch="true">
         <interface id="0" name="GigabitEthernet2"/>
     </node>
-    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="XR1" type="SIMPLE" subtype="IOS XRv" location="573,143"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþh</entry></extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
-    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="XR2" type="SIMPLE" subtype="IOS XRv" location="572,199"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþh</entry></extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
         <interface id="1" name="GigabitEthernet0/0/0/1"/>
     </node>
-    <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="420,478"><extensions><entry key="config" type="String">ÿþh</entry></extensions>
+    <node name="XR3" type="SIMPLE" subtype="IOS XRv" location="420,478"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþh</entry></extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
     </node>
-    <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="489,472"><extensions><entry key="config" type="String">ÿþ!</entry></extensions>
+    <node name="XR4" type="SIMPLE" subtype="IOS XRv" location="489,472"><extensions><entry key="AutoNetkit.mgmt_ip" type="string"></entry><entry key="config" type="String">ÿþ!</entry></extensions>
         <interface id="0" name="GigabitEthernet0/0/0/0"/>
     </node>
     <node name="SW2" type="SIMPLE" subtype="Unmanaged Switch" location="509,336">
